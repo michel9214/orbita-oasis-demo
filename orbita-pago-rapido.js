@@ -21,6 +21,77 @@ window.OrbitaPagoRapido = {
         this.setupUI();
     },
 
+    _mpEdgeUrl() {
+        return this.estado.mpEdgeUrl
+            || (window.orbitaPagoFlow && window.orbitaPagoFlow.MP_EDGE_URL)
+            || null;
+    },
+
+    _supabaseHeaders() {
+        const key = window.orbitaPagoFlow && window.orbitaPagoFlow.SUPABASE_KEY;
+        if (!key) return null;
+        return { apikey: key, Authorization: "Bearer " + key, "Content-Type": "application/json" };
+    },
+
+    _syncRegisterServer(cliente) {
+        const url = this._mpEdgeUrl();
+        const headers = this._supabaseHeaders();
+        if (!url || !headers) return;
+        fetch(url, {
+            method: "POST",
+            headers,
+            body: JSON.stringify({
+                action: "register_customer",
+                email: cliente.email,
+                nombre: cliente.nombre,
+                pin_hash: cliente.pin_hash,
+                telefono: cliente.telefono || null,
+                direccion_entrega: cliente.direccion_entrega || null,
+                metodo_pago: cliente.metodo_pago || "mercadopago",
+            }),
+        }).catch(() => {});
+    },
+
+    _syncUpdateServer(email, pin_hash, updates) {
+        const url = this._mpEdgeUrl();
+        const headers = this._supabaseHeaders();
+        if (!url || !headers) return;
+        fetch(url, {
+            method: "POST",
+            headers,
+            body: JSON.stringify({ action: "update_customer", email, pin_hash, updates }),
+        }).catch(() => {});
+    },
+
+    async _loginFromServer(email, pin_hash) {
+        const url = this._mpEdgeUrl();
+        const headers = this._supabaseHeaders();
+        if (!url || !headers) return null;
+        try {
+            const res = await fetch(url, {
+                method: "POST",
+                headers,
+                body: JSON.stringify({ action: "login_customer", email, pin_hash }),
+            });
+            if (!res.ok) return null;
+            const data = await res.json();
+            return data && data.ok ? data.cliente : null;
+        } catch (e) {
+            return null;
+        }
+    },
+
+    _syncDeleteServer(email, pin_hash) {
+        const url = this._mpEdgeUrl();
+        const headers = this._supabaseHeaders();
+        if (!url || !headers) return;
+        fetch(url, {
+            method: "POST",
+            headers,
+            body: JSON.stringify({ action: "delete_customer", email, pin_hash }),
+        }).catch(() => {});
+    },
+
     _getUsuarios() {
         try {
             const raw = localStorage.getItem('orbita_usuarios');
@@ -88,16 +159,25 @@ window.OrbitaPagoRapido = {
         return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
     },
 
-    guardarCliente(cliente) {
+    guardarCliente(cliente, opts) {
         try {
             const emailKey = (cliente.email || '').toLowerCase().trim();
             if (!emailKey) return;
+            cliente.email = emailKey;
             const map = this._getUsuarios();
             map[emailKey] = cliente;
             this._saveUsuarios(map);
             this._setSesionActiva(emailKey);
             this.estado.cliente = cliente;
             this.estado.modo = 'registrado';
+            // Sync con server (fire-and-forget)
+            const mode = opts && opts.mode;
+            if (mode === 'register') {
+                this._syncRegisterServer(cliente);
+            } else if (mode === 'update') {
+                const { pin_hash, email, created_at, creado, id, ...updates } = cliente;
+                this._syncUpdateServer(email, pin_hash, updates);
+            }
         } catch (e) {
             console.error('Error guardando cliente:', e);
         }
@@ -620,7 +700,7 @@ window.OrbitaPagoRapido = {
         c.ultimos4 = ultimos4;
         c.emisor_tarjeta = emisor || null;
 
-        this.guardarCliente(c);
+        this.guardarCliente(c, { mode: 'update' });
         this.mostrarToast('Tarjeta guardada ✓');
         this.abrirPerfil();
     },
@@ -629,12 +709,12 @@ window.OrbitaPagoRapido = {
         const c = this.estado.cliente;
         if (!c) return;
         if (!confirm('¿Eliminar la tarjeta guardada?')) return;
-        delete c.titular_tarjeta;
-        delete c.marca_tarjeta;
-        delete c.tipo_tarjeta;
-        delete c.ultimos4;
-        delete c.emisor_tarjeta;
-        this.guardarCliente(c);
+        c.titular_tarjeta = null;
+        c.marca_tarjeta = null;
+        c.tipo_tarjeta = null;
+        c.ultimos4 = null;
+        c.emisor_tarjeta = null;
+        this.guardarCliente(c, { mode: 'update' });
         this.mostrarToast('Tarjeta eliminada ✓');
         this.abrirPerfil();
     },
@@ -674,18 +754,28 @@ window.OrbitaPagoRapido = {
             return;
         }
 
-        const usuario = this._getUsuarioPorEmail(email);
-        if (!usuario) {
-            errEl.textContent = 'No hay una cuenta con ese email en este dispositivo. Crea una cuenta primero.';
-            errEl.style.display = 'block';
-            return;
-        }
-
         const hash = await this.hashPin(pin, email);
-        if (hash !== usuario.pin_hash) {
-            errEl.textContent = 'PIN incorrecto.';
-            errEl.style.display = 'block';
-            return;
+        let usuario = this._getUsuarioPorEmail(email);
+
+        if (usuario) {
+            if (hash !== usuario.pin_hash) {
+                errEl.textContent = 'PIN incorrecto.';
+                errEl.style.display = 'block';
+                return;
+            }
+        } else {
+            // No está local → buscar en el servidor (puede haberse registrado en otro dispositivo)
+            const remoto = await this._loginFromServer(email, hash);
+            if (!remoto) {
+                errEl.textContent = 'No encontramos una cuenta con ese email y PIN. Revisa los datos o crea una cuenta.';
+                errEl.style.display = 'block';
+                return;
+            }
+            // Cachear local con el pin_hash que ya tenemos (el server no lo devuelve)
+            usuario = { ...remoto, pin_hash: hash };
+            const map = this._getUsuarios();
+            map[email] = usuario;
+            this._saveUsuarios(map);
         }
 
         this.estado.cliente = usuario;
@@ -735,7 +825,7 @@ window.OrbitaPagoRapido = {
                 creado: new Date().toISOString()
             };
 
-            this.guardarCliente(cliente);
+            this.guardarCliente(cliente, { mode: 'register' });
             this.cerrarModal();
             this.mostrarToast(`¡Listo, ${nombre.split(' ')[0]}! Datos guardados ✓`);
             setTimeout(() => this.actualizarUI(), 300);
@@ -748,7 +838,7 @@ window.OrbitaPagoRapido = {
         const metodo = document.querySelector('input[name="perfil-metodo"]:checked')?.value;
         if (this.estado.cliente && metodo) {
             this.estado.cliente.metodo_pago = metodo;
-            this.guardarCliente(this.estado.cliente);
+            this.guardarCliente(this.estado.cliente, { mode: 'update' });
         }
         this.cerrarModal();
         this.actualizarUI();
@@ -885,12 +975,14 @@ window.OrbitaPagoRapido = {
 
     eliminarCuentaCompleta() {
         if (!confirm('¿Seguro quieres eliminar tu cuenta? Esta acción NO se puede deshacer.')) return;
-        if (!confirm('Se eliminarán todos tus datos guardados en este dispositivo. ¿Confirmar?')) return;
+        if (!confirm('Se eliminarán todos tus datos en este dispositivo y en el servidor. ¿Confirmar?')) return;
         const email = (this.estado.cliente && this.estado.cliente.email || '').toLowerCase().trim();
+        const pinHash = this.estado.cliente && this.estado.cliente.pin_hash;
         if (email) {
             const map = this._getUsuarios();
             delete map[email];
             this._saveUsuarios(map);
+            if (pinHash) this._syncDeleteServer(email, pinHash);
         }
         this._setSesionActiva(null);
         this.estado.cliente = null;
