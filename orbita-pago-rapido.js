@@ -993,15 +993,43 @@ window.OrbitaPagoRapido = {
     },
 
     // ── UTILIDADES ──
-    mostrarToast(msg) {
-        const toast = document.getElementById('orbita-pago-toast');
-        if (!toast) return;
-        toast.textContent = msg;
-        toast.style.display = 'block';
-        toast.style.opacity = '1';
-        toast.style.transition = '';
-        setTimeout(() => { toast.style.transition = 'opacity 0.4s'; toast.style.opacity = '0'; }, 2400);
-        setTimeout(() => { toast.style.display = 'none'; }, 2900);
+    mostrarToast(msg, tipo) {
+        // Quitar toast previo si existe
+        const prev = document.getElementById('orbita-pago-toast-dinamico');
+        if (prev) prev.remove();
+
+        const colors = {
+            success: { bg: '#25d366', fg: '#ffffff' },
+            error:   { bg: '#c1121f', fg: '#ffffff' },
+            info:    { bg: '#1f1f1f', fg: '#ffffff' }
+        };
+        const t = colors[tipo] || colors.info;
+
+        const el = document.createElement('div');
+        el.id = 'orbita-pago-toast-dinamico';
+        el.textContent = msg;
+        el.style.cssText =
+            'position:fixed;top:80px;left:50%;transform:translateX(-50%);z-index:99999;' +
+            'background:' + t.bg + ';color:' + t.fg + ';' +
+            'padding:14px 22px;border-radius:12px;' +
+            "font-family:'DM Sans',sans-serif;font-size:0.95rem;font-weight:600;" +
+            'box-shadow:0 10px 28px rgba(0,0,0,0.45);max-width:90vw;text-align:center;' +
+            'opacity:0;transition:opacity 0.25s ease,transform 0.25s ease;' +
+            'transform:translate(-50%,-10px);pointer-events:none;';
+        document.body.appendChild(el);
+
+        // Trigger animación de entrada
+        requestAnimationFrame(() => {
+            el.style.opacity = '1';
+            el.style.transform = 'translate(-50%,0)';
+        });
+
+        // Desvanecer y borrar
+        setTimeout(() => {
+            el.style.opacity = '0';
+            el.style.transform = 'translate(-50%,-10px)';
+        }, 2700);
+        setTimeout(() => { el.remove(); }, 3100);
     },
 
     detectarMarca(num) {
