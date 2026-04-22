@@ -21,29 +21,61 @@ window.OrbitaPagoRapido = {
         this.setupUI();
     },
 
+    _getUsuarios() {
+        try {
+            const raw = localStorage.getItem('orbita_usuarios');
+            return raw ? JSON.parse(raw) : {};
+        } catch (e) { return {}; }
+    },
+
+    _saveUsuarios(map) {
+        try { localStorage.setItem('orbita_usuarios', JSON.stringify(map)); } catch (e) {}
+    },
+
+    _getUsuarioPorEmail(email) {
+        if (!email) return null;
+        const map = this._getUsuarios();
+        return map[email.toLowerCase().trim()] || null;
+    },
+
+    _setSesionActiva(email) {
+        try {
+            if (email) localStorage.setItem('orbita_cliente_activo', email.toLowerCase().trim());
+            else localStorage.removeItem('orbita_cliente_activo');
+        } catch (e) {}
+    },
+
     async cargarClienteGuardado() {
         try {
-            const guardado = localStorage.getItem('orbita_cliente_global');
-            if (!guardado) return;
-            const c = JSON.parse(guardado);
-            let changed = false;
-
-            // Migración: PIN plano → pin_hash (SHA-256)
-            if (c.pin && !c.pin_hash) {
-                c.pin_hash = await this.hashPin(c.pin, c.email);
-                delete c.pin;
-                changed = true;
+            // Migración 1: si existe orbita_cliente_global viejo, moverlo al map nuevo
+            const legacy = localStorage.getItem('orbita_cliente_global');
+            if (legacy) {
+                const c = JSON.parse(legacy);
+                if (c && c.email) {
+                    // Migración PIN plano → hash
+                    if (c.pin && !c.pin_hash) {
+                        c.pin_hash = await this.hashPin(c.pin, c.email);
+                        delete c.pin;
+                    }
+                    // Migración PCI: borrar tarjeta con datos sensibles
+                    if (c.tarjeta_datos) {
+                        c.ultimos4 = c.tarjeta_datos.ultimos4 || c.ultimos4 || null;
+                        c.marca_tarjeta = c.tarjeta_datos.marca || c.marca_tarjeta || null;
+                        delete c.tarjeta_datos;
+                    }
+                    const map = this._getUsuarios();
+                    map[c.email.toLowerCase().trim()] = c;
+                    this._saveUsuarios(map);
+                    this._setSesionActiva(c.email);
+                }
+                localStorage.removeItem('orbita_cliente_global');
             }
 
-            // Migración PCI: borrar tarjeta guardada localmente
-            if (c.tarjeta_datos) {
-                c.ultimos4 = c.tarjeta_datos.ultimos4 || c.ultimos4 || null;
-                c.marca_tarjeta = c.tarjeta_datos.marca || c.marca_tarjeta || null;
-                delete c.tarjeta_datos;
-                changed = true;
-            }
-
-            if (changed) localStorage.setItem('orbita_cliente_global', JSON.stringify(c));
+            // Leer sesión activa del map
+            const emailActivo = localStorage.getItem('orbita_cliente_activo');
+            if (!emailActivo) return;
+            const c = this._getUsuarioPorEmail(emailActivo);
+            if (!c) { this._setSesionActiva(null); return; }
             this.estado.cliente = c;
             this.estado.modo = 'registrado';
         } catch (e) {}
@@ -58,7 +90,12 @@ window.OrbitaPagoRapido = {
 
     guardarCliente(cliente) {
         try {
-            localStorage.setItem('orbita_cliente_global', JSON.stringify(cliente));
+            const emailKey = (cliente.email || '').toLowerCase().trim();
+            if (!emailKey) return;
+            const map = this._getUsuarios();
+            map[emailKey] = cliente;
+            this._saveUsuarios(map);
+            this._setSesionActiva(emailKey);
             this.estado.cliente = cliente;
             this.estado.modo = 'registrado';
         } catch (e) {
@@ -637,18 +674,23 @@ window.OrbitaPagoRapido = {
             return;
         }
 
-        if (!this.estado.cliente || (this.estado.cliente.email || '').toLowerCase() !== email) {
-            errEl.textContent = 'No hay una cuenta con ese email en este dispositivo. Creá una cuenta primero.';
+        const usuario = this._getUsuarioPorEmail(email);
+        if (!usuario) {
+            errEl.textContent = 'No hay una cuenta con ese email en este dispositivo. Crea una cuenta primero.';
             errEl.style.display = 'block';
             return;
         }
 
         const hash = await this.hashPin(pin, email);
-        if (hash !== this.estado.cliente.pin_hash) {
+        if (hash !== usuario.pin_hash) {
             errEl.textContent = 'PIN incorrecto.';
             errEl.style.display = 'block';
             return;
         }
+
+        this.estado.cliente = usuario;
+        this.estado.modo = 'registrado';
+        this._setSesionActiva(email);
 
         this.cerrarModal();
         this.mostrarToast(`¡Hola de nuevo, ${this.estado.cliente.nombre.split(' ')[0]}!`);
@@ -714,12 +756,13 @@ window.OrbitaPagoRapido = {
     },
 
     cerrarSesion() {
-        localStorage.removeItem('orbita_cliente_global');
+        // Mantener la cuenta guardada en 'orbita_usuarios', solo desactivar la sesión
+        this._setSesionActiva(null);
         this.estado.cliente = null;
         this.estado.modo = 'nuevo';
         this.cerrarModal();
         this.actualizarUI();
-        this.mostrarToast('Sesión cerrada.');
+        this.mostrarToast('Sesión cerrada. Puedes volver a entrar con tu email y PIN.');
     },
 
     // ── PAGO RÁPIDO ──
@@ -841,9 +884,15 @@ window.OrbitaPagoRapido = {
     },
 
     eliminarCuentaCompleta() {
-        if (!confirm('¿Seguro querés eliminar tu cuenta? Esta acción NO se puede deshacer.')) return;
-        if (!confirm('Se eliminarán todos tus datos guardados. ¿Confirmar?')) return;
-        Object.keys(localStorage).filter(k => k.startsWith('orbita_')).forEach(k => localStorage.removeItem(k));
+        if (!confirm('¿Seguro quieres eliminar tu cuenta? Esta acción NO se puede deshacer.')) return;
+        if (!confirm('Se eliminarán todos tus datos guardados en este dispositivo. ¿Confirmar?')) return;
+        const email = (this.estado.cliente && this.estado.cliente.email || '').toLowerCase().trim();
+        if (email) {
+            const map = this._getUsuarios();
+            delete map[email];
+            this._saveUsuarios(map);
+        }
+        this._setSesionActiva(null);
         this.estado.cliente = null;
         this.estado.modo = 'nuevo';
         this.cerrarModal();
