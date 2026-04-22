@@ -409,9 +409,13 @@ window.OrbitaPagoRapido = {
 
         const estaRegistrado = !!this.estado.cliente;
 
+        const chipStyle = "background:rgba(30,30,30,0.95);color:var(--muted);padding:7px 13px;border-radius:20px;font-size:0.78rem;font-weight:600;cursor:pointer;border:1px solid var(--border);white-space:nowrap;";
+        const chipPrimary = "background:var(--fire,#ff4d00);color:#fff;padding:7px 13px;border-radius:20px;font-size:0.78rem;font-weight:700;cursor:pointer;border:1px solid var(--fire,#ff4d00);white-space:nowrap;";
+
         const html = `
             <div id="perfil-flotante-container" style="position:fixed;top:16px;right:16px;display:flex;align-items:center;gap:8px;z-index:1001;">
-                ${!estaRegistrado ? `<span id="perfil-texto" style="background:rgba(30,30,30,0.95);color:var(--muted);padding:7px 13px;border-radius:20px;font-size:0.78rem;font-weight:600;cursor:pointer;border:1px solid var(--border);white-space:nowrap;">Registrarme</span>` : ''}
+                ${!estaRegistrado ? `<span id="perfil-login" style="${chipPrimary}">Iniciar sesión</span>` : ''}
+                ${!estaRegistrado ? `<span id="perfil-texto" style="${chipStyle}">Registrarme</span>` : ''}
                 <div id="perfil-flotante" style="background:${estaRegistrado ? 'linear-gradient(135deg,var(--fire),#e03a00)' : '#2a2a2a'};color:white;border-radius:50%;width:44px;height:44px;display:flex;align-items:center;justify-content:center;font-size:${estaRegistrado ? '1.3rem' : '1.1rem'};font-weight:bold;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,0.4);font-family:'Bebas Neue',sans-serif;">
                     ${estaRegistrado ? this.estado.cliente.nombre.charAt(0).toUpperCase() : '?'}
                 </div>
@@ -422,11 +426,15 @@ window.OrbitaPagoRapido = {
         setTimeout(() => {
             const perfil = document.getElementById('perfil-flotante');
             const texto = document.getElementById('perfil-texto');
+            const login = document.getElementById('perfil-login');
             if (perfil) {
                 perfil.addEventListener('click', () => estaRegistrado ? this.abrirPerfil() : this.mostrarBeneficios());
             }
             if (texto) {
-                texto.addEventListener('click', () => this.mostrarBeneficios());
+                texto.addEventListener('click', () => this.mostrarRegistro());
+            }
+            if (login) {
+                login.addEventListener('click', () => this.mostrarLogin());
             }
         }, 50);
     },
