@@ -999,9 +999,9 @@ window.OrbitaPagoRapido = {
         if (prev) prev.remove();
 
         const colors = {
-            success: { bg: '#25d366', fg: '#ffffff' },
-            error:   { bg: '#c1121f', fg: '#ffffff' },
-            info:    { bg: '#1f1f1f', fg: '#ffffff' }
+            success: { bg: '#00ff88', fg: '#001a0a', glow: 'rgba(0,255,136,0.55)' },
+            error:   { bg: '#ff2d55', fg: '#ffffff', glow: 'rgba(255,45,85,0.55)' },
+            info:    { bg: '#39ff14', fg: '#0a1a00', glow: 'rgba(57,255,20,0.55)' }
         };
         const t = colors[tipo] || colors.info;
 
@@ -1011,9 +1011,11 @@ window.OrbitaPagoRapido = {
         el.style.cssText =
             'position:fixed;top:80px;left:50%;transform:translateX(-50%);z-index:99999;' +
             'background:' + t.bg + ';color:' + t.fg + ';' +
-            'padding:14px 22px;border-radius:12px;' +
-            "font-family:'DM Sans',sans-serif;font-size:0.95rem;font-weight:600;" +
-            'box-shadow:0 10px 28px rgba(0,0,0,0.45);max-width:90vw;text-align:center;' +
+            'padding:14px 24px;border-radius:14px;' +
+            "font-family:'DM Sans',sans-serif;font-size:1rem;font-weight:800;letter-spacing:0.3px;" +
+            'border:2px solid ' + t.bg + ';' +
+            'box-shadow:0 0 0 3px rgba(0,0,0,0.25),0 0 24px 4px ' + t.glow + ',0 10px 28px rgba(0,0,0,0.5);' +
+            'max-width:90vw;text-align:center;' +
             'opacity:0;transition:opacity 0.25s ease,transform 0.25s ease;' +
             'transform:translate(-50%,-10px);pointer-events:none;';
         document.body.appendChild(el);
