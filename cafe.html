@@ -496,7 +496,7 @@
     async function persistirCatalogoCafe() {
         const slim = productos.map(p => ({ id: p.id, nombre: p.nombre, precio: p.precio, activo: p.activo, cat: p.cat, desc: p.desc, grano: p.grano }));
         const r = await window.orbitaProductos.upsert(window.orbitaProductos.SITIO_CAFE, slim);
-        if (!r.ok) alert('No se pudo guardar el catálogo. Ejecutá orbita-productos.sql en Supabase.');
+        if (!r.ok) alert('No se pudo guardar el catálogo. Ejecuta orbita-productos.sql en Supabase.');
     }
 
     let pedido = {};
@@ -921,7 +921,7 @@
             const va = sumarVentasAnioCafe(rows, y);
             const netM = vm - cf;
             const netA = va - cf * 12;
-            const aviso = costos._necesitaLogin ? '<p style="color:var(--primary);font-size:0.78rem;margin-bottom:10px;text-align:left;">Iniciá sesión en este panel para ver costos y ventas con RLS.</p>' : (costos._sinTabla ? '<p style="color:var(--primary);font-size:0.78rem;margin-bottom:10px;text-align:left;">No se pudo leer orbita_config. Revisá SQL y sesión.</p>' : '');
+            const aviso = costos._necesitaLogin ? '<p style="color:var(--primary);font-size:0.78rem;margin-bottom:10px;text-align:left;">Inicia sesión en este panel para ver costos y ventas con RLS.</p>' : (costos._sinTabla ? '<p style="color:var(--primary);font-size:0.78rem;margin-bottom:10px;text-align:left;">No se pudo leer orbita_config. Revisa SQL y sesión.</p>' : '');
             box.innerHTML = aviso + `
                 <div class="admin-item">
                     <div style="font-size:0.88rem;margin-bottom:6px;">Ventas <strong>mes actual</strong></div>

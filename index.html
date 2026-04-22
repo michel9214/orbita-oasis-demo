@@ -476,7 +476,7 @@
     async function persistirCatalogoHandroll() {
         const slim = productos.map(p => ({ id: p.id, nombre: p.nombre, precio: p.precio, activo: p.activo, categoria: p.categoria }));
         const r = await window.orbitaProductos.upsert(window.orbitaProductos.SITIO_HANDROLL, slim);
-        if (!r.ok) alert('No se pudo guardar el catálogo en la nube. Revisá Supabase o ejecutá orbita-productos.sql.');
+        if (!r.ok) alert('No se pudo guardar el catálogo en la nube. Revisa Supabase o ejecuta orbita-productos.sql.');
     }
 
     let pedido = {};
@@ -966,7 +966,7 @@
             const va = sumarVentasAnio(rows, y);
             const netM = vm - cf;
             const netA = va - cf * 12;
-            const aviso = costos._necesitaLogin ? '<p style="color:var(--fire);font-size:0.78rem;margin-bottom:10px;text-align:left;">Iniciá sesión en este panel para ver costos y ventas con RLS.</p>' : (costos._sinTabla ? '<p style="color:var(--fire);font-size:0.78rem;margin-bottom:10px;text-align:left;">No se pudo leer orbita_config. Revisá SQL y sesión.</p>' : '');
+            const aviso = costos._necesitaLogin ? '<p style="color:var(--fire);font-size:0.78rem;margin-bottom:10px;text-align:left;">Inicia sesión en este panel para ver costos y ventas con RLS.</p>' : (costos._sinTabla ? '<p style="color:var(--fire);font-size:0.78rem;margin-bottom:10px;text-align:left;">No se pudo leer orbita_config. Revisa SQL y sesión.</p>' : '');
             box.innerHTML = aviso + `
                 <div class="admin-item">
                     <div style="font-size:0.9rem;margin-bottom:6px;">Ventas <strong>mes actual</strong></div>

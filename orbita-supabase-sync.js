@@ -82,7 +82,7 @@
                 localStorage.setItem(LS_LEGACY[clave], String(n));
             } catch (err) {}
             if (res.status === 401 || res.status === 403) {
-                return { ok: false, error: "Sesión requerida: iniciá sesión con el usuario de Supabase (Auth)." };
+                return { ok: false, error: "Sesión requerida: inicia sesión con el usuario de Supabase (Auth)." };
             }
             if (!res.ok) {
                 return {

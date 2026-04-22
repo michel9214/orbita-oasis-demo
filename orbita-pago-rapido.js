@@ -201,16 +201,16 @@ window.OrbitaPagoRapido = {
                     <!-- Vista: Beneficios (para no registrados) -->
                     <div id="vista-beneficios" style="display:none;">
                         <div class="modal-title">⚡ PAGO RÁPIDO ÓRBITA</div>
-                        <p class="modal-sub">Registráte y pagá en 1 solo click en los 3 locales.</p>
+                        <p class="modal-sub">Regístrate y paga en 1 solo click en los 3 locales.</p>
                         <div style="background:linear-gradient(135deg,rgba(255,77,0,0.1),rgba(0,158,227,0.06));padding:20px;border-radius:12px;margin:16px 0;text-align:center;">
                             <div style="font-size:2rem;margin-bottom:8px;">⚡</div>
-                            <div style="font-weight:700;font-size:1.1rem;color:var(--fire);margin-bottom:4px;">Pagá en 1 Segundo</div>
-                            <div style="font-size:0.85rem;color:var(--muted);">Guardá tus datos y usá tu PIN para compras futuras</div>
+                            <div style="font-weight:700;font-size:1.1rem;color:var(--fire);margin-bottom:4px;">Paga en 1 Segundo</div>
+                            <div style="font-size:0.85rem;color:var(--muted);">Guarda tus datos y usa tu PIN para compras futuras</div>
                         </div>
                         <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:20px;">
                             <div style="display:flex;align-items:center;gap:10px;">
                                 <span style="font-size:1.2rem;">⚡</span>
-                                <div><div style="font-weight:600;font-size:0.9rem;">Pago en 1 Click</div><div style="font-size:0.78rem;color:var(--muted);">Solo ingresá tu PIN</div></div>
+                                <div><div style="font-weight:600;font-size:0.9rem;">Pago en 1 Click</div><div style="font-size:0.78rem;color:var(--muted);">Solo ingresa tu PIN</div></div>
                             </div>
                             <div style="display:flex;align-items:center;gap:10px;">
                                 <span style="font-size:1.2rem;">🔒</span>
@@ -229,7 +229,7 @@ window.OrbitaPagoRapido = {
                     <!-- Vista: Iniciar sesión -->
                     <div id="vista-login" style="display:none;">
                         <div class="modal-title">INICIAR SESIÓN</div>
-                        <p class="modal-sub">Ingresá con tu email y PIN de 4 dígitos.</p>
+                        <p class="modal-sub">Ingresa con tu email y PIN de 4 dígitos.</p>
 
                         <div class="form-group">
                             <label>Email</label>
@@ -250,7 +250,7 @@ window.OrbitaPagoRapido = {
                     <!-- Vista: Registro -->
                     <div id="vista-registro" style="display:none;">
                         <div class="modal-title">REGISTRARME</div>
-                        <p class="modal-sub">Guardá tus datos una vez y la próxima pagás con PIN.</p>
+                        <p class="modal-sub">Guarda tus datos una vez y la próxima pagas con PIN.</p>
 
                         <div class="form-group">
                             <label>Email</label>
@@ -370,7 +370,7 @@ window.OrbitaPagoRapido = {
                         <div class="form-group">
                             <label>Marca</label>
                             <select id="tarjeta-marca" style="width:100%;padding:12px;background:var(--surface);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:'DM Sans',sans-serif;">
-                                <option value="">Elegí una</option>
+                                <option value="">Elige una</option>
                                 <option value="Visa">Visa</option>
                                 <option value="Mastercard">Mastercard</option>
                                 <option value="American Express">American Express</option>
@@ -380,7 +380,7 @@ window.OrbitaPagoRapido = {
                         <div class="form-group">
                             <label>Tipo</label>
                             <select id="tarjeta-tipo" style="width:100%;padding:12px;background:var(--surface);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:'DM Sans',sans-serif;">
-                                <option value="">Elegí una</option>
+                                <option value="">Elige una</option>
                                 <option value="credito">Crédito</option>
                                 <option value="debito">Débito</option>
                                 <option value="prepago">Prepago</option>
@@ -410,7 +410,7 @@ window.OrbitaPagoRapido = {
             <div class="modal-overlay" id="modal-pin-validacion">
                 <div class="modal">
                     <div class="modal-title">⚡ PAGO RÁPIDO</div>
-                    <p class="modal-sub">Ingresá tu PIN para confirmar el pago de $<span id="pin-total">0</span></p>
+                    <p class="modal-sub">Ingresa tu PIN para confirmar el pago de $<span id="pin-total">0</span></p>
                     <div class="form-group">
                         <label>PIN de 4 dígitos</label>
                         <input type="password" id="pin-input-validacion" placeholder="****" maxlength="4" inputmode="numeric"
@@ -629,7 +629,7 @@ window.OrbitaPagoRapido = {
             cont.innerHTML = `
                 <div style="background:linear-gradient(135deg,#2a2a2a,#1a1a1a);border:1px dashed var(--border);border-radius:16px;padding:28px 20px;text-align:center;color:var(--muted);font-size:0.88rem;">
                     No hay tarjeta guardada.<br>
-                    <span style="font-size:0.78rem;">Tocá "Editar" para agregar una.</span>
+                    <span style="font-size:0.78rem;">Toca "Editar" para agregar una.</span>
                 </div>`;
             return;
         }
@@ -689,9 +689,9 @@ window.OrbitaPagoRapido = {
         const errEl = document.getElementById('tarjeta-error');
         errEl.style.display = 'none';
 
-        if (!titular) { errEl.textContent = 'Ingresá el titular.'; errEl.style.display = 'block'; return; }
-        if (!marca) { errEl.textContent = 'Elegí la marca.'; errEl.style.display = 'block'; return; }
-        if (!tipo) { errEl.textContent = 'Elegí el tipo de tarjeta.'; errEl.style.display = 'block'; return; }
+        if (!titular) { errEl.textContent = 'Ingresa el titular.'; errEl.style.display = 'block'; return; }
+        if (!marca) { errEl.textContent = 'Elige la marca.'; errEl.style.display = 'block'; return; }
+        if (!tipo) { errEl.textContent = 'Elige el tipo de tarjeta.'; errEl.style.display = 'block'; return; }
         if (!/^\d{4}$/.test(ultimos4)) { errEl.textContent = 'Los últimos 4 dígitos deben ser 4 números.'; errEl.style.display = 'block'; return; }
 
         c.titular_tarjeta = titular;
@@ -744,7 +744,7 @@ window.OrbitaPagoRapido = {
         errEl.style.display = 'none';
 
         if (!email || !email.includes('@')) {
-            errEl.textContent = 'Ingresá un email válido.';
+            errEl.textContent = 'Ingresa un email válido.';
             errEl.style.display = 'block';
             return;
         }
@@ -802,12 +802,12 @@ window.OrbitaPagoRapido = {
         const errEl = document.getElementById('reg-error');
         errEl.style.display = 'none';
 
-        if (!email || !email.includes('@')) { errEl.textContent = 'Ingresá un email válido.'; errEl.style.display = 'block'; return; }
-        if (!nombre) { errEl.textContent = 'Ingresá tu nombre.'; errEl.style.display = 'block'; return; }
+        if (!email || !email.includes('@')) { errEl.textContent = 'Ingresa un email válido.'; errEl.style.display = 'block'; return; }
+        if (!nombre) { errEl.textContent = 'Ingresa tu nombre.'; errEl.style.display = 'block'; return; }
         if (!pin || pin.length !== 4 || !/^\d+$/.test(pin)) { errEl.textContent = 'El PIN debe tener 4 dígitos numéricos.'; errEl.style.display = 'block'; return; }
 
         const terminos = document.getElementById('reg-terminos');
-        if (!terminos?.checked) { errEl.textContent = 'Debés aceptar los Términos y Condiciones.'; errEl.style.display = 'block'; return; }
+        if (!terminos?.checked) { errEl.textContent = 'Debes aceptar los Términos y Condiciones.'; errEl.style.display = 'block'; return; }
 
         const btn = document.getElementById('btn-guardar-registro');
         btn.disabled = true;
@@ -858,18 +858,18 @@ window.OrbitaPagoRapido = {
     // ── PAGO RÁPIDO ──
     pagarRapido() {
         if (!this.estado.cliente) { this.mostrarBeneficios(); return; }
-        if (this.estado.total === 0) { this.mostrarToast('Agregá productos al pedido primero'); return; }
+        if (this.estado.total === 0) { this.mostrarToast('Agrega productos al pedido primero'); return; }
 
         const nombreInput = document.getElementById('input-nombre');
         if (nombreInput && !nombreInput.value.trim()) {
-            this.mostrarToast('Completá tu nombre');
+            this.mostrarToast('Completa tu nombre');
             nombreInput.focus();
             return;
         }
 
         const horaInput = document.getElementById('input-hora');
         if (horaInput && horaInput.style.display !== 'none' && !horaInput.value) {
-            this.mostrarToast('Elegí hora de retiro');
+            this.mostrarToast('Elige hora de retiro');
             horaInput.focus();
             return;
         }

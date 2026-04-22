@@ -117,7 +117,7 @@
                     <a href="cafe.html?k=orbita_8h3k2p_2026&orbita_back" style="padding:8px 12px;border-radius:10px;background:#221018;border:1px solid var(--cafe);color:#e8b4b4;font-size:0.82rem;font-weight:600;text-decoration:none;">Café · Productos</a>
                     <a href="fuente.html?k=orbita_8h3k2p_2026&orbita_back" style="padding:8px 12px;border-radius:10px;background:#1a1408;border:1px solid var(--fuente);color:var(--fuente);font-size:0.82rem;font-weight:600;text-decoration:none;">Fuente · Productos</a>
                 </div>
-                <p style="font-size:0.72rem;color:var(--muted);margin-top:10px;line-height:1.4;">Se guardan en <code style="font-size:0.68rem;">orbita_productos</code> (ejecutá <code style="font-size:0.68rem;">orbita-productos.sql</code> una vez en Supabase).</p>
+                <p style="font-size:0.72rem;color:var(--muted);margin-top:10px;line-height:1.4;">Se guardan en <code style="font-size:0.68rem;">orbita_productos</code> (ejecuta <code style="font-size:0.68rem;">orbita-productos.sql</code> una vez en Supabase).</p>
             </div>
             <div class="tab-nav">
                 <button type="button" class="active" onclick="showCentralTab('ventas', this)">Ventas</button>
@@ -467,10 +467,10 @@
         const w = document.getElementById("sync-warning");
         if (costos._necesitaLogin) {
             w.style.display = "block";
-            w.textContent = "Iniciá sesión arriba o aplicá supabase-security-rls.sql y usá un usuario de Authentication.";
+            w.textContent = "Inicia sesión arriba o aplicá supabase-security-rls.sql y usa un usuario de Authentication.";
         } else if (costos._sinTabla) {
             w.style.display = "block";
-            w.textContent = "No se pudo leer orbita_config (¿tabla o permisos?). Revisá orbita-config.sql y RLS.";
+            w.textContent = "No se pudo leer orbita_config (¿tabla o permisos?). Revisa orbita-config.sql y RLS.";
         } else {
             w.style.display = "none";
             w.textContent = "";

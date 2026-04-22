@@ -552,7 +552,7 @@
         var slimI = INGREDIENTES.map(function (i) { return { id: i.id, nombre: i.nombre, precio: Number(i.precio) || 0 }; });
         var payload = { productos: slimP, papas_tamanios: slimPa, bebidas: BEBIDAS.slice(), ingredientes: slimI };
         var r = await window.orbitaProductos.upsert(window.orbitaProductos.SITIO_FUENTE, payload);
-        if (!r.ok) alert('No se pudo guardar el catálogo. Ejecutá orbita-productos.sql en Supabase.');
+        if (!r.ok) alert('No se pudo guardar el catálogo. Ejecuta orbita-productos.sql en Supabase.');
     }
 
     let pedido = {};
@@ -1305,7 +1305,7 @@
             const rows = await fetchVentasDesdeFuente(desde);
             const vm = sumMesF(rows,y,m), va = sumAnioF(rows,y);
             const netM = vm - cf, netA = va - cf * 12;
-            const aviso = costos._necesitaLogin ? '<p style="color:var(--accent);font-size:0.78rem;margin-bottom:10px;text-align:left;">Iniciá sesión en este panel para ver costos y ventas con RLS.</p>' : (costos._sinTabla ? '<p style="color:var(--accent);font-size:0.78rem;margin-bottom:10px;text-align:left;">No se pudo leer orbita_config. Revisá SQL y sesión.</p>' : '');
+            const aviso = costos._necesitaLogin ? '<p style="color:var(--accent);font-size:0.78rem;margin-bottom:10px;text-align:left;">Inicia sesión en este panel para ver costos y ventas con RLS.</p>' : (costos._sinTabla ? '<p style="color:var(--accent);font-size:0.78rem;margin-bottom:10px;text-align:left;">No se pudo leer orbita_config. Revisa SQL y sesión.</p>' : '');
             box.innerHTML = aviso + `<div class="admin-item"><div style="font-size:0.88rem;margin-bottom:6px;">Ventas <strong>mes actual</strong></div><div style="font-family:'Bebas Neue',sans-serif;font-size:1.25rem;color:var(--green);">$${vm.toLocaleString('es-CL')}</div><div style="font-size:0.78rem;color:var(--muted);margin-top:8px;">− Costo fijo mes <strong>$${cf.toLocaleString('es-CL')}</strong></div><div style="font-size:0.85rem;margin-top:6px;">Resultado aprox. mes: <strong style="color:${netM>=0?'var(--green)':'#ff6b6b'}">$${netM.toLocaleString('es-CL')}</strong></div></div><div class="admin-item" style="margin-top:10px;"><div style="font-size:0.88rem;margin-bottom:6px;">Ventas <strong>año ${y}</strong></div><div style="font-family:'Bebas Neue',sans-serif;font-size:1.25rem;color:var(--text);">$${va.toLocaleString('es-CL')}</div><div style="font-size:0.78rem;color:var(--muted);margin-top:8px;">− Costos fijos 12 meses <strong>$${(cf*12).toLocaleString('es-CL')}</strong></div><div style="font-size:0.85rem;margin-top:6px;">Resultado aprox. año: <strong style="color:${netA>=0?'var(--green)':'#ff6b6b'}">$${netA.toLocaleString('es-CL')}</strong></div></div>`;
         } catch(e) { box.innerHTML = '<p style="color:var(--accent);font-size:0.85rem;">No se pudieron cargar las ventas.</p>'; }
     }

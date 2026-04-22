@@ -154,7 +154,7 @@
       toast("¡Pago recibido! Gracias por tu pedido 🎉", "success");
       setTimeout(abrirBannerResena, 1500);
     } else if (normalized === "failure") {
-      toast("El pago fue rechazado. Podés intentar de nuevo o pedir por WhatsApp.", "error");
+      toast("El pago fue rechazado. Puedes intentar de nuevo o pedir por WhatsApp.", "error");
     } else {
       toast("Tu pago está pendiente. Te avisamos cuando se confirme.", "info");
     }
