@@ -1,0 +1,1605 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Órbita Fuente de Soda | Frutillar</title>
+    <meta name="description" content="Órbita Fuente de Soda — Sándwiches, completos, hamburguesas y papas fritas caseras en Frutillar.">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍔</text></svg>">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    <script src="https://sdk.mercadopago.com/js/v2"></script>
+    <style>
+        :root {
+            --primary:  #7A3B1E;
+            --accent:   #D4872A;
+            --bg:       #0a0a0a;
+            --surface:  #1A0D05;
+            --card:     #2A1508;
+            --border:   #3D2410;
+            --border2:  #5A3520;
+            --text:     #F5DEB3;
+            --muted:    #c4a882;
+            --dark:     #2C1A0E;
+            --green:    #25d366;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; text-align: center; line-height: 1.6; overflow-x: hidden; }
+        body::before { content: ''; position: fixed; inset: 0; background: radial-gradient(ellipse 60% 40% at 70% 20%, rgba(212,135,42,0.04) 0%, transparent 60%); pointer-events: none; z-index: 0; }
+
+        /* ── HERO ── */
+        .hero { position: relative; z-index: 1; padding: 40px 20px 28px; border-bottom: 3px solid var(--accent); background: var(--primary); }
+        .logo { font-family: 'Playfair Display', serif; font-size: 2.4rem; letter-spacing: 2px; color: var(--text); line-height: 1; }
+        .logo span { color: var(--accent); }
+        .hero-tagline { font-size: 0.78rem; letter-spacing: 3px; text-transform: uppercase; color: var(--muted); margin-top: 8px; }
+        .hero-badge { display: inline-block; background: var(--dark); color: var(--accent); font-size: 0.7rem; letter-spacing: 2px; text-transform: uppercase; padding: 5px 14px; border-radius: 20px; margin-top: 10px; border: 1px solid var(--accent); }
+
+        /* ── SECTION ── */
+        .section { position: relative; z-index: 1; padding: 36px 24px 24px; max-width: 980px; margin: auto; }
+        .section-title { font-family: 'Bebas Neue', sans-serif; font-size: 1.9rem; letter-spacing: 2px; color: var(--text); margin-bottom: 14px; margin-top: 10px; }
+        .cat-label { font-family: 'Bebas Neue', sans-serif; font-size: 1.05rem; letter-spacing: 3px; color: var(--muted); text-align: left; margin: 30px 0 14px; border-left: 4px solid var(--accent); padding-left: 12px; }
+
+        /* ── GRID MENÚ 3 COL ── */
+        .menu-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; align-items: start; }
+        @media (max-width: 980px) { .menu-grid-3 { grid-template-columns: 1fr; } }
+        .col-box { min-width: 0; }
+
+        /* ── CARDS ── */
+        .food-card { background: var(--card); border: 1px solid var(--border2); padding: 22px 22px; border-radius: 18px; margin-bottom: 22px; transition: border-color 0.25s; text-align: left; overflow: hidden; }
+        .food-card:hover { border-color: var(--accent); }
+        .food-card.disabled { opacity: 0.4; pointer-events: none; }
+        .food-card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 14px; }
+        .food-card h3 { font-size: 1.1rem; font-weight: 700; color: var(--text); }
+        .food-card .desc { font-size: 0.85rem; color: var(--muted); margin-top: 4px; }
+        .price { font-family: 'Bebas Neue', sans-serif; font-size: 1.6rem; color: var(--accent); letter-spacing: 1px; white-space: nowrap; }
+
+        /* ── QTY ── */
+        .qty-control { display: flex; align-items: center; border: 1px solid var(--border2); border-radius: 10px; overflow: hidden; }
+        .qty-btn { background: var(--surface); border: none; width: 46px; height: 46px; font-size: 1.3rem; cursor: pointer; color: var(--text); transition: background 0.15s; display: flex; align-items: center; justify-content: center; }
+        .qty-btn:hover { background: var(--border); }
+        .qty-btn.plus { background: var(--accent); color: var(--dark); }
+        .qty-btn.plus:hover { opacity: 0.85; }
+        .qty-num { width: 46px; text-align: center; font-weight: 700; font-size: 1rem; background: var(--card); border: none; color: var(--text); }
+
+        /* ── SELECTOR BEBIDA ── */
+        .bebida-select { width: 100%; background: var(--primary) !important; border: 1px solid var(--accent) !important; border-radius: 8px; padding: 8px 12px; color: var(--text) !important; font-family: 'DM Sans', sans-serif; font-size: 0.82rem; outline: none; margin-top: 8px; cursor: pointer; -webkit-appearance: none; appearance: none; }
+        .bebida-select option { background: var(--primary); color: var(--text); }
+
+        /* ── PAPAS SELECTOR TAMAÑO ── */
+        .papas-card { background: var(--card); border: 1px solid var(--accent); padding: 22px 22px; border-radius: 18px; margin-bottom: 18px; text-align: left; }
+        .papas-card h3 { font-size: 1.1rem; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+        .papas-card .desc { font-size: 0.85rem; color: var(--muted); margin-bottom: 16px; }
+        .papas-sizes { display: flex; gap: 10px; margin-bottom: 14px; flex-wrap: wrap; }
+        .papas-size-btn { flex: 1; min-width: 80px; padding: 12px 8px; border: 1px solid var(--border2); border-radius: 10px; background: var(--surface); color: var(--muted); font-family: 'DM Sans', sans-serif; font-size: 0.88rem; font-weight: 600; cursor: pointer; transition: all 0.2s; text-align: center; }
+        .papas-size-btn:hover { border-color: var(--accent); color: var(--text); }
+        .papas-size-btn.selected { background: var(--accent); color: var(--dark); border-color: var(--accent); font-weight: 700; }
+        .papas-size-price { font-size: 0.78rem; margin-top: 4px; opacity: 0.85; }
+        .papas-resumen { font-size: 0.88rem; color: var(--muted); min-height: 22px; margin-bottom: 12px; text-align: left; }
+        .papas-resumen span { color: var(--accent); font-weight: 600; }
+        .btn-agregar-papa { width: 100%; padding: 13px; background: var(--accent); color: var(--dark); border: none; border-radius: 10px; font-family: 'Bebas Neue', sans-serif; font-size: 1.05rem; letter-spacing: 2px; cursor: pointer; transition: opacity 0.2s; }
+        .btn-agregar-papa:hover { opacity: 0.85; }
+        .btn-agregar-papa:disabled { opacity: 0.4; cursor: not-allowed; }
+
+        /* ── ACORDEÓN BEBIDAS/AGUAS ── */
+        .drinks-row { margin-top: 28px; }
+        .drinks-box { background: transparent; border: none; padding: 0; margin-bottom: 14px; border-radius: 14px; overflow: hidden; }
+        .drinks-box .drinks-acc-head {
+            width: 100%; display: flex; justify-content: space-between; align-items: center;
+            background: var(--card); border: 1px solid var(--border2); color: var(--text);
+            font-family: 'Bebas Neue', sans-serif; font-size: 1rem; letter-spacing: 2px;
+            padding: 15px 18px; border-radius: 14px; cursor: pointer; text-align: left;
+        }
+        .drinks-box.open .drinks-acc-head { border-radius: 14px 14px 0 0; border-bottom: 1px solid var(--border2); }
+        .drinks-acc-title { border-left: 3px solid var(--accent); padding-left: 10px; color: var(--muted); }
+        .drinks-box .acc-chev { transition: transform 0.2s; font-size: 0.72rem; opacity: 0.85; }
+        .drinks-box.open .acc-chev { transform: rotate(180deg); }
+        .drinks-box .drinks-panel { display: none; background: var(--card); border: 1px solid var(--border2); border-top: none; padding: 10px 16px 8px; border-radius: 0 0 14px 14px; overflow: visible; }
+        .drinks-box.open .drinks-panel { display: block; }
+        .jugo-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border2); }
+        .jugo-item:last-child { border-bottom: none; }
+        .jugo-info { display: flex; flex-direction: column; gap: 2px; }
+        .jugo-nombre { font-size: 0.92rem; font-weight: 600; color: var(--text); }
+        .jugo-precio { font-family: 'Bebas Neue', sans-serif; font-size: 1rem; color: var(--muted); }
+
+        /* ── ENTREGA ── */
+        .entrega-selector { display: flex; gap: 10px; margin: 18px 0 20px; }
+        .entrega-btn { flex: 1; padding: 15px 10px; border: 1px solid var(--border2); border-radius: 12px; background: var(--surface); color: var(--muted); font-family: 'DM Sans', sans-serif; font-size: 0.95rem; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+        .entrega-btn:hover { border-color: var(--accent); color: var(--text); }
+        .entrega-btn.active { background: var(--accent); color: var(--dark); border-color: var(--accent); }
+        .btn-ubicacion { width: 100%; padding: 12px; background: var(--surface); border: 1px solid var(--border2); border-radius: 10px; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 0.95rem; font-weight: 600; cursor: pointer; transition: all 0.2s; text-align: center; }
+        .btn-ubicacion:hover { border-color: var(--accent); }
+        .btn-ubicacion.obtenida { border-color: var(--green); color: var(--green); }
+
+        /* ── PERSONALIZACIÓN ── */
+        .custom-wrap { display: flex; flex-direction: column; gap: 14px; width: 100%; max-width: 100%; }
+        .mini-box { background: var(--surface); border: 1px solid var(--border2); border-radius: 14px; padding: 14px 14px 12px; width: 100%; max-width: 100%; }
+        .mini-title { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 2px; color: var(--muted); text-align: left; margin-bottom: 10px; }
+        .opt-btn { width: 100%; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--border2); background: var(--card); color: var(--muted); font-weight: 700; font-size: 0.88rem; cursor: pointer; text-align: left; margin-bottom: 10px; white-space: normal; display: block; }
+        .opt-btn:last-child { margin-bottom: 0; }
+        .opt-btn.active { border-color: var(--accent); color: var(--text); background: rgba(212,135,42,0.08); }
+        .extras-box { margin-top: 12px; background: var(--card); border: 1px dashed rgba(212,135,42,0.7); border-radius: 14px; padding: 12px; overflow: visible; }
+        .ing-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border2); }
+        .ing-row:last-child { border-bottom: none; }
+        .ing-name { font-size: 0.9rem; color: var(--text); font-weight: 600; }
+        .ing-price { font-size: 0.82rem; color: var(--muted); }
+        .ing-qty { display: flex; align-items: center; border: 1px solid var(--border2); border-radius: 10px; overflow: hidden; }
+        .ing-qty button { width: 36px; height: 36px; border: none; background: var(--surface); color: var(--text); cursor: pointer; font-size: 1rem; }
+        .ing-qty span { width: 36px; text-align: center; font-weight: 800; background: var(--card); font-size: 0.95rem; }
+
+        /* ── ORDER BOX ── */
+        .order-box { background: var(--card); padding: 28px 24px; border-radius: 22px; border: 2px solid var(--green); margin: 20px 0 28px; }
+        #resumen { font-size: 1rem; font-weight: 500; min-height: 28px; }
+        .cliente-form { margin: 18px 0 6px; display: flex; flex-direction: column; gap: 14px; }
+        .cliente-form label { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 1.5px; color: var(--muted); text-align: left; display: block; margin-bottom: 5px; }
+        .cliente-form input { width: 100%; background: var(--surface); border: 1px solid var(--border2); border-radius: 10px; padding: 14px 16px; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 1rem; outline: none; }
+        .cliente-form input:focus { border-color: var(--accent); }
+        .cliente-form input.input-error { border-color: #ff4444; }
+        .btn-wsp { background-color: var(--green); color: #fff; padding: 15px; font-weight: 700; font-family: 'Bebas Neue', sans-serif; font-size: 1.2rem; letter-spacing: 2px; border-radius: 50px; display: block; border: none; cursor: pointer; width: 100%; margin-top: 14px; transition: opacity 0.2s; }
+        .btn-wsp:hover { opacity: 0.9; }
+        .btn-mp { background-color: #009ee3; color: #fff; padding: 15px; font-weight: 700; font-family: 'Bebas Neue', sans-serif; font-size: 1.2rem; letter-spacing: 2px; border-radius: 50px; display: block; border: none; cursor: pointer; width: 100%; margin-top: 10px; transition: opacity 0.2s; }
+        .btn-mp:hover { opacity: 0.9; }
+        .btn-mp:disabled { opacity: 0.5; cursor: not-allowed; }
+        .btn-rayo { 
+            background: linear-gradient(135deg, #FFD700, #FFA500, #FF6347); 
+            color: #000; font-weight: 800; border: 2px solid #FFD700;
+            animation: rayo-pulse 2s infinite; text-shadow: 0 0 8px rgba(255,255,255,0.8);
+            font-family: 'Bebas Neue', sans-serif; font-size: 1.2rem; letter-spacing: 2px;
+            border-radius: 50px; padding: 15px; cursor: pointer; width: 100%; margin-top: 10px;
+            transition: opacity 0.2s;
+        }
+        .btn-rayo:hover { opacity: 0.9; }
+        @keyframes rayo-pulse { 
+            0%, 100% { transform: scale(1); box-shadow: 0 0 20px rgba(255,215,0,0.6); } 
+            50% { transform: scale(1.02); box-shadow: 0 0 30px rgba(255,215,0,0.9); } 
+        }
+
+        /* ── TAMBIÉN SOMOS ── */
+        .tambien-section { position: relative; z-index: 1; max-width: 480px; margin: 0 auto; padding: 0 20px 40px; }
+        .tambien-title { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px; color: var(--muted); margin-bottom: 12px; }
+        .tambien-grid { display: flex; gap: 10px; }
+        .tambien-card { flex: 1; border-radius: 14px; padding: 14px 12px; text-align: center; text-decoration: none; transition: opacity 0.2s; }
+        .tambien-card:hover { opacity: 0.85; }
+        .tambien-card.handroll { background: #0a0a0a; border: 1px solid #ff4d00; }
+        .tambien-card.cafe { background: #FAF3E0; border: 1px solid #8B1A1A; }
+        .tambien-card-name { font-family: 'Bebas Neue', sans-serif; font-size: 1rem; letter-spacing: 2px; display: block; margin-top: 4px; }
+        .tambien-card.handroll .tambien-card-name { color: #ff4d00; }
+        .tambien-card.cafe .tambien-card-name { color: #8B1A1A; }
+        .tambien-card-sub { font-size: 0.68rem; letter-spacing: 1px; text-transform: uppercase; }
+        .tambien-card.handroll .tambien-card-sub { color: #666; }
+        .tambien-card.cafe .tambien-card-sub { color: #A0522D; }
+
+        /* ── UBICACIÓN ── */
+        .ubicacion-section { position: relative; z-index: 1; max-width: 480px; margin: 0 auto; padding: 0 20px 30px; text-align: center; }
+        .ubicacion-title { font-family: 'Bebas Neue', sans-serif; font-size: 1.4rem; letter-spacing: 2px; color: var(--text); margin-bottom: 6px; }
+        .ubicacion-dir { font-size: 0.95rem; font-weight: 600; color: var(--text); margin-bottom: 3px; }
+        .ubicacion-sub { font-size: 0.78rem; color: var(--muted); margin-bottom: 16px; }
+        .btn-como-llegar { display: inline-block; background: var(--accent); color: var(--dark); padding: 12px 28px; border-radius: 50px; font-family: 'Bebas Neue', sans-serif; font-size: 1.1rem; letter-spacing: 2px; text-decoration: none; transition: opacity 0.2s; }
+        .btn-como-llegar:hover { opacity: 0.85; }
+
+        .accent-line { height: 1px; background: linear-gradient(90deg, transparent, var(--border2), transparent); border: none; max-width: 480px; margin: 20px auto 34px; }
+        footer { position: relative; z-index: 1; padding: 24px 20px; color: var(--muted); font-size: 0.78rem; border-top: 1px solid var(--border); }
+        .admin-link { display: none; }
+
+        /* ── MODAL ── */
+        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.88); z-index: 100; align-items: flex-start; justify-content: center; overflow-y: auto; padding: 20px; }
+        .modal-overlay.open { display: flex; }
+        .modal { background: var(--card); border: 1px solid var(--border2); border-radius: 20px; padding: 28px 22px; max-width: 480px; width: 100%; margin: auto; }
+        .modal h3 { font-family: 'Bebas Neue', sans-serif; font-size: 1.4rem; letter-spacing: 2px; margin-bottom: 20px; color: var(--accent); }
+        .modal input[type=password], .modal input[type=text], .modal input[type=email], .modal input[type=number] { width: 100%; background: var(--surface); border: 1px solid var(--border2); border-radius: 10px; padding: 12px 14px; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 1rem; outline: none; margin-bottom: 12px; }
+        .modal input:focus { border-color: var(--accent); }
+        .btn-modal { width: 100%; padding: 13px; border: none; border-radius: 10px; font-family: 'Bebas Neue', sans-serif; font-size: 1.1rem; letter-spacing: 1px; cursor: pointer; transition: opacity 0.2s; margin-bottom: 8px; }
+        .btn-fire { background: var(--accent); color: var(--dark); }
+        .btn-gray { background: var(--surface); color: var(--muted); }
+        .modal-error { color: var(--accent); font-size: 0.85rem; margin-bottom: 10px; display: none; }
+        .admin-tabs { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 20px; }
+        .tab-btn { flex: 1; padding: 9px 4px; border: 1px solid var(--border2); border-radius: 9px; background: var(--surface); color: var(--muted); font-family: 'DM Sans', sans-serif; font-size: 0.78rem; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+        .tab-btn.active { background: var(--accent); color: var(--dark); border-color: var(--accent); }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .section-label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 1.5px; color: var(--muted); margin-bottom: 12px; }
+        .admin-section { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 22px; align-items: flex-start; }
+        .admin-section h4 { flex: 1 1 100%; margin: 0 0 8px; color: var(--accent); letter-spacing: 1px; font-size: 0.92rem; }
+        .admin-section .admin-item { flex: 1 1 340px; min-width: 280px; max-width: 450px; }
+        .admin-item { background: var(--surface); border: 1px solid var(--border2); border-radius: 12px; padding: 14px; margin-bottom: 10px; text-align: left; }
+        .admin-item-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+        .btn-sm { border: none; border-radius: 8px; padding: 6px 12px; font-size: 0.78rem; font-weight: 700; cursor: pointer; transition: opacity 0.2s; }
+        .btn-sm:hover { opacity: 0.8; }
+        .btn-red { background: #ff3333; color: #fff; }
+        .btn-orange { background: var(--accent); color: var(--dark); }
+        .btn-toggle-on { background: var(--green); color: #fff; }
+        .btn-toggle-off { background: #555; color: #fff; }
+        .pedido-item { background: var(--surface); border: 1px solid var(--border2); border-radius: 12px; padding: 14px; margin-bottom: 10px; text-align: left; }
+        .pedido-total { font-family: 'Bebas Neue', sans-serif; font-size: 1.1rem; color: var(--green); }
+        .edit-form { background: var(--bg); border: 1px solid var(--accent); border-radius: 12px; padding: 14px; margin-top: 10px; display: none; }
+        .edit-form.open { display: block; }
+        .edit-row { display: flex; gap: 8px; align-items: center; margin-bottom: 10px; }
+        .edit-row label { font-size: 0.8rem; color: var(--muted); min-width: 60px; }
+        .edit-row input { flex: 1; background: var(--surface); border: 1px solid var(--border2); border-radius: 8px; padding: 8px 10px; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 0.9rem; outline: none; margin-bottom: 0; }
+
+        /* ── BANNER ── */
+        .banner-resena { display: none; position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: calc(100% - 40px); max-width: 440px; background: var(--card); border: 1px solid var(--green); border-radius: 16px; padding: 16px 18px; z-index: 50; box-shadow: 0 8px 32px rgba(0,0,0,0.5); animation: slideUp 0.35s ease; }
+        .banner-resena.open { display: flex; align-items: center; gap: 12px; }
+        @keyframes slideUp { from { opacity: 0; transform: translateX(-50%) translateY(20px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
+        .banner-resena-text { flex: 1; font-size: 0.9rem; line-height: 1.4; }
+        .banner-resena-text strong { color: var(--green); display: block; margin-bottom: 3px; }
+        .banner-resena-text a { color: var(--accent); font-weight: 700; text-decoration: none; }
+        .banner-resena-close { background: var(--surface); border: 1px solid var(--border2); color: var(--muted); border-radius: 50%; width: 30px; height: 30px; font-size: 1rem; cursor: pointer; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+    </style>
+</head>
+<body>
+
+<header class="hero">
+    <div class="logo">🍔 <span>ÓRBITA</span></div>
+    <p class="logo-sub" style="font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:4px;color:var(--text);margin-top:4px;">FUENTE DE SODA</p>
+    <p class="hero-tagline">Casero · Familiar · Rico</p>
+    <div class="hero-badge">Frutillar · Chile</div>
+</header>
+
+<section class="section">
+    <div class="section-title">Nuestro Menú</div>
+
+    <div class="menu-grid-3">
+        <div class="col-box">
+            <div class="cat-label">🍟 Papas Fritas</div>
+            <div class="papas-card" id="papas-selector">
+                <h3>Papas Fritas</h3>
+                <div class="desc">Elige tu tamaño — puedes agregar varios</div>
+                <div class="papas-sizes" id="papas-sizes"></div>
+                <div class="papas-resumen" id="papas-resumen">Sin papas aún</div>
+                <button class="btn-agregar-papa" id="btn-agregar-papa" onclick="agregarPapa()" disabled>+ AGREGAR</button>
+            </div>
+            <div id="menu-extras"></div>
+        </div>
+        <div class="col-box">
+            <div class="cat-label">🥪 Sándwiches & Hamburguesas</div>
+            <p style="font-size:0.78rem;color:var(--muted);text-align:left;margin-bottom:10px;">Todos incluyen papas fritas y bebida</p>
+            <div id="menu-sandwiches"></div>
+        </div>
+        <div class="col-box">
+            <div class="cat-label">🌭 Completos</div>
+            <div id="menu-completos"></div>
+        </div>
+    </div>
+
+    <div class="drinks-row">
+        <div class="cat-label">🥤 Refrescos (sin promo)</div>
+        <div class="drinks-box" id="box-jugos">
+            <button type="button" class="drinks-acc-head" id="head-jugos" onclick="toggleFuenteSec('jugos')" aria-expanded="false" aria-controls="panel-jugos">
+                <span class="drinks-acc-title">Jugos naturales</span><span class="acc-chev">▼</span>
+            </button>
+            <div class="drinks-panel" id="panel-jugos">
+                <div id="menu-jugos"></div>
+            </div>
+        </div>
+        <div class="drinks-box" id="box-bebidas">
+            <button type="button" class="drinks-acc-head" id="head-bebidas" onclick="toggleFuenteSec('bebidas')" aria-expanded="false" aria-controls="panel-bebidas">
+                <span class="drinks-acc-title">Bebidas</span><span class="acc-chev">▼</span>
+            </button>
+            <div class="drinks-panel" id="panel-bebidas">
+                <div id="menu-bebidas"></div>
+            </div>
+        </div>
+        <div class="drinks-box" id="box-aguas">
+            <button type="button" class="drinks-acc-head" id="head-aguas" onclick="toggleFuenteSec('aguas')" aria-expanded="false" aria-controls="panel-aguas">
+                <span class="drinks-acc-title">Aguas</span><span class="acc-chev">▼</span>
+            </button>
+            <div class="drinks-panel" id="panel-aguas">
+                <div id="menu-aguas"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="order-box">
+        <p id="resumen" style="color:var(--muted);">Tu pedido está vacío</p>
+        <div class="entrega-selector">
+            <button class="entrega-btn" id="btn-retiro" onclick="seleccionarEntrega('retiro')">🏪 Retiro en local</button>
+            <button class="entrega-btn" id="btn-delivery" onclick="seleccionarEntrega('delivery')">🛵 Delivery <span style="font-size:0.75rem;color:var(--accent);">+$2.000</span></button>
+        </div>
+        <div class="cliente-form">
+            <div>
+                <label for="input-nombre">👤 Tu nombre</label>
+                <input type="text" id="input-nombre" placeholder="Ej: María González" autocomplete="name">
+            </div>
+            <div id="campo-hora">
+                <label for="input-hora">⏰ Hora de retiro</label>
+                <input type="time" id="input-hora" min="09:00" max="22:00">
+            </div>
+            <div id="campo-direccion" style="display:none;">
+                <label>📍 Tu ubicación</label>
+                <button type="button" class="btn-ubicacion" id="btn-compartir-ubi" onclick="compartirUbicacion()">📍 Compartir mi ubicación</button>
+                <p id="ubi-estado" style="font-size:0.78rem;color:var(--muted);margin-top:6px;text-align:left;"></p>
+            </div>
+        </div>
+        <button onclick="enviarPedido()" class="btn-wsp">🛒 PEDIR POR WHATSAPP</button>
+        <button onclick="pagarConMP()" class="btn-mp" id="btn-mp">💳 PAGAR EN LÍNEA</button>
+        <button onclick="OrbitaPagoRapido.pagarRapido()" class="btn-rayo" id="btn-rayo" style="display:none;">⚡ PAGO RÁPIDO ⚡</button>
+    </div>
+</section>
+
+<hr class="accent-line">
+<section class="ubicacion-section">
+    <div class="ubicacion-title">📍 ¿Dónde estamos?</div>
+    <p class="ubicacion-dir">Por definir, Frutillar</p>
+    <p class="ubicacion-sub">⏰ Lunes a Domingo · Por definir</p>
+    <a href="#" class="btn-como-llegar">🗺️ Cómo llegar →</a>
+</section>
+
+<hr class="accent-line">
+<section class="tambien-section">
+    <p class="tambien-title">También somos</p>
+    <div class="tambien-grid">
+        <a href="index.html" class="tambien-card handroll">
+            <span style="font-size:1.4rem;">🍣</span>
+            <span class="tambien-card-name">HAND ROLL</span>
+            <span class="tambien-card-sub">Órbita</span>
+        </a>
+        <a href="cafe.html" class="tambien-card cafe">
+            <span style="font-size:1.4rem;">☕</span>
+            <span class="tambien-card-name">CAFÉ</span>
+            <span class="tambien-card-sub">Órbita</span>
+        </a>
+    </div>
+</section>
+
+<footer>
+    &copy; 2026 Órbita Fuente de Soda
+    <br><a href="orbita.html" style="color:var(--muted);font-size:0.75rem;text-decoration:none;">Órbita — otros locales</a>
+</footer>
+
+<!-- MODAL ADMIN -->
+<div class="modal-overlay" id="modal-overlay">
+    <div class="modal">
+        <div id="login-section">
+            <h3>🔒 Acceso staff</h3>
+            <p class="modal-error" id="modal-error">Credenciales incorrectas</p>
+            <input type="email" id="admin-email" placeholder="Email (Supabase Auth)" autocomplete="username">
+            <input type="password" id="admin-pass" placeholder="Contraseña" autocomplete="current-password" onkeydown="if(event.key==='Enter') verificarPass()">
+            <button class="btn-modal btn-fire" onclick="verificarPass()">INGRESAR</button>
+            <button type="button" class="btn-modal btn-gray" onclick="resetContrasena()" style="font-size:0.8rem;padding:8px 12px;">Olvidé mi contraseña</button>
+            <button class="btn-modal btn-gray" onclick="cerrarAdmin()">CANCELAR</button>
+        </div>
+        <div id="admin-panel" style="display:none;">
+            <h3>⚙️ Panel Admin — Fuente de Soda</h3>
+            <div class="admin-tabs">
+                <button class="tab-btn active" onclick="showTab('tab-pedidos',this)">📦 Pedidos</button>
+                <button class="tab-btn" onclick="showTab('tab-productos',this)">🍔 Productos</button>
+                <button class="tab-btn" onclick="showTab('tab-resenas',this)">⭐ Reseñas</button>
+                <button class="tab-btn" onclick="showTab('tab-rendimiento',this)">📊 Rendimiento</button>
+                <button class="tab-btn" onclick="showTab('tab-inventario',this)">📦 Inventario</button>
+            </div>
+            <div class="tab-content active" id="tab-pedidos">
+                <p class="section-label">Pedidos de hoy</p>
+                <div id="admin-pedidos-list"><p style="color:var(--muted);font-size:0.9rem;">Cargando...</p></div>
+            </div>
+            <div class="tab-content" id="tab-productos">
+                <p class="section-label">Gestionar productos</p>
+                <p style="font-size:0.72rem;color:var(--muted);text-align:left;margin:-6px 0 10px;">Papas, platos y lista de bebidas. Supabase <code style="font-size:0.68rem;">orbita_productos</code> · fuente.</p>
+                <input id="admin-productos-search" type="text" placeholder="Buscar por nombre o categoría..." oninput="setAdminProductoSearch(this.value)" style="width:100%;background:var(--surface);border:1px solid var(--border2);border-radius:10px;padding:12px 14px;margin-bottom:12px;color:var(--text);font-family:'DM Sans',sans-serif;">
+                <div class="admin-item" style="margin-bottom:12px;">
+                    <div style="font-weight:700;margin-bottom:8px;">🥤 Bebidas (para promos)</div>
+                    <div style="display:flex;gap:8px;">
+                        <input type="text" id="bebida-nueva" placeholder="Ej: Coca-Cola sin azúcar" style="flex:1;margin-bottom:0;">
+                        <button class="btn-sm btn-orange" type="button" onclick="agregarBebida()">+ Agregar</button>
+                    </div>
+                    <div id="admin-bebidas-list" style="margin-top:10px;"></div>
+                </div>
+                <div class="admin-item" style="margin-bottom:12px;">
+                    <div style="font-weight:700;margin-bottom:8px;">🧄 Ingredientes (extras y personalizar)</div>
+                    <div style="display:flex;gap:8px;align-items:center;">
+                        <input type="text" id="ing-nombre" placeholder="Nombre (Ej: Tocino)" style="flex:1;margin-bottom:0;">
+                        <input type="number" id="ing-precio" placeholder="Precio" min="0" step="100" style="width:120px;margin-bottom:0;">
+                        <button class="btn-sm btn-orange" type="button" onclick="agregarIngrediente()">+ Agregar</button>
+                    </div>
+                    <div id="admin-ingredientes-list" style="margin-top:10px;"></div>
+                </div>
+                <div id="admin-productos-list"></div>
+            </div>
+            <div class="tab-content" id="tab-resenas">
+                <p class="section-label">Reseñas de clientes</p>
+                <div id="admin-reviews-list"><p style="color:var(--muted);font-size:0.9rem;">Cargando...</p></div>
+            </div>
+            <div class="tab-content" id="tab-rendimiento">
+                <p class="section-label">Costo fijo mensual (Fuente de soda)</p>
+                <p style="font-size:0.78rem;color:var(--muted);text-align:left;margin-bottom:10px;">Arriendo, luz, etc. Se guarda en Supabase (<code style="font-size:0.72rem;">orbita_config</code>) para todos los dispositivos.</p>
+                <input type="number" id="input-cf-fuente" placeholder="Ej: 450000" min="0" step="1000" style="width:100%;background:var(--surface);border:1px solid var(--border2);border-radius:10px;padding:12px 14px;color:var(--text);margin-bottom:8px;">
+                <button class="btn-modal btn-fire" type="button" onclick="guardarCostoFijoFuente()">Guardar costo fijo</button>
+                <p class="section-label" style="margin-top:18px;">Ventas (Supabase)</p>
+                <div id="rendimiento-fuente-body"><p style="color:var(--muted);font-size:0.9rem;">Abre esta pestaña para cargar datos.</p></div>
+                <p class="section-label" style="margin-top:18px;">Cambiar contraseña</p>
+                <p style="font-size:0.78rem;color:var(--muted);text-align:left;margin-bottom:10px;">Nueva contraseña para tu cuenta Supabase Auth.</p>
+                <input type="password" id="input-nueva-pass" placeholder="Nueva contraseña" style="margin-bottom:8px;">
+                <button class="btn-modal btn-fire" type="button" onclick="cambiarContrasena()">Cambiar contraseña</button>
+            </div>
+            <div class="tab-content" id="tab-inventario">
+                <p class="section-label">Inventario e insumos</p>
+                <p style="font-size:0.78rem;color:var(--muted);text-align:left;margin-bottom:12px;">Registra insumos y movimientos desde el propio admin del local.</p>
+                <div class="perf-card" style="padding:16px;margin-bottom:14px;">
+                    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;">
+                        <input id="fuente-inv-name" type="text" placeholder="Nombre del insumo" style="width:100%;padding:10px;border:1px solid var(--border2);border-radius:10px;background:var(--surface);color:var(--text);">
+                        <input id="fuente-inv-stock" type="number" placeholder="Stock inicial" min="0" step="0.01" style="width:100%;padding:10px;border:1px solid var(--border2);border-radius:10px;background:var(--surface);color:var(--text);">
+                        <input id="fuente-inv-unit" type="text" placeholder="Unidad (kg, L, u)" style="width:100%;padding:10px;border:1px solid var(--border2);border-radius:10px;background:var(--surface);color:var(--text);">
+                        <input id="fuente-inv-costo" type="number" placeholder="Costo unitario" min="0" step="100" style="width:100%;padding:10px;border:1px solid var(--border2);border-radius:10px;background:var(--surface);color:var(--text);">
+                    </div>
+                    <button class="btn-modal btn-fire" type="button" style="margin-top:10px;" onclick="window.orbitaInventario.agregarInsumo('fuente','fuente')">Agregar insumo</button>
+                </div>
+                <div id="fuente-inv-list"></div>
+                <h4 style="margin:18px 0 10px;color:var(--accent);">Historial de movimientos</h4>
+                <div id="fuente-inv-history" class="history-list"></div>
+            </div>
+            <p style="margin-top:12px;font-size:0.75rem;"><a href="orbita.html" style="color:var(--muted);">Inicio Órbita</a> · <a href="panel_central.html?k=orbita_8h3k2p_2026" style="color:var(--muted);">Panel central (3 locales)</a> · <button id="btn-admin-reopen" type="button" class="btn-modal btn-fire" onclick="abrirAdmin()" style="margin-left:6px;padding:6px 10px;font-size:0.85rem;">Ingresar credenciales</button></p>
+            <button class="btn-modal btn-gray" style="margin-top:14px;" onclick="cerrarAdmin()">CERRAR</button>
+        </div>
+    </div>
+</div>
+
+<!-- BANNER RESEÑA -->
+<div class="banner-resena" id="banner-resena">
+    <div class="banner-resena-text">
+        <strong>¡Pago recibido! 🎉</strong>
+        ¿Ya retiraste? Déjanos una reseña, nos ayuda mucho.
+        <br><a href="" id="banner-resena-link" target="_blank">⭐ Dejar reseña</a>
+    </div>
+    <button class="banner-resena-close" onclick="document.getElementById('banner-resena').classList.remove('open')">✕</button>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="./orbita-auth.js"></script>
+<script src="./orbita-supabase-sync.js"></script>
+<script src="./orbita-productos.js"></script>
+<script src="./orbita-inventario.js"></script>
+<script>
+    const WSP_NUMBER    = "56971019691"; // ← cambiar al número de la fuente de soda
+    const LINK_RESENA   = "resenas.html";
+    const MP_EDGE_URL = "https://bhayzqgzxgzluafjhpdg.supabase.co/functions/v1/hyper-worker";
+    const TABLA_PEDIDOS = "pedidos_fuente";
+
+    const BEBIDAS_DEF = [
+        'Coca-Cola',
+        'Coca-Cola sin azúcar',
+        'Pepsi',
+        'Kem',
+        'Bilz',
+        'Pap',
+        'Fanta',
+        'Sprite',
+        'Agua con gas',
+        'Agua sin gas'
+    ];
+    let BEBIDAS = BEBIDAS_DEF.slice();
+
+    const INGREDIENTES_DEF = [
+        { id: 'tomate', nombre: 'Tomate', precio: 0 },
+        { id: 'palta', nombre: 'Palta', precio: 0 },
+        { id: 'mayo', nombre: 'Mayonesa', precio: 0 },
+        { id: 'chucrut', nombre: 'Chucrut', precio: 0 },
+        { id: 'americana', nombre: 'Americana', precio: 0 },
+        { id: 'lechuga', nombre: 'Lechuga', precio: 0 },
+        { id: 'cebolla', nombre: 'Cebolla', precio: 0 },
+        { id: 'queso', nombre: 'Queso', precio: 0 },
+        { id: 'pepino', nombre: 'Pepinillos', precio: 0 },
+        { id: 'porotos', nombre: 'Porotos verdes', precio: 0 },
+        { id: 'aji', nombre: 'Ají', precio: 0 },
+    ];
+    let INGREDIENTES = INGREDIENTES_DEF.map(i => ({ ...i }));
+
+    const PAPAS_TAMANIOS_DEF = [
+        { id: 'papa_chica',   nombre: 'Chica',   precio: 0 },
+        { id: 'papa_mediana', nombre: 'Mediana', precio: 0 },
+        { id: 'papa_grande',  nombre: 'Grande',  precio: 0 },
+    ];
+    let PAPAS_TAMANIOS = PAPAS_TAMANIOS_DEF.map(function (t) { return Object.assign({}, t); });
+
+    const PRODUCTOS_DEF = [
+        // EXTRAS CON PAPAS
+        { id: 'salchipapa',   nombre: 'Salchipapa',          precio: 0, activo: true, cat: 'extra',    desc: 'Papas + salchicha', bebida: false },
+        { id: 'nuggets',      nombre: 'Papas con Nuggets',   precio: 0, activo: true, cat: 'extra',    desc: 'Papas + nuggets', bebida: false },
+        // SÁNDWICHES
+        { id: 'mechada',      nombre: 'Sándwich Mechada',    precio: 0, activo: true, cat: 'sandwich', desc: 'Mechada casera · papas · bebida', bebida: true },
+        { id: 'lomo',         nombre: 'Sándwich Lomo',       precio: 0, activo: true, cat: 'sandwich', desc: 'Lomo ahumado · papas · bebida', bebida: true },
+        { id: 'hamburguesa',  nombre: 'Hamburguesa',         precio: 0, activo: true, cat: 'sandwich', desc: 'Casera · papas · bebida', bebida: true },
+        // COMPLETOS
+        { id: 'completo',     nombre: 'Completo',            precio: 0, activo: true, cat: 'completo', desc: 'Solo', bebida: false },
+        { id: 'completo_promo', nombre: 'Completo Promo',   precio: 0, activo: true, cat: 'completo', desc: 'Con papas + bebida', bebida: true },
+        { id: 'completo_xl',  nombre: 'Completo XL',         precio: 0, activo: true, cat: 'completo', desc: 'Italiano · papas + bebida', bebida: true },
+        // JUGOS (venta directa, mismos ids que Hand Roll)
+        { id: 'jugo_frambuesa', nombre: 'Jugo Frambuesa', precio: 3000, activo: true, cat: 'jugo', desc: '', bebida: false },
+        { id: 'jugo_frutilla', nombre: 'Jugo Frutilla', precio: 2500, activo: true, cat: 'jugo', desc: '', bebida: false },
+        { id: 'jugo_arandano', nombre: 'Jugo Arándano', precio: 2500, activo: true, cat: 'jugo', desc: '', bebida: false },
+        { id: 'jugo_fru_ara', nombre: 'Jugo Frutilla-Arándano', precio: 2500, activo: true, cat: 'jugo', desc: '', bebida: false },
+        { id: 'jugo_fram_ara', nombre: 'Jugo Frambuesa-Arándano', precio: 2500, activo: true, cat: 'jugo', desc: '', bebida: false },
+        { id: 'jugo_melon_tuna', nombre: 'Jugo Melón Tuna', precio: 2500, activo: true, cat: 'jugo', desc: '', bebida: false },
+        { id: 'jugo_melon_cal', nombre: 'Jugo Melón Calameño', precio: 2500, activo: true, cat: 'jugo', desc: '', bebida: false },
+        { id: 'jugo_pina', nombre: 'Jugo Piña', precio: 2500, activo: true, cat: 'jugo', desc: '', bebida: false },
+        { id: 'jugo_mango', nombre: 'Jugo Mango', precio: 2500, activo: true, cat: 'jugo', desc: '', bebida: false },
+        { id: 'jugo_pina_mango', nombre: 'Jugo Piña-Mango', precio: 2500, activo: true, cat: 'jugo', desc: '', bebida: false },
+        { id: 'jugo_naranja_plat', nombre: 'Jugo Naranja-Plátano', precio: 2500, activo: true, cat: 'jugo', desc: '', bebida: false },
+        // BEBIDAS / AGUAS (venta directa)
+        { id: 'beb_coca',        nombre: 'Coca-Cola',               precio: 2000, activo: true, cat: 'bebida', desc: '', bebida: false },
+        { id: 'beb_coca_zero',   nombre: 'Coca-Cola sin azúcar',    precio: 2000, activo: true, cat: 'bebida', desc: '', bebida: false },
+        { id: 'beb_pepsi',       nombre: 'Pepsi',                   precio: 2000, activo: true, cat: 'bebida', desc: '', bebida: false },
+        { id: 'beb_kem',         nombre: 'Kem',                     precio: 2000, activo: true, cat: 'bebida', desc: '', bebida: false },
+        { id: 'beb_bilz',        nombre: 'Bilz',                    precio: 2000, activo: true, cat: 'bebida', desc: '', bebida: false },
+        { id: 'beb_pap',         nombre: 'Pap',                     precio: 2000, activo: true, cat: 'bebida', desc: '', bebida: false },
+        { id: 'beb_fanta',       nombre: 'Fanta',                   precio: 2000, activo: true, cat: 'bebida', desc: '', bebida: false },
+        { id: 'beb_sprite',      nombre: 'Sprite',                  precio: 2000, activo: true, cat: 'bebida', desc: '', bebida: false },
+        { id: 'agua_gas',        nombre: 'Agua con gas',            precio: 1500, activo: true, cat: 'agua',   desc: '', bebida: false },
+        { id: 'agua_sin_gas',    nombre: 'Agua sin gas',            precio: 1500, activo: true, cat: 'agua',   desc: '', bebida: false },
+    ];
+
+    let productos = [];
+
+    async function cargarCatalogoFuente() {
+        try {
+            const raw = await window.orbitaProductos.fetchJson(window.orbitaProductos.SITIO_FUENTE);
+            var m = window.orbitaProductos.mergeFuente(PRODUCTOS_DEF, PAPAS_TAMANIOS_DEF, BEBIDAS_DEF, raw);
+            productos = m.productos;
+            PAPAS_TAMANIOS = m.papas_tamanios;
+            BEBIDAS = m.bebidas;
+            INGREDIENTES = (m.ingredientes && m.ingredientes.length ? m.ingredientes : INGREDIENTES_DEF).map(i => ({ ...i }));
+        } catch (e) {
+            productos = PRODUCTOS_DEF.map(function (p) { return Object.assign({}, p); });
+            PAPAS_TAMANIOS = PAPAS_TAMANIOS_DEF.map(function (t) { return Object.assign({}, t); });
+            BEBIDAS = BEBIDAS_DEF.slice();
+            INGREDIENTES = INGREDIENTES_DEF.map(i => ({ ...i }));
+        }
+    }
+
+    async function persistirCatalogoFuente() {
+        var slimP = productos.map(function (p) {
+            return { id: p.id, nombre: p.nombre, precio: p.precio, activo: p.activo, cat: p.cat, desc: p.desc, bebida: p.bebida };
+        });
+        var slimPa = PAPAS_TAMANIOS.map(function (t) { return { id: t.id, nombre: t.nombre, precio: t.precio }; });
+        var slimI = INGREDIENTES.map(function (i) { return { id: i.id, nombre: i.nombre, precio: Number(i.precio) || 0 }; });
+        var payload = { productos: slimP, papas_tamanios: slimPa, bebidas: BEBIDAS.slice(), ingredientes: slimI };
+        var r = await window.orbitaProductos.upsert(window.orbitaProductos.SITIO_FUENTE, payload);
+        if (!r.ok) alert('No se pudo guardar el catálogo. Ejecutá orbita-productos.sql en Supabase.');
+    }
+
+    let pedido = {};
+    let papaSeleccionada = null; // tamaño actualmente seleccionado
+    let papasEnPedido = []; // [{ id, nombre, precio }, ...]
+    let extrasPapasEnPedido = []; // [{ tipo, sizeId, nombre, precio }]
+    let extraSel = {}; // { [prodId]: sizeId }
+    let customState = {}; // por producto (sandwich/completo)
+    let adminDesbloqueado = false;
+    const ADMIN_URL_FLAG = 'orbita_back';
+    const ADMIN_PRIVATE_KEY = 'k';
+    const ADMIN_PRIVATE_SECRET = 'orbita_8h3k2p_2026';
+    const qs = new URLSearchParams(window.location.search);
+    const tieneClavePrivada = qs.get(ADMIN_PRIVATE_KEY) === ADMIN_PRIVATE_SECRET;
+    const esAdmin = tieneClavePrivada;
+
+    function mostrarAdminModoBanner() {
+        const banner = document.createElement('div');
+        banner.id = 'admin-mode-banner';
+        banner.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:9999;padding:12px 14px;font-family:DM Sans, sans-serif;font-size:0.95rem;text-align:center;background:rgba(17,17,17,0.96);color:#fff;border-bottom:2px solid #D4872A;';
+        banner.innerHTML = 'Modo admin privado activo: ingresa email y contraseña para ver pedidos y acceder al panel central. <button id="btn-admin-banner" type="button" class="btn-modal btn-fire" style="margin-left:10px;font-size:0.85rem;padding:6px 10px;vertical-align:middle;" onclick="abrirAdmin()">Ingresar credenciales</button>';
+        document.body.insertBefore(banner, document.body.firstChild);
+        document.body.style.paddingTop = '54px';
+    }
+
+    // ── RENDER PAPAS SELECTOR ──
+    function renderPapasSizes() {
+        document.getElementById('papas-sizes').innerHTML = PAPAS_TAMANIOS.map(t => `
+            <button class="papas-size-btn ${papaSeleccionada === t.id ? 'selected' : ''}" onclick="seleccionarPapa('${t.id}')">
+                ${t.nombre}
+                <div class="papas-size-price">$${t.precio.toLocaleString('es-CL')}</div>
+            </button>`).join('');
+        document.getElementById('btn-agregar-papa').disabled = !papaSeleccionada;
+        const btn = document.getElementById('btn-agregar-papa');
+        if (papaSeleccionada) {
+            const t = PAPAS_TAMANIOS.find(x => x.id === papaSeleccionada);
+            btn.textContent = `+ AGREGAR ${t.nombre.toUpperCase()}`;
+        } else {
+            btn.textContent = '+ AGREGAR';
+        }
+        actualizarResumenPapas();
+    }
+
+    function seleccionarPapa(id) {
+        papaSeleccionada = id;
+        renderPapasSizes();
+    }
+
+    function agregarPapa() {
+        if (!papaSeleccionada) return;
+        const t = PAPAS_TAMANIOS.find(x => x.id === papaSeleccionada);
+        papasEnPedido.push({ ...t });
+        papaSeleccionada = null;
+        renderPapasSizes();
+        actualizarResumen();
+    }
+
+    function actualizarResumenPapas() {
+        const el = document.getElementById('papas-resumen');
+        if (!papasEnPedido.length) { el.innerHTML = 'Sin papas aún'; return; }
+        const conteo = {};
+        papasEnPedido.forEach(p => { conteo[p.nombre] = (conteo[p.nombre] || 0) + 1; });
+        el.innerHTML = Object.entries(conteo).map(([n, c]) => `<span>${c} ${n}</span>`).join(' · ');
+    }
+
+    // ── RENDER MENU ──
+    function renderMenu() {
+        const extras    = productos.filter(p => p.cat === 'extra');
+        const sandwiches = productos.filter(p => p.cat === 'sandwich');
+        const completos  = productos.filter(p => p.cat === 'completo');
+        const jugos      = productos.filter(p => p.cat === 'jugo');
+        const bebidas    = productos.filter(p => p.cat === 'bebida');
+        const aguas      = productos.filter(p => p.cat === 'agua');
+
+        document.getElementById('menu-extras').innerHTML    = extras.map(renderExtraPapasCard).join('');
+        document.getElementById('menu-sandwiches').innerHTML = sandwiches.map(renderCard).join('');
+        document.getElementById('menu-completos').innerHTML  = completos.map(renderCard).join('');
+        document.getElementById('menu-jugos').innerHTML      = jugos.map(renderFilaBebida).join('');
+        document.getElementById('menu-bebidas').innerHTML    = bebidas.map(renderFilaBebida).join('');
+        document.getElementById('menu-aguas').innerHTML      = aguas.map(renderFilaBebida).join('');
+
+        productos.forEach(p => { if (pedido[p.id] === undefined) pedido[p.id] = 0; });
+        renderPapasSizes();
+        actualizarResumen();
+    }
+
+    function toggleFuenteSec(seccion) {
+        const map = { jugos: 'jugos', bebidas: 'bebidas', aguas: 'aguas' };
+        const key = map[seccion];
+        if (!key) return;
+        const box = document.getElementById('box-' + key);
+        const head = document.getElementById('head-' + key);
+        if (!box || !head) return;
+        box.classList.toggle('open');
+        const abierto = box.classList.contains('open');
+        head.setAttribute('aria-expanded', abierto ? 'true' : 'false');
+    }
+
+    function renderFilaBebida(p) {
+        return `
+            <div class="jugo-item">
+                <div class="jugo-info">
+                    <span class="jugo-nombre">${escHtml(p.nombre)}${!p.activo ? ' <span style="color:var(--accent);font-size:0.7rem;">(No disponible)</span>' : ''}</span>
+                    <span class="jugo-precio">$${p.precio.toLocaleString('es-CL')}</span>
+                </div>
+                <div class="qty-control" style="${!p.activo ? 'opacity:0.4;pointer-events:none;' : ''}">
+                    <button class="qty-btn" onclick="cambiar('${p.id}',-1)">−</button>
+                    <span class="qty-num" id="qty-${p.id}">0</span>
+                    <button class="qty-btn plus" onclick="cambiar('${p.id}',1)">+</button>
+                </div>
+            </div>`;
+    }
+
+    function renderExtraPapasCard(p) {
+        const sel = extraSel[p.id] || null;
+        const btnText = sel ? `+ AGREGAR ${p.nombre.toUpperCase()}` : '+ AGREGAR';
+        return `<div class="papas-card ${p.activo ? '' : 'disabled'}" id="extra-${p.id}">
+            <h3>${escHtml(p.nombre)}${!p.activo ? ' <span style="color:var(--accent);font-size:0.72rem;">(No disponible)</span>' : ''}</h3>
+            <div class="desc">${escHtml(p.desc||'')}</div>
+            <div class="papas-sizes">
+                ${PAPAS_TAMANIOS.map(t => `
+                    <button class="papas-size-btn ${sel === t.id ? 'selected' : ''}" onclick="seleccionarExtraPapa('${p.id}','${t.id}')">
+                        ${escHtml(t.nombre)}
+                        <div class="papas-size-price">$${(t.precio + p.precio).toLocaleString('es-CL')}</div>
+                    </button>
+                `).join('')}
+            </div>
+            <button class="btn-agregar-papa" onclick="agregarExtraPapa('${p.id}')" ${sel ? '' : 'disabled'}>${btnText}</button>
+        </div>`;
+    }
+
+    function seleccionarExtraPapa(prodId, sizeId) {
+        extraSel[prodId] = sizeId;
+        renderMenu();
+    }
+
+    function agregarExtraPapa(prodId) {
+        const prod = productos.find(p => p.id === prodId);
+        const sizeId = extraSel[prodId];
+        const t = PAPAS_TAMANIOS.find(x => x.id === sizeId);
+        if (!prod || !t) return;
+        extrasPapasEnPedido.push({ tipo: prodId, sizeId, nombre: `${prod.nombre} ${t.nombre}`, precio: t.precio + prod.precio });
+        extraSel[prodId] = null;
+        renderMenu();
+    }
+
+    const OPCIONES_SAND = ['Italiano', 'Chacarero', 'Luco'];
+    const OPCIONES_COMP = ['Italiano', 'Completo', 'Dinámico'];
+    const SALCHICHAS = ['Tradicional', 'Vegana'];
+
+    function initCustom(id, tipo) {
+        if (customState[id]) return;
+        customState[id] = { modo: 'opcion', opcion: null, salchicha: null, extras: {}, ingr: {} };
+        if (tipo === 'completo') customState[id].salchicha = 'Tradicional';
+    }
+
+    const RECETA_COMPLETOS = {
+        'Italiano': ['tomate', 'palta', 'mayo'],
+        'Completo': ['tomate', 'mayo', 'chucrut'],
+        'Dinámico': ['tomate', 'palta', 'mayo', 'americana', 'chucrut']
+    };
+    const RECETA_SANDWICH = {
+        'Italiano': ['tomate', 'palta', 'mayo'],
+        'Chacarero': ['tomate', 'palta', 'porotos', 'mayo', 'aji'],
+        'Luco': ['queso']
+    };
+
+    function baseExtrasPorOpcion(tipo, opcion) {
+        if (tipo === 'completo') {
+            const arr = RECETA_COMPLETOS[opcion] || [];
+            const out = {};
+            arr.forEach(id => { out[id] = true; });
+            return out;
+        }
+        if (tipo === 'sandwich') {
+            const arr = RECETA_SANDWICH[opcion] || [];
+            const out = {};
+            arr.forEach(id => { out[id] = true; });
+            return out;
+        }
+        return {};
+    }
+
+    function setModo(id, modo) {
+        initCustom(id);
+        // click sobre el modo activo = cerrar (volver a "nada seleccionado")
+        if (customState[id].modo === modo) {
+            customState[id].modo = 'opcion';
+            customState[id].opcion = null;
+            customState[id].extras = {};
+            customState[id].ingr = {};
+            renderMenu();
+            actualizarResumen();
+            return;
+        }
+        customState[id].modo = modo;
+        customState[id].opcion = null;
+        customState[id].extras = {};
+        customState[id].ingr = {};
+        renderMenu();
+        actualizarResumen();
+    }
+
+    function setOpcion(id, opcion) {
+        initCustom(id);
+        // click sobre la opción activa = deseleccionar + cerrar extras
+        if (customState[id].modo === 'opcion' && customState[id].opcion === opcion) {
+            customState[id].opcion = null;
+            customState[id].extras = {};
+            renderMenu();
+            actualizarResumen();
+            return;
+        }
+        customState[id].modo = 'opcion';
+        customState[id].opcion = opcion;
+        const tipo = (productos.find(p => p.id === id)?.cat) || '';
+        customState[id].extras = baseExtrasPorOpcion(tipo, opcion);
+        customState[id].ingr = {};
+        renderMenu();
+        actualizarResumen();
+    }
+    function setSalchicha(id, s) {
+        initCustom(id);
+        customState[id].salchicha = s;
+        renderMenu();
+        actualizarResumen();
+    }
+    function toggleExtraIng(id, ingId) {
+        initCustom(id);
+        customState[id].extras[ingId] = !customState[id].extras[ingId];
+        actualizarResumen();
+    }
+    function incIng(id, ingId, delta) {
+        initCustom(id);
+        const cur = customState[id].ingr[ingId] || 0;
+        const nxt = Math.max(0, cur + delta);
+        if (nxt === 0) delete customState[id].ingr[ingId];
+        else customState[id].ingr[ingId] = nxt;
+        renderMenu();
+        actualizarResumen();
+    }
+
+    function costoCustomUnit(id) {
+        const st = customState[id];
+        if (!st) return 0;
+        if (st.modo === 'opcion') {
+            return INGREDIENTES.reduce((a, i) => a + (st.extras[i.id] ? (Number(i.precio) || 0) : 0), 0);
+        }
+        return INGREDIENTES.reduce((a, i) => a + ((st.ingr[i.id] || 0) * (Number(i.precio) || 0)), 0);
+    }
+
+    function detalleCustomTexto(id, tipo) {
+        const st = customState[id];
+        if (!st) return '';
+        let parts = [];
+        if (tipo === 'completo') parts.push(`Salchicha: ${st.salchicha || '—'}`);
+        if (st.modo === 'opcion') {
+            parts.push(`Opción: ${st.opcion || '—'}`);
+            const ex = INGREDIENTES.filter(i => st.extras[i.id]).map(i => i.nombre);
+            if (ex.length) parts.push(`Extras: ${ex.join(', ')}`);
+        } else {
+            const it = Object.entries(st.ingr).map(([k, q]) => {
+                const it = INGREDIENTES.find(i => i.id === k);
+                return it ? `${q} ${it.nombre}` : null;
+            }).filter(Boolean);
+            if (it.length) parts.push(`Personalizar: ${it.join(', ')}`);
+            else parts.push('Personalizar');
+        }
+        return parts.length ? ` (${parts.join(' · ')})` : '';
+    }
+
+    function renderCard(p) {
+        const esXL = p.id === 'completo_xl';
+        if (p.cat === 'sandwich') initCustom(p.id, 'sandwich');
+        if (p.cat === 'completo') initCustom(p.id, 'completo');
+
+        const showCustom = (p.cat === 'sandwich' || p.cat === 'completo') && !esXL;
+        const st = customState[p.id];
+        const opts = p.cat === 'sandwich' ? OPCIONES_SAND : (p.cat === 'completo' ? OPCIONES_COMP : []);
+
+        const customHtml = showCustom ? `
+            <div class="custom-wrap" style="margin-top:14px;">
+
+                ${p.cat === 'completo' ? `
+                    <div class="mini-box">
+                        <div class="mini-title">Salchicha</div>
+                        <div style="display:flex;gap:8px;">
+                            ${SALCHICHAS.map(s => `<button class="opt-btn ${st.salchicha===s?'active':''}" style="flex:1;" onclick="setSalchicha('${p.id}','${s}')">${s}</button>`).join('')}
+                        </div>
+                    </div>
+                ` : ``}
+
+                <div class="mini-box">
+                    <div class="mini-title">Opción</div>
+                    ${opts.map(o => `<button class="opt-btn ${st.modo==='opcion' && st.opcion===o ? 'active':''}" onclick="setOpcion('${p.id}','${o}')">${o}</button>`).join('')}
+                    ${st.modo==='opcion' && st.opcion ? (() => {
+                        const tipo = p.cat;
+                        const receta = tipo === 'completo' ? (RECETA_COMPLETOS[st.opcion] || []) : (RECETA_SANDWICH[st.opcion] || []);
+                        const enReceta = INGREDIENTES.filter(i => receta.includes(i.id));
+                        const fuera    = INGREDIENTES.filter(i => !receta.includes(i.id));
+                        const ordenado = [...enReceta, ...fuera];
+                        return `<div class="extras-box">
+                            <div class="mini-title" style="margin-bottom:8px;">Ingredientes incluidos · puedes agregar o quitar</div>
+                            ${ordenado.map(i => `
+                                <label class="ing-row" style="cursor:pointer;">
+                                    <div>
+                                        <div class="ing-name">${escHtml(i.nombre)}</div>
+                                        <div class="ing-price">+$${(Number(i.precio)||0).toLocaleString('es-CL')}</div>
+                                    </div>
+                                    <input type="checkbox" ${st.extras[i.id] ? 'checked' : ''} onchange="toggleExtraIng('${p.id}','${i.id}')">
+                                </label>
+                            `).join('')}
+                        </div>`;
+                    })() : ``}
+                </div>
+
+                <div class="mini-box">
+                    <button type="button" class="opt-btn mode-btn ${st.modo==='personalizar' ? 'active' : ''}" style="margin-bottom:0;" onclick="setModo('${p.id}','personalizar')">✏️ Personalizar ingredientes</button>
+                    ${st.modo==='personalizar' ? (() => {
+                        const tipo = p.cat;
+                        const receta = tipo === 'completo' ? [] : (RECETA_SANDWICH[st.opcion || ''] || []);
+                        const enReceta = INGREDIENTES.filter(i => receta.includes(i.id));
+                        const fuera    = INGREDIENTES.filter(i => !receta.includes(i.id));
+                        const ordenado = [...enReceta, ...fuera];
+                        return `<div class="extras-box" style="margin-top:12px;">
+                            ${ordenado.map(i => `
+                                <div class="ing-row">
+                                    <div>
+                                        <div class="ing-name">${escHtml(i.nombre)}</div>
+                                        <div class="ing-price">+$${(Number(i.precio)||0).toLocaleString('es-CL')}</div>
+                                    </div>
+                                    <div class="ing-qty">
+                                        <button type="button" onclick="incIng('${p.id}','${i.id}',-1)">−</button>
+                                        <span>${st.ingr[i.id]||0}</span>
+                                        <button type="button" onclick="incIng('${p.id}','${i.id}',1)">+</button>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>`;
+                    })() : ``}
+                </div>
+
+                <div class="qty-control" style="margin-top:4px;">
+                    <button class="qty-btn" onclick="cambiar('${p.id}',-1)">−</button>
+                    <span class="qty-num" id="qty-${p.id}">0</span>
+                    <button class="qty-btn plus" onclick="cambiar('${p.id}',1)">+</button>
+                </div>
+            </div>
+        ` : '';
+
+        return `<div class="food-card ${p.activo ? '' : 'disabled'}" id="card-${p.id}">
+            <div class="food-card-header">
+                <div>
+                    <h3>${escHtml(p.nombre)}${!p.activo ? ' <span style="color:var(--accent);font-size:0.72rem;">(No disponible)</span>' : ''}</h3>
+                    <div class="desc">${escHtml(p.desc||'')}</div>
+                </div>
+                <span class="price">$${p.precio.toLocaleString('es-CL')}</span>
+            </div>
+            ${p.bebida ? `<select class="bebida-select" id="bebida-${p.id}"><option value="">🥤 Elige bebida</option>${BEBIDAS.map(b=>`<option value="${b}">${b}</option>`).join('')}</select>` : ''}
+            ${esXL ? `<div style="font-size:0.78rem;color:var(--muted);margin-top:8px;text-align:left;">Estilo: <strong>Italiano</strong></div>` : ``}
+            ${showCustom ? customHtml : `
+                <div class="qty-control" style="margin-top:${p.bebida?'8':'0'}px;">
+                    <button class="qty-btn" onclick="cambiar('${p.id}',-1)">−</button>
+                    <span class="qty-num" id="qty-${p.id}">0</span>
+                    <button class="qty-btn plus" onclick="cambiar('${p.id}',1)">+</button>
+                </div>
+            `}
+        </div>`;
+    }
+
+    function cambiar(id, delta) {
+        const prod = productos.find(p => p.id === id);
+        if (!prod || !prod.activo) return;
+        pedido[id] = Math.max(0, (pedido[id] || 0) + delta);
+        document.getElementById('qty-' + id).textContent = pedido[id];
+        actualizarResumen();
+    }
+
+    function actualizarResumen() {
+        const res = document.getElementById('resumen');
+        let items = [];
+        // Papas
+        if (papasEnPedido.length) {
+            const conteo = {};
+            papasEnPedido.forEach(p => { conteo[p.nombre] = (conteo[p.nombre] || 0) + 1; });
+            Object.entries(conteo).forEach(([n,c]) => items.push(`${c}x Papas ${n}`));
+        }
+        if (extrasPapasEnPedido.length) {
+            const conteo2 = {};
+            extrasPapasEnPedido.forEach(p => { conteo2[p.nombre] = (conteo2[p.nombre] || 0) + 1; });
+            Object.entries(conteo2).forEach(([n,c]) => items.push(`${c}x ${n}`));
+        }
+        productos.forEach(p => {
+            if (pedido[p.id] > 0) items.push(`${pedido[p.id]}x ${p.nombre}${(p.cat==='sandwich'||p.cat==='completo') ? detalleCustomTexto(p.id, p.cat) : ''}`);
+        });
+        const totalPapas = papasEnPedido.reduce((a,p) => a+p.precio, 0) + extrasPapasEnPedido.reduce((a,p)=>a+p.precio,0);
+        const totalBase = productos.reduce((a, p) => a + (pedido[p.id] || 0) * p.precio, 0);
+        const totalCustom = productos.reduce((a,p)=> a + (pedido[p.id]||0) * costoCustomUnit(p.id), 0);
+        const delivery = tipoEntrega === 'delivery' ? 2000 : 0;
+        const total = totalPapas + totalBase + totalCustom + delivery;
+        if (items.length > 0) {
+            res.innerHTML = `<span style="color:#25d366">Llevas: ${items.join(' · ')}</span><br><span style="font-family:'Bebas Neue',sans-serif;font-size:1.3rem;color:var(--text);">Total: $${total.toLocaleString('es-CL')}</span>`;
+        } else {
+            res.innerHTML = `<span style="color:var(--muted)">Tu pedido está vacío</span>`;
+        }
+    }
+
+    let ubicacionCliente = null; // { lat, lng, url }
+    let tipoEntrega = null; // 'retiro' | 'delivery'
+
+    function compartirUbicacion() {
+        const btn    = document.getElementById('btn-compartir-ubi');
+        const estado = document.getElementById('ubi-estado');
+        btn.textContent = '⏳ Obteniendo ubicación...';
+        btn.disabled = true;
+        navigator.geolocation.getCurrentPosition(
+            pos => {
+                const lat = pos.coords.latitude;
+                const lng = pos.coords.longitude;
+                ubicacionCliente = { lat, lng, url: `https://maps.google.com/?q=${lat},${lng}` };
+                btn.textContent = '✅ Ubicación obtenida';
+                btn.classList.add('obtenida');
+                btn.disabled = false;
+                estado.textContent = '📍 Tu ubicación fue guardada. Se enviará con el pedido.';
+                estado.style.color = 'var(--green)';
+            },
+            () => {
+                btn.textContent = '📍 Compartir mi ubicación';
+                btn.disabled = false;
+                estado.textContent = 'No se pudo obtener tu ubicación. Activa el GPS e intenta de nuevo.';
+                estado.style.color = 'var(--accent)';
+            },
+            { enableHighAccuracy: true, timeout: 10000 }
+        );
+    }
+    function seleccionarEntrega(tipo) {
+        tipoEntrega = tipo;
+        document.getElementById('btn-retiro').classList.toggle('active', tipo === 'retiro');
+        document.getElementById('btn-delivery').classList.toggle('active', tipo === 'delivery');
+        document.getElementById('campo-hora').style.display      = tipo === 'retiro'   ? '' : 'none';
+        document.getElementById('campo-direccion').style.display = tipo === 'delivery' ? '' : 'none';
+        actualizarResumen();
+    }
+
+    // ── ENVIAR PEDIDO ──
+    async function enviarPedido() {
+        const totalUnidades = papasEnPedido.length + extrasPapasEnPedido.length + productos.reduce((a,p) => a+(pedido[p.id]||0), 0);
+        if (totalUnidades === 0) { alert("Primero agrega algo al pedido 🍔"); return; }
+        if (!tipoEntrega) { alert("Por favor elige Retiro en local o Delivery 👆"); return; }
+        const nombreInput = document.getElementById('input-nombre');
+        const horaInput   = document.getElementById('input-hora');
+        const nombre = nombreInput.value.trim(), hora = horaInput.value.trim();
+        let error = false;
+        nombreInput.classList.remove('input-error'); horaInput.classList.remove('input-error');
+        if (!nombre) { nombreInput.classList.add('input-error'); nombreInput.focus(); error = true; }
+        if (tipoEntrega === 'retiro' && !hora) { horaInput.classList.add('input-error'); if (!error) horaInput.focus(); error = true; }
+        if (tipoEntrega === 'delivery' && !ubicacionCliente) { alert("Por favor comparte tu ubicación para el delivery 📍"); return; }
+        if (error)   { alert("Por favor completa todos los campos 👆"); return; }
+
+        // Validaciones de bebida en promos
+        for (const p of productos) {
+            if (p.bebida && (pedido[p.id] || 0) > 0) {
+                const bebida = document.getElementById('bebida-' + p.id)?.value;
+                if (!bebida) { alert(`Elige la bebida para: ${p.nombre} 🥤`); return; }
+            }
+        }
+
+        const totalPapas = papasEnPedido.reduce((a,p) => a+p.precio, 0) + extrasPapasEnPedido.reduce((a,p)=>a+p.precio,0);
+        const totalBase  = productos.reduce((a,p) => a+(pedido[p.id]||0)*p.precio, 0);
+        const totalCustom = productos.reduce((a,p)=> a + (pedido[p.id]||0) * costoCustomUnit(p.id), 0);
+        const delivery = tipoEntrega === 'delivery' ? 2000 : 0;
+        const total = totalPapas + totalBase + totalCustom + delivery;
+
+        let msg = `ÓRBITA FUENTE DE SODA\n--------------------\n`;
+        if (papasEnPedido.length) {
+            msg += `🍟 Papas Fritas:\n`;
+            const conteo = {};
+            papasEnPedido.forEach(p => { conteo[p.nombre] = (conteo[p.nombre]||0)+1; });
+            Object.entries(conteo).forEach(([n,c]) => { msg += `  • ${c}x Papas ${n}\n`; });
+        }
+        if (extrasPapasEnPedido.length) {
+            msg += `🍟 Extras con papas:\n`;
+            const conteoE = {};
+            extrasPapasEnPedido.forEach(p => { conteoE[p.nombre] = (conteoE[p.nombre]||0)+1; });
+            Object.entries(conteoE).forEach(([n,c]) => { msg += `  • ${c}x ${n}\n`; });
+        }
+        productos.filter(p => pedido[p.id] > 0).forEach(p => {
+            const bebida = document.getElementById('bebida-'+p.id)?.value;
+            const det = (p.cat === 'sandwich' || p.cat === 'completo') ? detalleCustomTexto(p.id, p.cat) : '';
+            msg += `  • ${pedido[p.id]}x ${p.nombre}${det}${bebida ? ' + '+bebida : ''}\n`;
+        });
+        msg += `--------------------\n`;
+        if (tipoEntrega === 'retiro') msg += `📦 Retiro en local\nHora de retiro: ${hora}\n`;
+        else msg += `🛵 Delivery (+$2.000)\nUbicación: ${ubicacionCliente.url}\n`;
+        msg += `Nombre: ${nombre}\nTotal: $${total.toLocaleString('es-CL')}\n--------------------`;
+
+        const items_json = [];
+        if (papasEnPedido.length) {
+            const conteo = {};
+            papasEnPedido.forEach(p => { const k=p.nombre; conteo[k]=(conteo[k]||{nombre:'Papas '+k, cantidad:0, precio:p.precio}); conteo[k].cantidad++; });
+            Object.values(conteo).forEach(x => items_json.push(x));
+        }
+        if (extrasPapasEnPedido.length) {
+            const conteoE = {};
+            extrasPapasEnPedido.forEach(p => { const k=p.nombre; conteoE[k]=(conteoE[k]||{nombre:k, cantidad:0, precio:p.precio}); conteoE[k].cantidad++; });
+            Object.values(conteoE).forEach(x => items_json.push(x));
+        }
+        productos.filter(p => pedido[p.id]>0).forEach(p => {
+            const bebida = document.getElementById('bebida-' + p.id)?.value || null;
+            items_json.push({ id:p.id, nombre:p.nombre, cantidad:pedido[p.id], precio:p.precio, bebida });
+        });
+        if (tipoEntrega === 'delivery') items_json.push({ id:'delivery', nombre:'Delivery', cantidad:1, precio:2000 });
+
+        const pedidoBody = {
+            nombre, total,
+            hora_retiro: tipoEntrega === 'retiro' ? hora : null,
+            tipo_entrega: tipoEntrega,
+            items_json,
+            direccion_entrega: tipoEntrega === 'delivery' ? (ubicacionCliente?.url || null) : null,
+        };
+
+        papasEnPedido = []; extrasPapasEnPedido = []; papaSeleccionada = null;
+        productos.forEach(p => { pedido[p.id] = 0; });
+        document.querySelectorAll('.qty-num').forEach(el => el.textContent = '0');
+        document.getElementById('input-nombre').value = '';
+        document.getElementById('input-hora').value = '';
+        ubicacionCliente = null;
+        const bU = document.getElementById('btn-compartir-ubi'); if (bU) { bU.textContent = '📍 Compartir mi ubicación'; bU.classList.remove('obtenida'); bU.disabled = false; }
+        const stU = document.getElementById('ubi-estado'); if (stU) stU.textContent = '';
+        renderPapasSizes(); actualizarResumen();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+
+        if (window.orbitaPagoFlow) {
+            await window.orbitaPagoFlow.registrarWhatsapp({
+                sitio: 'fuente', pedidoBody, wspNumber: WSP_NUMBER, mensaje: msg
+            });
+        } else {
+            setTimeout(() => { window.open("https://wa.me/" + WSP_NUMBER + "?text=" + encodeURIComponent(msg), '_blank'); }, 400);
+        }
+    }
+
+    // ── MERCADO PAGO ──
+    async function pagarConMP() {
+        const totalUnidades = papasEnPedido.length + extrasPapasEnPedido.length + productos.reduce((a,p) => a+(pedido[p.id]||0), 0);
+        if (totalUnidades === 0) { alert("Primero agrega algo al pedido 🍔"); return; }
+        if (!tipoEntrega) { alert("Por favor elige Retiro en local o Delivery 👆"); return; }
+        const nombreInput = document.getElementById('input-nombre');
+        const horaInput   = document.getElementById('input-hora');
+        const nombre = nombreInput.value.trim();
+        const hora   = horaInput.value.trim();
+        let error = false;
+        nombreInput.classList.remove('input-error');
+        horaInput.classList.remove('input-error');
+        if (!nombre) { nombreInput.classList.add('input-error'); nombreInput.focus(); error = true; }
+        if (tipoEntrega === 'retiro' && !hora) { horaInput.classList.add('input-error'); if (!error) horaInput.focus(); error = true; }
+        if (tipoEntrega === 'delivery' && !ubicacionCliente) { alert("Por favor comparte tu ubicación para el delivery 📍"); return; }
+        if (error) { alert("Por favor completa todos los campos 👆"); return; }
+
+        for (const p of productos) {
+            if (p.bebida && (pedido[p.id] || 0) > 0) {
+                const bebida = document.getElementById('bebida-' + p.id)?.value;
+                if (!bebida) { alert(`Elige la bebida para: ${p.nombre} 🥤`); return; }
+            }
+        }
+        const btn = document.getElementById('btn-mp');
+        btn.disabled = true; btn.textContent = '⏳ Generando pago...';
+        const items = [];
+        if (papasEnPedido.length) {
+            const conteo = {};
+            papasEnPedido.forEach(p => { const k=p.nombre; conteo[k]=(conteo[k]||{nombre:'Papas '+k, qty:0, precio:p.precio}); conteo[k].qty++; });
+            Object.values(conteo).forEach(x => items.push({ title:x.nombre, quantity:x.qty, unit_price:x.precio, currency_id:'CLP' }));
+        }
+        if (extrasPapasEnPedido.length) {
+            const conteoE = {};
+            extrasPapasEnPedido.forEach(p => { const k=p.nombre; conteoE[k]=(conteoE[k]||{nombre:k, qty:0, precio:p.precio}); conteoE[k].qty++; });
+            Object.values(conteoE).forEach(x => items.push({ title:x.nombre, quantity:x.qty, unit_price:x.precio, currency_id:'CLP' }));
+        }
+        productos.filter(p => pedido[p.id]>0 && p.precio>0).forEach(p => items.push({ title:p.nombre, quantity:pedido[p.id], unit_price:p.precio, currency_id:'CLP' }));
+        // extras por personalización
+        productos.filter(p => (p.cat==='sandwich'||p.cat==='completo') && (pedido[p.id]||0) > 0).forEach(p => {
+            const cu = costoCustomUnit(p.id);
+            if (cu > 0) items.push({ title: `${p.nombre} (Extras)`, quantity: pedido[p.id], unit_price: cu, currency_id: 'CLP' });
+        });
+        if (tipoEntrega === 'delivery') items.push({ title: 'Delivery', quantity: 1, unit_price: 2000, currency_id: 'CLP' });
+        if (items.length === 0) { alert('Los productos seleccionados aún no tienen precio configurado. Por favor pide por WhatsApp por ahora.'); btn.disabled = false; btn.textContent = '💳 PAGAR EN LÍNEA'; return; }
+
+        const items_json = items.map(i => ({ nombre: i.title, cantidad: i.quantity, precio: i.unit_price }));
+        const total = items_json.reduce((a, i) => a + i.cantidad * i.precio, 0);
+        const pedidoBody = {
+            nombre, total,
+            hora_retiro: tipoEntrega === 'retiro' ? hora : null,
+            tipo_entrega: tipoEntrega,
+            items_json,
+            direccion_entrega: tipoEntrega === 'delivery' ? (ubicacionCliente?.url || null) : null,
+        };
+
+        if (!window.orbitaPagoFlow) {
+            alert('Error: el módulo de pago no cargó. Recargá la página.');
+            btn.disabled = false; btn.textContent = '💳 PAGAR EN LÍNEA';
+            return;
+        }
+
+        await window.orbitaPagoFlow.iniciarPagoMP({
+            sitio: 'fuente',
+            items,
+            pedidoBody,
+            onError: () => {
+                alert('No se pudo generar el pago. Intenta por WhatsApp.');
+                btn.disabled = false; btn.textContent = '💳 PAGAR EN LÍNEA';
+            }
+        });
+    }
+
+    // ── ADMIN (Supabase Auth) ──
+    async function abrirAdmin() {
+        document.getElementById('modal-overlay').classList.add('open');
+        actualizarBotonIngresoAdmin();
+        const { data: { session } } = await window.orbitaAuth.getSession();
+        if (session) { adminDesbloqueado = true; mostrarPanelAdmin(); return; }
+        adminDesbloqueado = false;
+        document.getElementById('login-section').style.display = '';
+        document.getElementById('admin-panel').style.display = 'none';
+        document.getElementById('modal-error').style.display = 'none';
+        setTimeout(() => document.getElementById('admin-email').focus(), 100);
+    }
+    function cerrarAdmin() {
+        document.getElementById('modal-overlay').classList.remove('open');
+        actualizarBotonIngresoAdmin();
+        document.getElementById('admin-email').value = '';
+        document.getElementById('admin-pass').value = '';
+        adminDesbloqueado = false;
+    }
+    function actualizarBotonIngresoAdmin() {
+        const overlay = document.getElementById('modal-overlay');
+        const hidden = overlay && overlay.classList.contains('open');
+        const botones = [
+            document.getElementById('btn-admin-reopen'),
+            document.getElementById('btn-admin-banner')
+        ];
+        botones.forEach(btn => {
+            if (btn) btn.style.display = hidden ? 'none' : 'inline-block';
+        });
+    }
+    async function verificarPass() {
+        const email = document.getElementById('admin-email').value.trim();
+        const password = document.getElementById('admin-pass').value;
+        const modalError = document.getElementById('modal-error');
+        modalError.style.display = 'none';
+        if (!email || !password) {
+            modalError.textContent = 'Ingresa email y contraseña para iniciar sesión.';
+            modalError.style.display = 'block';
+            return;
+        }
+        try {
+            const result = await window.orbitaAuth.signIn(email, password);
+            if (!result || result.error) {
+                modalError.textContent = result && result.error && result.error.message ? result.error.message : 'No se pudo iniciar sesión';
+                modalError.style.display = 'block';
+                document.getElementById('admin-pass').value = '';
+                return;
+            }
+            adminDesbloqueado = true;
+            mostrarPanelAdmin();
+        } catch (e) {
+            modalError.textContent = e.message || 'Error al iniciar sesión. Revisa la consola.';
+            modalError.style.display = 'block';
+            document.getElementById('admin-pass').value = '';
+        }
+    }
+    async function resetContrasena() {
+        const email = document.getElementById('admin-email').value.trim();
+        if (!email) {
+            alert('Ingresa tu email para resetear la contraseña.');
+            return;
+        }
+        try {
+            const result = await window.orbitaAuth.resetPassword(email);
+            if (result.error) {
+                alert('Error al enviar email de reset: ' + result.error.message);
+            } else {
+                alert('Email de reset enviado. Revisa tu bandeja de entrada.');
+            }
+        } catch (e) {
+            alert('Error: ' + e.message);
+        }
+    }
+    function mostrarPanelAdmin() {
+        document.getElementById('login-section').style.display='none';
+        document.getElementById('admin-panel').style.display='';
+        cargarPedidosAdmin();
+        renderProductosAdmin();
+        renderBebidasAdmin();
+        renderIngredientesAdmin();
+        if (window.orbitaInventario) window.orbitaInventario.init('fuente', 'fuente');
+    }
+    function showTab(tabId, btn) {
+        document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+        document.getElementById(tabId).classList.add('active'); btn.classList.add('active');
+        if(tabId==='tab-rendimiento') cargarRendimientoFuente();
+        else if (tabId === 'tab-resenas') cargarResenasAdmin();
+        else if (tabId === 'tab-inventario' && window.orbitaInventario) window.orbitaInventario.render('fuente', 'fuente');
+    }
+    async function guardarCostoFijoFuente() {
+        const v = parseInt(document.getElementById('input-cf-fuente').value, 10) || 0;
+        const r = await window.orbitaCostosFijos.guardar(window.orbitaCostosFijos.claveFuente, v);
+        if (r.ok) alert('Costo fijo guardado y sincronizado.');
+        else alert(r.error || 'No se pudo guardar.');
+        cargarRendimientoFuente();
+    }
+    async function cambiarContrasena() {
+        const nuevaPass = document.getElementById('input-nueva-pass').value.trim();
+        if (!nuevaPass || nuevaPass.length < 6) {
+            alert('La nueva contraseña debe tener al menos 6 caracteres.');
+            return;
+        }
+        try {
+            const result = await window.orbitaAuth.updatePassword(nuevaPass);
+            if (result.error) {
+                alert('Error al cambiar contraseña: ' + result.error.message);
+            } else {
+                alert('Contraseña cambiada exitosamente.');
+                document.getElementById('input-nueva-pass').value = '';
+            }
+        } catch (e) {
+            alert('Error: ' + e.message);
+        }
+    }
+    async function fetchVentasDesdeFuente(desdeISO) {
+        const res = await window.orbitaAuth.adminFetch(`${SUPABASE_URL}/rest/v1/pedidos?select=total,creado_at,estado&sitio=eq.fuente&creado_at=gte.${desdeISO}&order=creado_at.asc`);
+        if (!res.ok) return [];
+        const data = await res.json();
+        if (!Array.isArray(data)) return [];
+        return data.filter(r => r.estado !== 'anulado' && r.estado !== 'rechazado');
+    }
+    function sumMesF(rows,y,m0){ return rows.reduce((a,r)=>{ const d=new Date(r.creado_at); if(d.getFullYear()===y&&d.getMonth()===m0) return a+(Number(r.total)||0); return a; },0); }
+    function sumAnioF(rows,y){ return rows.reduce((a,r)=>{ const d=new Date(r.creado_at); if(d.getFullYear()===y) return a+(Number(r.total)||0); return a; },0); }
+    async function cargarRendimientoFuente() {
+        const box = document.getElementById('rendimiento-fuente-body');
+        const inp = document.getElementById('input-cf-fuente');
+        if (!box) return;
+        box.innerHTML = '<p style="color:var(--muted);font-size:0.9rem;">Cargando...</p>';
+        let costos;
+        try { costos = await window.orbitaCostosFijos.leer(); }
+        catch (e) { costos = { costo_fijo_handroll: 0, costo_fijo_cafe: 0, costo_fijo_fuente: 0, _sinTabla: true }; }
+        const cf = Number(costos.costo_fijo_fuente) || 0;
+        if (inp) inp.value = cf || '';
+        const now = new Date(), y = now.getFullYear(), m = now.getMonth(), desde = `${y}-01-01T00:00:00`;
+        try {
+            const rows = await fetchVentasDesdeFuente(desde);
+            const vm = sumMesF(rows,y,m), va = sumAnioF(rows,y);
+            const netM = vm - cf, netA = va - cf * 12;
+            const aviso = costos._necesitaLogin ? '<p style="color:var(--accent);font-size:0.78rem;margin-bottom:10px;text-align:left;">Iniciá sesión en este panel para ver costos y ventas con RLS.</p>' : (costos._sinTabla ? '<p style="color:var(--accent);font-size:0.78rem;margin-bottom:10px;text-align:left;">No se pudo leer orbita_config. Revisá SQL y sesión.</p>' : '');
+            box.innerHTML = aviso + `<div class="admin-item"><div style="font-size:0.88rem;margin-bottom:6px;">Ventas <strong>mes actual</strong></div><div style="font-family:'Bebas Neue',sans-serif;font-size:1.25rem;color:var(--green);">$${vm.toLocaleString('es-CL')}</div><div style="font-size:0.78rem;color:var(--muted);margin-top:8px;">− Costo fijo mes <strong>$${cf.toLocaleString('es-CL')}</strong></div><div style="font-size:0.85rem;margin-top:6px;">Resultado aprox. mes: <strong style="color:${netM>=0?'var(--green)':'#ff6b6b'}">$${netM.toLocaleString('es-CL')}</strong></div></div><div class="admin-item" style="margin-top:10px;"><div style="font-size:0.88rem;margin-bottom:6px;">Ventas <strong>año ${y}</strong></div><div style="font-family:'Bebas Neue',sans-serif;font-size:1.25rem;color:var(--text);">$${va.toLocaleString('es-CL')}</div><div style="font-size:0.78rem;color:var(--muted);margin-top:8px;">− Costos fijos 12 meses <strong>$${(cf*12).toLocaleString('es-CL')}</strong></div><div style="font-size:0.85rem;margin-top:6px;">Resultado aprox. año: <strong style="color:${netA>=0?'var(--green)':'#ff6b6b'}">$${netA.toLocaleString('es-CL')}</strong></div></div>`;
+        } catch(e) { box.innerHTML = '<p style="color:var(--accent);font-size:0.85rem;">No se pudieron cargar las ventas.</p>'; }
+    }
+
+    function _badgeEstado(estado) {
+        const map = {
+            pagado:     { txt: '✓ Pagado',    bg: 'rgba(37,211,102,0.15)', color: 'var(--green)' },
+            pendiente:  { txt: '⏳ Pendiente', bg: 'rgba(255,193,7,0.15)',  color: '#ffc107' },
+            rechazado:  { txt: '✗ Rechazado', bg: 'rgba(255,68,68,0.15)',  color: '#ff4444' },
+            anulado:    { txt: '🚫 Anulado',   bg: 'rgba(120,120,120,0.2)', color: '#aaa' },
+            whatsapp:   { txt: '💬 WhatsApp', bg: 'rgba(37,211,102,0.12)', color: 'var(--green)' }
+        };
+        const m = map[estado] || { txt: estado || '—', bg: 'rgba(120,120,120,0.15)', color: '#aaa' };
+        return `<span style="background:${m.bg};color:${m.color};padding:2px 8px;border-radius:10px;font-size:0.7rem;font-weight:700;">${m.txt}</span>`;
+    }
+    function _itemsResumen(p) {
+        if (Array.isArray(p.items_json) && p.items_json.length) {
+            return p.items_json.map(i => `${i.cantidad || 1}x ${i.nombre}`).join(' · ');
+        }
+        let items = [];
+        (typeof productos !== 'undefined' ? productos : []).forEach(pr => { if (p[pr.id] > 0) items.push(`${p[pr.id]}x ${pr.nombre}`); });
+        return items.join(' · ') || '—';
+    }
+    async function anularPedido(id) {
+        if (!confirm('¿Anular este pedido?')) return;
+        try {
+            const res = await window.orbitaAuth.adminFetch(`${SUPABASE_URL}/rest/v1/pedidos?id=eq.${id}`, {
+                method: 'PATCH', headers: { 'Content-Type': 'application/json', Prefer: 'return=minimal' },
+                body: JSON.stringify({ estado: 'anulado' })
+            });
+            if (res.ok) cargarPedidosAdmin(); else alert('No se pudo anular.');
+        } catch(e) { alert('Error al anular.'); }
+    }
+    window.anularPedido = anularPedido;
+
+    async function cargarPedidosAdmin() {
+        const lista = document.getElementById('admin-pedidos-list');
+        lista.innerHTML = '<p style="color:var(--muted);font-size:0.9rem;">Cargando...</p>';
+        try {
+            const hoy = new Date().toISOString().split('T')[0];
+            const res = await window.orbitaAuth.adminFetch(`${SUPABASE_URL}/rest/v1/pedidos?select=*&sitio=eq.fuente&creado_at=gte.${hoy}T00:00:00&order=creado_at.desc`);
+            const data = await res.json();
+            if (!Array.isArray(data)||data.length===0) { lista.innerHTML='<p style="color:var(--muted);font-size:0.9rem;">Sin pedidos hoy aún.</p>'; return; }
+            const totalDia = data.filter(p=>p.estado!=='anulado'&&p.estado!=='rechazado').reduce((a,p)=>a+(p.total||0),0);
+            const esc = s => String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+            lista.innerHTML = `<p style="color:var(--green);font-size:0.85rem;margin-bottom:12px;">💰 Total del día: $${totalDia.toLocaleString('es-CL')} · ${data.length} pedido${data.length!==1?'s':''}</p>` +
+                data.map(p => {
+                    const hora = new Date(p.creado_at).toLocaleTimeString('es-CL',{hour:'2-digit',minute:'2-digit'});
+                    const items = _itemsResumen(p);
+                    const puedeAnular = p.estado === 'pendiente' || p.estado === 'whatsapp';
+                    return `<div class="pedido-item">
+                        <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:4px;">
+                            <div style="font-weight:700;font-size:0.95rem;flex:1;">${esc(items)}</div>
+                            ${_badgeEstado(p.estado)}
+                        </div>
+                        ${p.nombre ? `<div style="font-size:0.8rem;color:#aaa;">👤 ${esc(p.nombre)}</div>` : ''}
+                        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;gap:8px;">
+                            <span style="font-size:0.75rem;color:var(--muted);">⏰ ${hora}</span>
+                            <span class="pedido-total">$${(p.total||0).toLocaleString('es-CL')}</span>
+                        </div>
+                        ${puedeAnular ? `<button class="btn-sm btn-red" style="margin-top:8px;width:100%;" onclick="anularPedido(${p.id})">Anular pedido</button>` : ''}
+                    </div>`;
+                }).join('');
+        } catch(e) { lista.innerHTML='<p style="color:var(--accent);font-size:0.85rem;">Error al cargar.</p>'; }
+    }
+
+    async function cargarResenasAdmin() {
+        const lista = document.getElementById('admin-reviews-list');
+        if (!lista) return;
+        lista.innerHTML = '<p style="color:var(--muted);font-size:0.9rem;">Cargando...</p>';
+        const esc = s => String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+        try {
+            const res = await window.orbitaAuth.adminFetch(`${SUPABASE_URL}/rest/v1/resenas?select=*&order=creado_at.desc`);
+            const data = await res.json();
+            if (!Array.isArray(data) || data.length === 0) {
+                lista.innerHTML = '<p style="color:var(--muted);font-size:0.9rem;">Sin reseñas aún.</p>'; return;
+            }
+            lista.innerHTML = data.map(r => `
+                <div id="ar-${r.id}" class="admin-item" style="margin-bottom:10px;">
+                    <div style="display:flex;justify-content:space-between;align-items:center;">
+                        <strong>${esc(r.nombre)}</strong><span>${'⭐'.repeat(r.estrellas)}</span>
+                    </div>
+                    <p style="color:#ccc;font-size:0.88rem;margin:6px 0;">"${esc(r.comentario)}"</p>
+                    <div style="display:flex;justify-content:space-between;align-items:center;">
+                        <span style="font-size:0.72rem;color:var(--muted);">${new Date(r.creado_at).toLocaleDateString('es-CL')}</span>
+                        <button class="btn-sm btn-red" onclick="borrarResena(${r.id})">🗑️ Borrar</button>
+                    </div>
+                </div>`).join('');
+        } catch(e) { lista.innerHTML = '<p style="color:var(--accent);font-size:0.85rem;">Error al cargar.</p>'; }
+    }
+    async function borrarResena(id) {
+        if (!confirm('¿Borrar esta reseña?')) return;
+        try {
+            const res = await window.orbitaAuth.adminFetch(`${SUPABASE_URL}/rest/v1/resenas?id=eq.${id}`, { method: 'DELETE' });
+            if (res.ok) document.getElementById('ar-' + id)?.remove();
+        } catch(e) { alert('Error al borrar.'); }
+    }
+    window.borrarResena = borrarResena;
+
+    let adminProductoQuery = '';
+    function setAdminProductoSearch(value) {
+        adminProductoQuery = value.trim().toLowerCase();
+        renderProductosAdmin();
+    }
+    function matchesAdminSearch(product) {
+        if (!adminProductoQuery) return true;
+        var nombre = String(product.nombre || '').toLowerCase();
+        var categoria = String(product.categoria || product.cat || '').toLowerCase();
+        return nombre.includes(adminProductoQuery) || categoria.includes(adminProductoQuery);
+    }
+    function renderProductosAdmin() {
+        const lista = document.getElementById('admin-productos-list');
+        const sections = [
+            { title: 'Papas', items: (PAPAS_TAMANIOS || []).filter(p => matchesAdminSearch(p)) },
+            { title: 'Extras', items: productos.filter(p => p.cat === 'extra' && matchesAdminSearch(p)) },
+            { title: 'Sándwiches', items: productos.filter(p => p.cat === 'sandwich' && matchesAdminSearch(p)) },
+            { title: 'Completos', items: productos.filter(p => p.cat === 'completo' && matchesAdminSearch(p)) },
+            { title: 'Jugos naturales', items: productos.filter(p => p.cat === 'jugo' && matchesAdminSearch(p)) },
+            { title: 'Bebidas', items: productos.filter(p => p.cat === 'bebida' && matchesAdminSearch(p)) },
+            { title: 'Aguas', items: productos.filter(p => p.cat === 'agua' && matchesAdminSearch(p)) }
+        ];
+        const html = sections.map(section => {
+            if (!section.items.length) return '';
+            return `
+                <div class="admin-section">
+                    <h4 style="margin:0 0 12px;color:var(--fuente);letter-spacing:1px;font-size:0.92rem;">${section.title}</h4>
+                    ${section.items.map((p, i) => `
+                        <div class="admin-item">
+                            <div class="admin-item-top">
+                                <div><div style="font-weight:700;font-size:0.95rem;">${escHtml(p.nombre)}</div><div style="font-size:0.85rem;color:var(--muted);">$${p.precio.toLocaleString('es-CL')}</div></div>
+                                <div style="display:flex;gap:6px;">
+                                    <button class="btn-sm btn-orange" onclick="abrirEditProductoF('${p.id}',${i})">✏️ Editar</button>
+                                </div>
+                            </div>
+                            <div class="edit-form" id="edit-${p.id}">
+                                <div class="edit-row"><label>Nombre</label><input type="text" id="edit-nombre-${p.id}" value="${escHtml(p.nombre)}"></div>
+                                <div class="edit-row"><label>Precio</label><input type="number" id="edit-precio-${p.id}" value="${p.precio}" step="100"></div>
+                                <button class="btn-sm btn-fire" style="background:var(--accent);color:var(--dark);width:100%;padding:9px;margin-top:4px;" onclick="guardarProductoF('${p.id}',${i})">💾 GUARDAR</button>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>`;
+        }).join('');
+        lista.innerHTML = html.trim() ? html : '<p style="color:var(--muted);font-size:0.9rem;">No se encontraron productos.</p>';
+    }
+
+    function abrirEditProductoF(id) { document.getElementById('edit-'+id).classList.toggle('open'); }
+
+    function guardarProductoF(id, i) {
+        const n  = document.getElementById('edit-nombre-'+id).value.trim();
+        const pr = parseInt(document.getElementById('edit-precio-'+id).value);
+        if (!n||isNaN(pr)||pr<0) { alert('Datos inválidos'); return; }
+        const papaIdx = PAPAS_TAMANIOS.findIndex(p=>p.id===id);
+        if (papaIdx>=0) { PAPAS_TAMANIOS[papaIdx].nombre=n; PAPAS_TAMANIOS[papaIdx].precio=pr; }
+        else { const pi=productos.findIndex(p=>p.id===id); if(pi>=0){productos[pi].nombre=n;productos[pi].precio=pr;} }
+        renderMenu(); renderProductosAdmin();
+        persistirCatalogoFuente();
+    }
+
+    function renderBebidasAdmin() {
+        const box = document.getElementById('admin-bebidas-list');
+        if (!box) return;
+        box.innerHTML = (BEBIDAS || []).map((b, i) => `
+            <div style="display:flex;justify-content:space-between;align-items:center;border:1px solid var(--border2);border-radius:10px;padding:10px 12px;margin-bottom:8px;">
+                <div style="font-weight:700;">${escHtml(b)}</div>
+                <button class="btn-sm btn-red" type="button" onclick="borrarBebida(${i})">🗑️</button>
+            </div>
+        `).join('') || '<p style="color:var(--muted);font-size:0.85rem;">Sin bebidas aún.</p>';
+    }
+    function agregarBebida() {
+        const inp = document.getElementById('bebida-nueva');
+        const v = (inp?.value || '').trim();
+        if (!v) return;
+        BEBIDAS = Array.from(new Set([...(BEBIDAS || []), v]));
+        if (inp) inp.value = '';
+        renderBebidasAdmin();
+        renderMenu();
+        persistirCatalogoFuente();
+    }
+    function borrarBebida(i) {
+        if (!Array.isArray(BEBIDAS)) return;
+        BEBIDAS.splice(i, 1);
+        renderBebidasAdmin();
+        renderMenu();
+        persistirCatalogoFuente();
+    }
+
+    function renderIngredientesAdmin() {
+        const box = document.getElementById('admin-ingredientes-list');
+        if (!box) return;
+        box.innerHTML = (INGREDIENTES || []).map((ing, i) => `
+            <div style="border:1px solid var(--border2);border-radius:12px;padding:12px;margin-bottom:10px;">
+                <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;">
+                    <div style="font-weight:800;">${escHtml(ing.nombre)}</div>
+                    <button class="btn-sm btn-red" type="button" onclick="borrarIngrediente(${i})">🗑️</button>
+                </div>
+                <div style="display:flex;gap:8px;align-items:center;margin-top:10px;">
+                    <label style="font-size:0.78rem;color:var(--muted);min-width:60px;">Precio</label>
+                    <input type="number" min="0" step="100" id="ing-precio-${i}" value="${Number(ing.precio)||0}" style="margin-bottom:0;">
+                    <button class="btn-sm btn-orange" type="button" onclick="guardarIngredientePrecio(${i})">💾</button>
+                </div>
+            </div>
+        `).join('') || '<p style="color:var(--muted);font-size:0.85rem;">Sin ingredientes aún.</p>';
+    }
+    function slugId(nombre) {
+        return String(nombre || '')
+            .toLowerCase()
+            .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+            .replace(/[^a-z0-9]+/g, '_')
+            .replace(/^_+|_+$/g, '')
+            .slice(0, 32) || ('ing_' + Math.random().toString(16).slice(2, 8));
+    }
+    function agregarIngrediente() {
+        const n = (document.getElementById('ing-nombre')?.value || '').trim();
+        const pr = parseInt(document.getElementById('ing-precio')?.value || '0', 10) || 0;
+        if (!n) return;
+        const id = slugId(n);
+        if (!Array.isArray(INGREDIENTES)) INGREDIENTES = [];
+        if (INGREDIENTES.some(x => x.id === id)) { alert('Ya existe un ingrediente con ese nombre/id.'); return; }
+        INGREDIENTES.push({ id, nombre: n, precio: Math.max(0, pr) });
+        const in1 = document.getElementById('ing-nombre'); if (in1) in1.value = '';
+        const in2 = document.getElementById('ing-precio'); if (in2) in2.value = '';
+        renderIngredientesAdmin();
+        renderMenu();
+        persistirCatalogoFuente();
+    }
+    function borrarIngrediente(i) {
+        if (!Array.isArray(INGREDIENTES)) return;
+        INGREDIENTES.splice(i, 1);
+        // limpiar selecciones cliente
+        Object.keys(customState || {}).forEach(k => {
+            if (customState[k]?.extras) customState[k].extras = {};
+            if (customState[k]?.ingr) customState[k].ingr = {};
+        });
+        renderIngredientesAdmin();
+        renderMenu();
+        actualizarResumen();
+        persistirCatalogoFuente();
+    }
+    function guardarIngredientePrecio(i) {
+        const v = parseInt(document.getElementById('ing-precio-' + i)?.value || '0', 10);
+        if (!INGREDIENTES[i] || isNaN(v) || v < 0) return;
+        INGREDIENTES[i].precio = v;
+        renderIngredientesAdmin();
+        actualizarResumen();
+        persistirCatalogoFuente();
+    }
+
+    function escHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+    document.getElementById('modal-overlay').addEventListener('click', function(e) { if(e.target===this) cerrarAdmin(); });
+
+    (async function init() {
+        await cargarCatalogoFuente();
+        if (window.orbitaPagoFlow) window.orbitaPagoFlow.detectarRetorno();
+        renderMenu();
+    })();
+    if (esAdmin) window.addEventListener('load', () => {
+        mostrarAdminModoBanner();
+        setTimeout(abrirAdmin, 300);
+    });
+    
+    // Inicializar Pago Rápido Órbita
+    window.addEventListener('load', () => {
+        if (window.OrbitaPagoRapido) {
+            window.OrbitaPagoRapido.init({
+                local: 'fuente',
+                wspNumber: WSP_NUMBER,
+                mpEdgeUrl: MP_EDGE_URL
+            });
+            
+            // Actualizar total cuando cambie el pedido
+            const originalActualizarResumen = window.actualizarResumen;
+            if (originalActualizarResumen) {
+                window.actualizarResumen = function() {
+                    originalActualizarResumen();
+                    
+                    // Calcular total para pago rápido
+                    const delivery = tipoEntrega === 'delivery' ? 2000 : 0;
+                    const total = productos.reduce((a, p) => a + (pedido[p.id] || 0) * p.precio, 0) + delivery;
+                    
+                    // Obtener items para mostrar
+                    const items = [];
+                    productos.forEach(p => { 
+                        if (pedido[p.id] > 0) items.push(`${pedido[p.id]}x ${p.nombre}`); 
+                    });
+                    
+                    window.OrbitaPagoRapido.actualizarTotal(total, items);
+                };
+            }
+        }
+    });
+</script>
+<script src="./orbita-pago-flow.js"></script>
+<script src="./orbita-pago-rapido.js"></script>
+</body>
+</html>

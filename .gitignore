@@ -1,0 +1,4 @@
+supabase/
+demo-secrets.env
+backup-supabase/
+node_modules/
