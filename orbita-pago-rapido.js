@@ -710,31 +710,32 @@ window.OrbitaPagoRapido = {
         cont.innerHTML = `
             <div style="width:100%;max-width:360px;margin:0 auto;aspect-ratio:1.586 / 1;background:${s.bg};border-radius:16px;color:${s.fg};font-family:'DM Sans',sans-serif;box-shadow:0 14px 30px rgba(0,0,0,0.5),0 2px 6px rgba(0,0,0,0.3),inset 0 1px 0 rgba(255,255,255,0.08);position:relative;overflow:hidden;">
                 <div style="position:absolute;inset:0;background:${s.shine};pointer-events:none;"></div>
-                <div style="position:absolute;inset:0;padding:18px 20px;display:flex;flex-direction:column;justify-content:space-between;">
-                    <!-- Top row -->
-                    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;">
-                        <div>
-                            <div style="font-size:0.62rem;font-weight:800;letter-spacing:1.2px;color:${s.sub};text-transform:uppercase;">${this._esc(emisor)}</div>
-                            ${tipoLabel ? `<div style="font-size:0.58rem;font-weight:700;letter-spacing:1.4px;color:${s.sub};margin-top:2px;">${tipoLabel}</div>` : ''}
-                        </div>
-                        ${contactlessSvg}
-                    </div>
-                    <!-- Chip + número -->
-                    <div>
-                        <div style="margin-bottom:10px;">${chipSvg}</div>
-                        <div style="font-family:'Courier New','DM Mono',monospace;font-size:1.25rem;font-weight:700;letter-spacing:3px;color:${s.fg};text-shadow:0 1px 2px rgba(0,0,0,0.3);">
-                            ••••&nbsp;&nbsp;••••&nbsp;&nbsp;••••&nbsp;&nbsp;${ultimos}
-                        </div>
-                    </div>
-                    <!-- Bottom row -->
-                    <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:12px;">
-                        <div style="flex:1;min-width:0;">
-                            <div style="font-size:0.54rem;font-weight:700;letter-spacing:1.2px;color:${s.sub};text-transform:uppercase;margin-bottom:2px;">TITULAR</div>
-                            <div style="font-size:0.82rem;font-weight:700;letter-spacing:0.8px;color:${s.fg};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${this._esc(titular)}</div>
-                        </div>
-                        <div style="flex-shrink:0;">${logoSvg}</div>
-                    </div>
+
+                <!-- Arriba izquierda: emisor + tipo -->
+                <div style="position:absolute;top:7%;left:6%;">
+                    <div style="font-size:0.64rem;font-weight:800;letter-spacing:1.3px;color:${s.sub};text-transform:uppercase;">${this._esc(emisor)}</div>
+                    ${tipoLabel ? `<div style="font-size:0.56rem;font-weight:700;letter-spacing:1.5px;color:${s.sub};margin-top:3px;">${tipoLabel}</div>` : ''}
                 </div>
+
+                <!-- Arriba derecha: contactless -->
+                <div style="position:absolute;top:7%;right:6%;line-height:0;">${contactlessSvg}</div>
+
+                <!-- Chip EMV: ~38% desde arriba, izquierda -->
+                <div style="position:absolute;top:38%;left:6%;transform:translateY(-50%);line-height:0;">${chipSvg}</div>
+
+                <!-- Número: justo debajo del chip, ancho completo con márgenes -->
+                <div style="position:absolute;left:6%;right:6%;top:62%;font-family:'Courier New','Consolas',monospace;font-size:1.15rem;font-weight:700;letter-spacing:2px;color:${s.fg};text-shadow:0 1px 2px rgba(0,0,0,0.35);white-space:nowrap;">
+                    ••••&nbsp;&nbsp;••••&nbsp;&nbsp;••••&nbsp;&nbsp;${ultimos}
+                </div>
+
+                <!-- Abajo izquierda: titular -->
+                <div style="position:absolute;left:6%;bottom:7%;max-width:60%;">
+                    <div style="font-size:0.52rem;font-weight:700;letter-spacing:1.2px;color:${s.sub};text-transform:uppercase;margin-bottom:2px;">TITULAR</div>
+                    <div style="font-size:0.82rem;font-weight:700;letter-spacing:0.8px;color:${s.fg};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${this._esc(titular)}</div>
+                </div>
+
+                <!-- Abajo derecha: logo marca -->
+                <div style="position:absolute;right:6%;bottom:8%;line-height:0;">${logoSvg}</div>
             </div>`;
     },
 
