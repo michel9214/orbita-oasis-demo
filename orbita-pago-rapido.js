@@ -627,35 +627,112 @@ window.OrbitaPagoRapido = {
         if (!cont) return;
         if (!c.ultimos4) {
             cont.innerHTML = `
-                <div style="background:linear-gradient(135deg,#2a2a2a,#1a1a1a);border:1px dashed var(--border);border-radius:16px;padding:28px 20px;text-align:center;color:var(--muted);font-size:0.88rem;">
+                <div style="background:linear-gradient(135deg,#2a2a2a,#1a1a1a);border:1px dashed rgba(255,255,255,0.15);border-radius:16px;padding:36px 20px;text-align:center;color:#888;font-size:0.88rem;">
+                    <div style="font-size:1.8rem;margin-bottom:8px;opacity:0.4;">💳</div>
                     No hay tarjeta guardada.<br>
                     <span style="font-size:0.78rem;">Toca "Editar" para agregar una.</span>
                 </div>`;
             return;
         }
-        const logo = c.marca_tarjeta === 'Visa'
-            ? `<span style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;color:#1a1f71;background:#fff;padding:2px 10px;border-radius:4px;letter-spacing:1px;">VISA</span>`
-            : c.marca_tarjeta === 'Mastercard'
-            ? `<span style="display:inline-flex;align-items:center;"><span style="display:inline-block;width:20px;height:20px;background:#eb001b;border-radius:50%;"></span><span style="display:inline-block;width:20px;height:20px;background:#f79e1b;border-radius:50%;margin-left:-8px;"></span></span>`
-            : c.marca_tarjeta === 'American Express'
-            ? `<span style="font-family:'DM Sans',sans-serif;font-size:0.75rem;color:#fff;background:#016fd0;padding:4px 10px;border-radius:3px;font-weight:800;">AMEX</span>`
-            : `<span style="font-family:'DM Sans',sans-serif;font-size:0.8rem;color:#fff;background:#555;padding:4px 10px;border-radius:4px;">TARJETA</span>`;
-        const tipoLabel = c.tipo_tarjeta === 'credito' ? 'Crédito'
-            : c.tipo_tarjeta === 'debito' ? 'Débito'
-            : c.tipo_tarjeta === 'prepago' ? 'Prepago' : '';
+
+        // Esquemas por marca: fondo + color de texto
+        const marca = c.marca_tarjeta || 'Otra';
+        const schemes = {
+            'Visa': {
+                bg: 'linear-gradient(135deg,#1a1f71 0%,#0f1347 50%,#1a1f71 100%)',
+                shine: 'linear-gradient(115deg,transparent 40%,rgba(255,255,255,0.08) 50%,transparent 60%)',
+                fg: '#ffffff', sub: 'rgba(255,255,255,0.75)'
+            },
+            'Mastercard': {
+                bg: 'linear-gradient(135deg,#1a1a1a 0%,#0a0a0a 50%,#2b1f1f 100%)',
+                shine: 'linear-gradient(115deg,transparent 40%,rgba(255,153,0,0.08) 50%,transparent 60%)',
+                fg: '#ffffff', sub: 'rgba(255,255,255,0.7)'
+            },
+            'American Express': {
+                bg: 'linear-gradient(135deg,#006fcf 0%,#00457c 50%,#012665 100%)',
+                shine: 'linear-gradient(115deg,transparent 40%,rgba(255,255,255,0.1) 50%,transparent 60%)',
+                fg: '#ffffff', sub: 'rgba(255,255,255,0.78)'
+            },
+            'Otra': {
+                bg: 'linear-gradient(135deg,#ff4d00 0%,#c13600 50%,#7a1f00 100%)',
+                shine: 'linear-gradient(115deg,transparent 40%,rgba(255,255,255,0.1) 50%,transparent 60%)',
+                fg: '#ffffff', sub: 'rgba(255,255,255,0.78)'
+            }
+        };
+        const s = schemes[marca] || schemes['Otra'];
+
+        // Logo SVG por marca
+        const logoSvg = marca === 'Visa' ? `
+            <svg viewBox="0 0 80 26" width="56" height="18" xmlns="http://www.w3.org/2000/svg" style="display:block;">
+                <text x="0" y="22" font-family="Arial Black,Arial,sans-serif" font-size="24" font-weight="900" font-style="italic" fill="#fff" letter-spacing="-1">VISA</text>
+            </svg>`
+            : marca === 'Mastercard' ? `
+            <svg viewBox="0 0 48 30" width="48" height="30" xmlns="http://www.w3.org/2000/svg" style="display:block;">
+                <circle cx="18" cy="15" r="12" fill="#eb001b"/>
+                <circle cx="30" cy="15" r="12" fill="#f79e1b" fill-opacity="0.92"/>
+            </svg>`
+            : marca === 'American Express' ? `
+            <svg viewBox="0 0 60 22" width="56" height="20" xmlns="http://www.w3.org/2000/svg" style="display:block;">
+                <rect width="60" height="22" rx="3" fill="#ffffff"/>
+                <text x="5" y="16" font-family="Arial Black,Arial,sans-serif" font-size="12" font-weight="900" fill="#016fd0" letter-spacing="0.5">AMEX</text>
+            </svg>`
+            : `<span style="font-family:'DM Sans',sans-serif;font-size:0.78rem;color:#fff;background:rgba(255,255,255,0.18);padding:4px 10px;border-radius:4px;font-weight:800;letter-spacing:1px;">${this._esc(marca.toUpperCase())}</span>`;
+
+        // Chip EMV (SVG inline)
+        const chipSvg = `
+            <svg viewBox="0 0 40 30" width="38" height="28" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <linearGradient id="chipG" x1="0" y1="0" x2="1" y2="1">
+                        <stop offset="0%" stop-color="#d4af37"/>
+                        <stop offset="50%" stop-color="#f5d77e"/>
+                        <stop offset="100%" stop-color="#b8860b"/>
+                    </linearGradient>
+                </defs>
+                <rect x="0" y="0" width="40" height="30" rx="5" fill="url(#chipG)"/>
+                <path d="M8 8 H32 M8 15 H16 M24 15 H32 M8 22 H32 M15 8 V22 M25 8 V22" stroke="#8a6a0b" stroke-width="1.2" fill="none" opacity="0.7"/>
+            </svg>`;
+
+        // Contactless symbol
+        const contactlessSvg = `
+            <svg viewBox="0 0 24 24" width="22" height="22" xmlns="http://www.w3.org/2000/svg" style="transform:rotate(90deg);">
+                <path d="M7 6 Q12 12 7 18" stroke="${s.fg}" stroke-width="1.8" fill="none" stroke-linecap="round" opacity="0.55"/>
+                <path d="M11 4 Q17 12 11 20" stroke="${s.fg}" stroke-width="1.8" fill="none" stroke-linecap="round" opacity="0.75"/>
+                <path d="M15 2 Q22 12 15 22" stroke="${s.fg}" stroke-width="1.8" fill="none" stroke-linecap="round" opacity="0.95"/>
+            </svg>`;
+
+        const tipoLabel = c.tipo_tarjeta === 'credito' ? 'CRÉDITO'
+            : c.tipo_tarjeta === 'debito' ? 'DÉBITO'
+            : c.tipo_tarjeta === 'prepago' ? 'PREPAGO' : '';
         const emisor = (c.emisor_tarjeta || 'TARJETA').toUpperCase();
         const titular = (c.titular_tarjeta || c.nombre || '').toUpperCase();
+        const ultimos = this._esc(c.ultimos4);
+
         cont.innerHTML = `
-            <div style="background:linear-gradient(135deg,#d8d8d8,#a8a8a8);border-radius:16px;padding:20px;color:#1a1a1a;font-family:'DM Sans',sans-serif;box-shadow:0 6px 16px rgba(0,0,0,0.3);position:relative;min-height:130px;">
-                <div style="font-size:0.72rem;font-weight:700;letter-spacing:1px;margin-bottom:24px;">${this._esc(emisor)}</div>
-                <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:12px;">
-                    <div style="flex:1;">
-                        <div style="font-size:0.72rem;color:#333;">**** ${this._esc(c.ultimos4)}</div>
-                        <div style="font-size:0.78rem;font-weight:700;margin-top:4px;">${this._esc(titular)}</div>
+            <div style="width:100%;max-width:360px;margin:0 auto;aspect-ratio:1.586 / 1;background:${s.bg};border-radius:16px;color:${s.fg};font-family:'DM Sans',sans-serif;box-shadow:0 14px 30px rgba(0,0,0,0.5),0 2px 6px rgba(0,0,0,0.3),inset 0 1px 0 rgba(255,255,255,0.08);position:relative;overflow:hidden;">
+                <div style="position:absolute;inset:0;background:${s.shine};pointer-events:none;"></div>
+                <div style="position:absolute;inset:0;padding:18px 20px;display:flex;flex-direction:column;justify-content:space-between;">
+                    <!-- Top row -->
+                    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;">
+                        <div>
+                            <div style="font-size:0.62rem;font-weight:800;letter-spacing:1.2px;color:${s.sub};text-transform:uppercase;">${this._esc(emisor)}</div>
+                            ${tipoLabel ? `<div style="font-size:0.58rem;font-weight:700;letter-spacing:1.4px;color:${s.sub};margin-top:2px;">${tipoLabel}</div>` : ''}
+                        </div>
+                        ${contactlessSvg}
                     </div>
-                    <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;">
-                        ${logo}
-                        ${tipoLabel ? `<span style="font-size:0.68rem;color:#333;background:rgba(255,255,255,0.6);padding:2px 6px;border-radius:3px;font-weight:600;">${tipoLabel}</span>` : ''}
+                    <!-- Chip + número -->
+                    <div>
+                        <div style="margin-bottom:10px;">${chipSvg}</div>
+                        <div style="font-family:'Courier New','DM Mono',monospace;font-size:1.25rem;font-weight:700;letter-spacing:3px;color:${s.fg};text-shadow:0 1px 2px rgba(0,0,0,0.3);">
+                            ••••&nbsp;&nbsp;••••&nbsp;&nbsp;••••&nbsp;&nbsp;${ultimos}
+                        </div>
+                    </div>
+                    <!-- Bottom row -->
+                    <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:12px;">
+                        <div style="flex:1;min-width:0;">
+                            <div style="font-size:0.54rem;font-weight:700;letter-spacing:1.2px;color:${s.sub};text-transform:uppercase;margin-bottom:2px;">TITULAR</div>
+                            <div style="font-size:0.82rem;font-weight:700;letter-spacing:0.8px;color:${s.fg};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${this._esc(titular)}</div>
+                        </div>
+                        <div style="flex-shrink:0;">${logoSvg}</div>
                     </div>
                 </div>
             </div>`;
