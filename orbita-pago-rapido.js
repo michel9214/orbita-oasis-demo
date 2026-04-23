@@ -518,6 +518,28 @@ window.OrbitaPagoRapido = {
     actualizarUI() {
         this.mostrarPerfilFlotante();
         this.mostrarBotonPagoRapido();
+        this.prellenarDatosPedido();
+    },
+
+    prellenarDatosPedido() {
+        const c = this.estado.cliente;
+        const inputNombre = document.getElementById('input-nombre');
+        if (inputNombre) {
+            if (c && c.nombre) {
+                // Si está vacío o contiene el nombre de un cliente previo, rellenar con el actual
+                const val = inputNombre.value.trim();
+                if (!val || val === (this._prevNombre || '')) {
+                    inputNombre.value = c.nombre;
+                }
+                this._prevNombre = c.nombre;
+            } else {
+                // Sin cliente → limpiar si quedó el nombre del cliente anterior
+                if (inputNombre.value.trim() === (this._prevNombre || '')) {
+                    inputNombre.value = '';
+                }
+                this._prevNombre = '';
+            }
+        }
     },
 
     mostrarPerfilFlotante() {
