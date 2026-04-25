@@ -1,5 +1,5 @@
 (function () {
-  const SUPABASE_URL = "https://bhayzqgzxgzluafjhpdg.supabase.co";
+  const SUPABASE_URL = "https://uldqgxdmblhyqsnxenaz.supabase.co";
   const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJoYXl6cWd6eGd6bHVhZmpocGRnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY4ODA2MjEsImV4cCI6MjA5MjQ1NjYyMX0.z2fEdAvskGkKDRlcO_IFRHvZnilLEoLQRrpUNGIJNhM";
   const MP_EDGE_URL = SUPABASE_URL + "/functions/v1/hyper-worker";
   const TABLA_PEDIDOS = "pedidos";
@@ -57,7 +57,7 @@
   }
 
   async function iniciarPagoMP(opts) {
-    const { sitio, items, pedidoBody, onError } = opts;
+    const { sitio, items, pedidoBody, onError, wspNumber } = opts;
     try {
       const res = await fetch(MP_EDGE_URL, {
         method: "POST",
@@ -91,8 +91,15 @@
             ref: data.external_reference,
             sitio,
             ts: Date.now(),
+            tipo_entrega: pedidoBody && pedidoBody.tipo_entrega,
+            direccion_entrega: pedidoBody && pedidoBody.direccion_entrega,
+            nombre: pedidoBody && pedidoBody.nombre,
+            total: pedidoBody && pedidoBody.total,
+            wspNumber: wspNumber || null,
           }),
         );
+        // Limpiar marca de WSP para no mezclar flujos
+        localStorage.removeItem("orbita_wsp_enviado");
       } catch (e) {}
 
       window.location.href = data.init_point;
@@ -133,6 +140,43 @@
     } catch (e) {}
   }
 
+  // Muestra un CTA para que el cliente envíe su ubicación al local via
+  // WhatsApp cuando pagó online con delivery. El pedido (con la URL de
+  // Google Maps) ya se guardó en la tabla `pedidos`, este paso es un
+  // canal redundante para que el local no dependa solo del panel.
+  function mostrarCtaUbicacionDelivery(pendiente) {
+    if (!pendiente) return;
+    if (pendiente.tipo_entrega !== "delivery") return;
+    if (!pendiente.direccion_entrega || !pendiente.wspNumber) return;
+
+    const mensaje =
+      `📍 UBICACIÓN PARA DELIVERY\n` +
+      `Nombre: ${pendiente.nombre || ""}\n` +
+      `Total: $${(pendiente.total || 0).toLocaleString("es-CL")}\n` +
+      `Ref: ${pendiente.ref}\n` +
+      `Ubicación: ${pendiente.direccion_entrega}`;
+    const url = "https://wa.me/" + pendiente.wspNumber + "?text=" + encodeURIComponent(mensaje);
+
+    const prev = document.getElementById("orbita-cta-ubicacion");
+    if (prev) prev.remove();
+
+    const el = document.createElement("div");
+    el.id = "orbita-cta-ubicacion";
+    el.style.cssText =
+      "position:fixed;left:50%;bottom:24px;transform:translateX(-50%);" +
+      "background:#25d366;color:#ffffff;border-radius:50px;padding:14px 22px;" +
+      "font-family:'DM Sans',sans-serif;font-size:0.95rem;font-weight:700;" +
+      "box-shadow:0 8px 28px rgba(0,0,0,0.45);z-index:99999;cursor:pointer;" +
+      "max-width:90vw;text-align:center;border:2px solid #ffffff;";
+    el.innerHTML = "📍 Enviar mi ubicación al local (WhatsApp)";
+    el.addEventListener("click", () => {
+      window.open(url, "_blank");
+    });
+    document.body.appendChild(el);
+    // Auto-hide después de 30s (no es destructivo si el user ya lo tocó)
+    setTimeout(() => { const x = document.getElementById("orbita-cta-ubicacion"); if (x) x.remove(); }, 30000);
+  }
+
   async function detectarRetorno() {
     const params = new URLSearchParams(window.location.search);
     const status = params.get("status") || params.get("collection_status");
@@ -148,11 +192,22 @@
 
     if (!normalized) return null;
 
+    // Recuperar info del pedido antes de limpiar
+    let pendiente = null;
+    try {
+      const raw = localStorage.getItem("orbita_pago_pendiente");
+      if (raw) pendiente = JSON.parse(raw);
+    } catch (e) {}
+
     await marcarPago(ref, normalized);
 
     if (normalized === "approved") {
       toast("¡Pago recibido! Gracias por tu pedido 🎉", "success");
       setTimeout(abrirBannerResena, 1500);
+      // Si fue delivery, ofrecer enviar ubicación al local por WSP
+      if (pendiente && pendiente.tipo_entrega === "delivery") {
+        setTimeout(() => mostrarCtaUbicacionDelivery({ ...pendiente, ref }), 1800);
+      }
     } else if (normalized === "failure") {
       toast("El pago fue rechazado. Puedes intentar de nuevo o pedir por WhatsApp.", "error");
     } else {
@@ -178,10 +233,108 @@
     };
     await insertarPedido(enriched);
 
-    setTimeout(abrirBannerResena, 800);
+    // Marcar que hay un pedido WSP recién enviado. El banner se abrirá
+    // cuando el usuario vuelva a la pestaña (tras enviar el mensaje real),
+    // no inmediatamente al hacer click.
+    try {
+      localStorage.setItem("orbita_wsp_enviado", JSON.stringify({
+        sitio,
+        ts: Date.now(),
+      }));
+    } catch (e) {}
+  }
+
+  // Al volver a la pestaña después de pasar por WSP, mostrar el banner.
+  // Delay mínimo de 6s desde el click (evita mostrarlo si el usuario
+  // solo miró y volvió sin enviar).
+  function _checkRetornoWsp() {
+    try {
+      const raw = localStorage.getItem("orbita_wsp_enviado");
+      if (!raw) return;
+      const mark = JSON.parse(raw);
+      if (!mark || !mark.ts) return;
+      const elapsed = Date.now() - mark.ts;
+      // Entre 6s y 30 min después del click → mostrar banner (y limpiar marca)
+      if (elapsed >= 6000 && elapsed <= 30 * 60 * 1000) {
+        localStorage.removeItem("orbita_wsp_enviado");
+        setTimeout(abrirBannerResena, 400);
+      } else if (elapsed > 30 * 60 * 1000) {
+        localStorage.removeItem("orbita_wsp_enviado");
+      }
+    } catch (e) {}
+  }
+
+  // Captura el texto original del botón MP al cargar la página,
+  // antes de que el click lo cambie a "Generando pago…".
+  function _snapshotMpBtnOriginal() {
+    const btn = document.getElementById("btn-mp");
+    if (!btn) return;
+    if (!btn.dataset.originalText && !btn.disabled) {
+      btn.dataset.originalText = btn.textContent;
+    }
+  }
+
+  // Resetea el botón "Pagar en línea" si el usuario volvió de MP sin
+  // completar el pago (bfcache, back, cerró MP). Funciona en los 3 locales
+  // buscando el botón por id #btn-mp.
+  function _resetMpButtonIfNeeded() {
+    const btn = document.getElementById("btn-mp");
+    if (!btn) return;
+    const txt = (btn.textContent || "").toLowerCase();
+    const enLoading = btn.disabled && (txt.includes("generando") || txt.includes("⏳"));
+    if (!enLoading) return;
+
+    const params = new URLSearchParams(window.location.search);
+    const hasMpReturn = params.has("status") || params.has("collection_status");
+    // Si volvimos a la página SIN params de retorno → cancelado/abandonado
+    if (!hasMpReturn) {
+      btn.disabled = false;
+      btn.textContent = btn.dataset.originalText || "💳 PAGAR EN LÍNEA";
+      // Limpiar el pendiente para que no se reutilice por error
+      try { localStorage.removeItem("orbita_pago_pendiente"); } catch (e) {}
+    }
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", _snapshotMpBtnOriginal);
+  } else {
+    _snapshotMpBtnOriginal();
+  }
+
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "visible") {
+      _checkRetornoWsp();
+      _resetMpButtonIfNeeded();
+    }
+  });
+  window.addEventListener("pageshow", (e) => {
+    _checkRetornoWsp();
+    // pageshow con persisted=true = bfcache (back desde MP)
+    _resetMpButtonIfNeeded();
+  });
+
+  // Scroll al elemento con highlight de error (pulso rojo) y toast opcional.
+  // Uso: orbitaPagoFlow.flashError(el, "Elige bebida primero") → scroll + pulse rojo + toast.
+  function flashError(el, mensaje) {
+    if (el && el.scrollIntoView) {
+      try { el.scrollIntoView({ behavior: "smooth", block: "center" }); } catch (e) {}
+      el.classList.add("orbita-pulse-error");
+      setTimeout(() => el.classList.remove("orbita-pulse-error"), 2000);
+    }
+    if (mensaje) toast(mensaje, "error");
+  }
+  function flashOk(el, mensaje) {
+    if (el && el.scrollIntoView) {
+      try { el.scrollIntoView({ behavior: "smooth", block: "center" }); } catch (e) {}
+      el.classList.add("orbita-pulse");
+      setTimeout(() => el.classList.remove("orbita-pulse"), 1800);
+    }
+    if (mensaje) toast(mensaje, "success");
   }
 
   window.orbitaPagoFlow = {
+    flashError: flashError,
+    flashOk: flashOk,
     iniciarPagoMP,
     detectarRetorno,
     registrarWhatsapp,

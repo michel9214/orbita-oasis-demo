@@ -1,4 +1,5 @@
-supabase/
+supabase/.temp/
+supabase/.branches/
 demo-secrets.env
 backup-supabase/
 node_modules/

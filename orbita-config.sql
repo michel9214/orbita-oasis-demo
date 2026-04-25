@@ -1,5 +1,5 @@
 -- Ejecutar UNA VEZ en Supabase: SQL Editor → New query → Run
--- Proyecto: bhayzqgzxgzluafjhpdg (mismo que usan las páginas HTML)
+-- Proyecto: uldqgxdmblhyqsnxenaz (mismo que usan las páginas HTML)
 
 create table if not exists public.orbita_config (
   clave text primary key,

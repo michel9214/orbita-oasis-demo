@@ -8,10 +8,10 @@
     <meta name="keywords" content="hand roll, sushi, sushi para llevar, comida japonesa, hand roll express">
     <meta name="robots" content="index, follow">
     <meta name="google-site-verification" content="QFUea1IbOHTdOBKMp_GZnMcZ3-TFAUEP4CXhPYY-UUY">
-    <link rel="canonical" href="https://orbita-demo-phi.vercel.app/">
+    <link rel="canonical" href="https://orbita-prueba-9qlp.vercel.app/">
     <meta property="og:title" content="Hand Roll Express | Sushi Fresco para Llevar">
     <meta property="og:description" content="Sushi fresco, rápido y crujiente. Pide por WhatsApp o paga en línea.">
-    <meta property="og:url" content="https://orbita-demo-phi.vercel.app/">
+    <meta property="og:url" content="https://orbita-prueba-9qlp.vercel.app/">
     <meta property="og:type" content="website">
     <meta property="og:locale" content="es_CL">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍣</text></svg>">
@@ -60,10 +60,6 @@
         .qty-btn.plus:hover { opacity: 0.85; }
         .qty-num { width: 44px; text-align: center; font-weight: 700; font-size: 1rem; background: var(--card); border: none; color: var(--text); }
 
-        .salsas-box { background: var(--surface); padding: 16px 18px; border-radius: 12px; margin: 0 0 18px; border: 1px solid var(--border); text-align: left; }
-        .salsas-box h4 { color: var(--fire); margin-bottom: 12px; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1.5px; }
-        .option-salsa { display: flex; align-items: center; margin-bottom: 10px; cursor: pointer; font-size: 0.95rem; }
-        .option-salsa input { margin-right: 10px; accent-color: var(--fire); width: 17px; height: 17px; }
 
         .order-box { background: var(--card); padding: 24px 20px; border-radius: 20px; border: 2px solid var(--green); margin: 6px 0 20px; }
         #resumen { font-size: 1rem; font-weight: 500; min-height: 26px; }
@@ -132,7 +128,7 @@
         /* ADMIN ITEMS */
         .admin-item { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px; margin-bottom: 10px; text-align: left; }
         .admin-item-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
-        .btn-sm { border: none; border-radius: 8px; padding: 6px 12px; font-size: 0.78rem; font-weight: 700; cursor: pointer; transition: opacity 0.2s; }
+        .btn-sm { border: none; border-radius: 8px; padding: 6px 9px; font-size: 0.74rem; font-weight: 700; cursor: pointer; transition: opacity 0.2s; white-space: nowrap; }
         .btn-sm:hover { opacity: 0.8; }
         .btn-red { background: #ff3333; color: #fff; }
         .btn-orange { background: var(--fire); color: #fff; }
@@ -201,8 +197,41 @@
         .entrega-btn.active { background: var(--fire); color: #fff; border-color: var(--fire); }
         .cat-label { font-family: 'Bebas Neue', sans-serif; font-size: 1rem; letter-spacing: 3px; color: var(--muted); text-align: left; margin: 22px 0 12px; border-left: 3px solid var(--fire); padding-left: 10px; }
 
-        .menu-two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; align-items: start; }
+        .menu-two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; align-items: start; max-width: 720px; margin: 0 auto; }
         @media (max-width: 560px) { .menu-two-col { grid-template-columns: 1fr; } }
+
+        /* ── BUSCADOR ── */
+        .search-container { max-width: 520px; margin: 0 auto 18px; }
+        .search-wrapper { position: relative; }
+        .search-input { width: 100%; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 12px 42px 12px 16px; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 0.95rem; outline: none; transition: border-color 0.2s; }
+        .search-input:focus { border-color: var(--fire); }
+        .search-input::placeholder { color: var(--muted); }
+        .search-clear { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--muted); cursor: pointer; font-size: 1.3rem; padding: 4px 10px; border-radius: 50%; }
+        .search-clear:hover { background: var(--border); color: var(--text); }
+        .search-results { margin-top: 10px; max-height: 340px; overflow-y: auto; }
+        .search-result-item { background: var(--card); border: 1px solid var(--border); padding: 12px 14px; border-radius: 12px; margin-bottom: 8px; cursor: pointer; transition: all 0.2s; text-align: left; display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+        .search-result-item:hover { border-color: var(--fire); transform: translateY(-1px); }
+        .search-result-info { flex: 1; min-width: 0; }
+        .search-result-name { font-weight: 600; color: var(--text); }
+        .search-result-desc { font-size: 0.78rem; color: var(--muted); margin-top: 2px; }
+        .search-result-price { font-family: 'Bebas Neue', sans-serif; font-size: 1.1rem; color: var(--fire); white-space: nowrap; }
+        .search-no-results { text-align: center; color: var(--muted); font-size: 0.9rem; padding: 16px; }
+
+        /* Pulse highlight al llegar desde el buscador */
+        @keyframes orbita-pulse-anim {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(255, 77, 0, 0); }
+            30%      { box-shadow: 0 0 0 4px rgba(255, 77, 0, 0.75); }
+            60%      { box-shadow: 0 0 0 2px rgba(255, 77, 0, 0.4); }
+        }
+        .orbita-pulse { animation: orbita-pulse-anim 1.8s ease-in-out; border-radius: 14px; }
+
+        @keyframes orbita-pulse-error-anim {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(193, 18, 31, 0); outline: 2px solid transparent; }
+            25%      { box-shadow: 0 0 0 5px rgba(193, 18, 31, 0.85); outline: 2px solid #c1121f; }
+            50%      { box-shadow: 0 0 0 2px rgba(193, 18, 31, 0.4); outline: 2px solid transparent; }
+            75%      { box-shadow: 0 0 0 5px rgba(193, 18, 31, 0.85); outline: 2px solid #c1121f; }
+        }
+        .orbita-pulse-error { animation: orbita-pulse-error-anim 1.8s ease-in-out 3; border-radius: 12px; }
         .menu-col-right { display: flex; flex-direction: column; gap: 10px; }
         .drinks-box { background: transparent; border: none; padding: 0; margin-bottom: 0; border-radius: 14px; overflow: hidden; }
         .drinks-box .drinks-acc-head { width: 100%; display: flex; justify-content: space-between; align-items: center; background: var(--card); border: 1px solid var(--border); color: var(--text); font-family: 'Bebas Neue', sans-serif; font-size: 0.95rem; letter-spacing: 2px; padding: 12px 14px; border-radius: 14px; cursor: pointer; text-align: left; }
@@ -229,16 +258,19 @@
 <section class="section">
     <div class="section-title" style="margin-top:10px;">🌯 Nuestro Menú</div>
 
+    <div class="search-container">
+        <div class="search-wrapper">
+            <input type="text" class="search-input" id="search-input" placeholder="Buscar rolls, jugos, bebidas..." oninput="buscarProductos(this.value)">
+            <button type="button" class="search-clear" id="search-clear" onclick="limpiarBusqueda()" style="display:none;">×</button>
+        </div>
+        <div class="search-results" id="search-results" style="display:none;"></div>
+    </div>
+
     <div class="menu-two-col">
         <div class="menu-col-left">
             <div class="cat-label" style="margin-top:0;">&#x1F363; Hand Rolls</div>
             <div id="menu-handrolls"></div>
-
-            <div class="salsas-box">
-                <h4>Salsas (Opcional)</h4>
-                <label class="option-salsa"><input type="checkbox" value="Soya" class="check-salsa"> Soya <span style="font-size:0.75rem;color:var(--muted);margin-left:4px;">· Gratis</span></label>
-                <label class="option-salsa"><input type="checkbox" value="Agridulce" id="check-agridulce" class="check-salsa" onchange="actualizarResumen()"> Agridulce <span style="font-size:0.75rem;color:var(--fire);margin-left:4px;">· $500</span></label>
-            </div>
+            <p style="font-size:0.78rem;color:var(--muted);margin-top:8px;text-align:center;">Cada hand roll lleva su propia salsa 🍣</p>
         </div>
         <div class="menu-col-right">
             <div class="drinks-box" id="box-jugos">
@@ -273,8 +305,9 @@
 
         <div class="entrega-selector">
             <button class="entrega-btn" id="btn-retiro" onclick="seleccionarEntrega('retiro')">🏪 Retiro en local</button>
-            <button class="entrega-btn" id="btn-delivery" onclick="seleccionarEntrega('delivery')">🛵 Delivery <span style="font-size:0.75rem;color:var(--fire);">+$2.000</span></button>
+            <button class="entrega-btn" id="btn-delivery" onclick="seleccionarEntrega('delivery')">🛵 Delivery <span id="label-delivery-cost" style="font-size:0.75rem;color:var(--fire);">+$2.000</span></button>
         </div>
+        <p style="font-size:0.75rem;color:var(--muted);margin:-10px 0 14px;text-align:center;">📍 Delivery solo dentro de Frutillar alto/bajo</p>
 
         <div class="cliente-form">
             <div>
@@ -355,13 +388,13 @@
             <button type="button" class="btn-modal btn-gray" onclick="cerrarAdmin()">CANCELAR</button>
         </div>
 
-        <div id="admin-panel" style="display:none;">
+        <div id="admin-panel" style="display:none;position:relative;">
+            <button type="button" onclick="cerrarAdmin()" title="Cerrar panel" style="position:absolute;top:-6px;right:-6px;width:36px;height:36px;border-radius:50%;border:1px solid var(--border);background:var(--surface);color:var(--text);font-size:1.2rem;line-height:1;cursor:pointer;z-index:5;">✕</button>
             <h3>⚙️ Panel Admin</h3>
             <div class="admin-tabs">
                 <button class="tab-btn active" onclick="showTab('tab-pedidos', this)">📦 Pedidos</button>
                 <button class="tab-btn" onclick="showTab('tab-productos', this)">🍣 Productos</button>
                 <button class="tab-btn" onclick="showTab('tab-resenas', this)">⭐ Reseñas</button>
-                <button class="tab-btn" onclick="showTab('tab-rendimiento', this)">📊 Rendimiento</button>
                 <button class="tab-btn" onclick="showTab('tab-inventario', this)">📦 Inventario</button>
             </div>
             <div class="tab-content active" id="tab-pedidos">
@@ -370,7 +403,7 @@
             </div>
             <div class="tab-content" id="tab-productos">
                 <p class="section-label">Productos activos</p>
-                <p style="font-size:0.72rem;color:var(--muted);text-align:left;margin:-6px 0 10px;">Los cambios se guardan en Supabase (<code style="font-size:0.68rem;">orbita_productos</code>) y se muestran en la web pública.</p>
+                <button class="btn-modal btn-fire" type="button" style="margin-bottom:12px;padding:10px;" onclick="abrirAgregarProducto()">+ Agregar producto</button>
                 <input id="admin-productos-search" type="text" placeholder="Buscar por nombre o categoría..." oninput="setAdminProductoSearch(this.value)" style="width:100%;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:12px;color:var(--text);font-family:'DM Sans',sans-serif;">
                 <div id="admin-productos-list"></div>
             </div>
@@ -378,19 +411,25 @@
                 <p class="section-label">Gestionar reseñas</p>
                 <div id="admin-reviews-list"><p style="color:var(--muted);font-size:0.9rem;">Cargando...</p></div>
             </div>
-            <div class="tab-content" id="tab-rendimiento">
-                <p class="section-label">Costo fijo mensual (local)</p>
-                <p style="font-size:0.8rem;color:var(--muted);text-align:left;margin-bottom:10px;">Arriendo, luz, etc. Se guarda en Supabase (<code style="font-size:0.72rem;">orbita_config</code>) y se sincroniza con el panel central y los otros locales.</p>
-                <input type="number" id="input-cf-handroll" placeholder="Ej: 500000" min="0" step="1000" style="margin-bottom:8px;">
-                <button class="btn-modal btn-fire" type="button" onclick="guardarCostoFijoHandroll()">Guardar costo fijo</button>
-                <p class="section-label" style="margin-top:18px;">Ventas (Supabase)</p>
-                <div id="rendimiento-handroll-body"><p style="color:var(--muted);font-size:0.9rem;">Abre esta pestaña para cargar datos.</p></div>
-                <p class="section-label" style="margin-top:18px;">Cambiar contraseña</p>
-                <p style="font-size:0.78rem;color:var(--muted);text-align:left;margin-bottom:10px;">Nueva contraseña para tu cuenta Supabase Auth.</p>
-                <input type="password" id="input-nueva-pass" placeholder="Nueva contraseña" style="margin-bottom:8px;">
-                <button class="btn-modal btn-fire" type="button" onclick="cambiarContrasena()">Cambiar contraseña</button>
-            </div>
             <div class="tab-content" id="tab-inventario">
+                <p class="section-label">Costo de delivery</p>
+                <p style="font-size:0.78rem;color:var(--muted);text-align:left;margin-bottom:10px;">Se suma al pedido cuando el cliente elige Delivery.</p>
+                <input type="number" id="input-costo-delivery-handroll" placeholder="2000" min="0" step="100">
+                <button class="btn-modal btn-fire" type="button" style="margin-bottom:18px;" onclick="guardarCostoDeliveryHandroll()">Guardar costo delivery</button>
+
+                <p class="section-label">Horario de delivery</p>
+                <p style="font-size:0.78rem;color:var(--muted);text-align:left;margin-bottom:10px;">Fuera de este horario, el cliente no podrá elegir Delivery.</p>
+                <div style="display:flex;gap:8px;margin-bottom:10px;">
+                    <div style="flex:1;">
+                        <label style="font-size:0.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:4px;">Desde</label>
+                        <input type="time" id="input-hora-ini-handroll" value="12:00">
+                    </div>
+                    <div style="flex:1;">
+                        <label style="font-size:0.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:4px;">Hasta</label>
+                        <input type="time" id="input-hora-fin-handroll" value="21:00">
+                    </div>
+                </div>
+                <button class="btn-modal btn-fire" type="button" style="margin-bottom:18px;" onclick="guardarHorarioDeliveryHandroll()">Guardar horario delivery</button>
                 <p class="section-label">Inventario e insumos</p>
                 <div class="perf-card" style="padding:16px;margin-bottom:14px;">
                     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;">
@@ -404,6 +443,10 @@
                 <div id="handroll-inv-list"></div>
                 <h4 style="margin:18px 0 10px;color:var(--hand);">Historial de movimientos</h4>
                 <div id="handroll-inv-history" class="history-list"></div>
+
+                <p class="section-label" style="margin-top:24px;">Cambiar contraseña</p>
+                <p style="font-size:0.78rem;color:var(--muted);text-align:left;margin-bottom:10px;">Por seguridad, te enviamos un link de restablecimiento a tu correo registrado. Desde ahí podrás elegir una nueva contraseña.</p>
+                <button class="btn-modal btn-fire" type="button" onclick="enviarResetPassAdmin()">Enviar link por correo</button>
             </div>
             <p style="margin-top:12px;font-size:0.75rem;"><a id="link-admin-recarga" href="index.html?orbita_back" style="color:var(--muted);">Recargar con panel admin</a> · <a href="orbita.html" style="color:var(--muted);">Inicio Órbita</a> · <a href="panel_central.html?k=orbita_8h3k2p_2026" style="color:var(--muted);">Panel central</a> · <button id="btn-admin-reopen" type="button" class="btn-modal btn-fire" onclick="abrirAdmin()" style="margin-left:6px;padding:6px 10px;font-size:0.85rem;">Ingresar credenciales</button></p>
             <button class="btn-modal btn-gray" style="margin-top:14px;" onclick="cerrarAdmin()">CERRAR</button>
@@ -424,11 +467,13 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <script src="./orbita-auth.js"></script>
 <script src="./orbita-supabase-sync.js"></script>
+<script src="./orbita-delivery.js"></script>
 <script src="./orbita-productos.js"></script>
 <script src="./orbita-inventario.js"></script>
 <script>
     const WSP_NUMBER  = "56971019691";
-    const LINK_RESENA = "resenas.html";
+    const LINK_RESENA = "resenas.html?sitio=handroll";
+    window.LINK_RESENA = LINK_RESENA;
     const MP_PUBLIC_KEY = "APP_USR-1b0d847d-66f5-4257-a8a3-ea955b18c660";
     const TABLA_VENTAS_HANDROLL = "pedidos";
 
@@ -474,12 +519,64 @@
     }
 
     async function persistirCatalogoHandroll() {
-        const slim = productos.map(p => ({ id: p.id, nombre: p.nombre, precio: p.precio, activo: p.activo, categoria: p.categoria }));
+        const slim = productos.map(p => ({ id: p.id, nombre: p.nombre, precio: p.precio, activo: p.activo, categoria: p.categoria, costo: Number(p.costo)||0 }));
         const r = await window.orbitaProductos.upsert(window.orbitaProductos.SITIO_HANDROLL, slim);
         if (!r.ok) alert('No se pudo guardar el catálogo en la nube. Revisa Supabase o ejecuta orbita-productos.sql.');
     }
 
     let pedido = {};
+    // Hand rolls: lista de unidades. Cada elemento es 1 hand roll con su salsa.
+    // [{ uid, baseId, nombre, precio, salsa: 'Soya'|'Agridulce'|'Sin salsa' }]
+    let handrollsEnPedido = [];
+    // Salsa actualmente seleccionada por handroll para el próximo "+".
+    // { [baseId]: 'Soya' } por defecto Soya (gratis).
+    let salsaSel = {};
+    const SALSAS_HR = [
+        { id: 'Soya',      label: 'Soya',      precio: 0,   nota: 'Gratis' },
+        { id: 'Agridulce', label: 'Agridulce', precio: 500, nota: '+$500' },
+        { id: 'Sin salsa', label: 'Sin salsa', precio: 0,   nota: '' },
+    ];
+    function _salsaPrecio(id) { const s = SALSAS_HR.find(x => x.id === id); return s ? s.precio : 0; }
+    function _qtyHandroll(baseId) { return handrollsEnPedido.filter(h => h.baseId === baseId).length; }
+    function setSalsaHandroll(baseId, salsaId) {
+        salsaSel[baseId] = salsaId;
+        renderMenu();
+    }
+    function agregarHandroll(baseId) {
+        const prod = productos.find(p => p.id === baseId);
+        if (!prod || !prod.activo) return;
+        const salsa = salsaSel[baseId] || 'Soya';
+        handrollsEnPedido.push({
+            uid: 'hr_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
+            baseId,
+            nombre: prod.nombre,
+            precio: Number(prod.precio) || 0,
+            salsa,
+        });
+        renderMenu();
+        actualizarResumen();
+        if (window.orbitaPagoFlow && window.orbitaPagoFlow.toast) {
+            const sufijo = salsa === 'Sin salsa' ? '' : ` con ${salsa.toLowerCase()}`;
+            window.orbitaPagoFlow.toast(`${prod.nombre.replace('Hand Roll ','')}${sufijo} ✓`, 'success');
+        }
+    }
+    function quitarHandrollPorUid(uid) {
+        const idx = handrollsEnPedido.findIndex(h => h.uid === uid);
+        if (idx < 0) return;
+        handrollsEnPedido.splice(idx, 1);
+        renderMenu();
+        actualizarResumen();
+    }
+    function quitarUltimoHandroll(baseId) {
+        for (let i = handrollsEnPedido.length - 1; i >= 0; i--) {
+            if (handrollsEnPedido[i].baseId === baseId) {
+                handrollsEnPedido.splice(i, 1);
+                break;
+            }
+        }
+        renderMenu();
+        actualizarResumen();
+    }
     /** Favoritos: tu-dominio/index.html?k=orbita_8h3k2p_2026&orbita_back */
     const ADMIN_URL_FLAG = 'orbita_back';
     const ADMIN_PRIVATE_KEY = 'k';
@@ -498,17 +595,33 @@
     }
 
     function nombreEnPedido(p) {
-        if (p.categoria === 'jugo') return p.nombre.replace('Jugo ', '');
-        return p.nombre;
+        let nom = p.categoria === 'jugo' ? p.nombre.replace('Jugo ', '') : p.nombre;
+        if (p.categoria === 'jugo') {
+            const op = (window.jugoOpciones && window.jugoOpciones[p.id]) || 'con';
+            const label = op === 'con' ? 'con azúcar' : op === 'sin' ? 'sin azúcar' : 'con endulzante';
+            nom += ' (' + label + ')';
+        }
+        return nom;
     }
 
     function filaListaCompacta(p) {
         const nom = escHtml(nombreEnPedido(p));
+        const esJugo = p.categoria === 'jugo';
+        const opcionSel = (window.jugoOpciones && window.jugoOpciones[p.id]) || 'con';
+        const azucarHtml = esJugo ? `
+            <div class="azucar-opts" style="display:flex;gap:4px;margin-top:6px;">
+                ${['con','sin','endulzante'].map(op => `
+                    <button type="button" onclick="setAzucar('${p.id}','${op}')" class="azucar-btn ${opcionSel === op ? 'active' : ''}" style="flex:1;padding:5px 6px;font-size:0.68rem;border:1px solid var(--border);border-radius:8px;background:${opcionSel === op ? 'var(--fire)' : 'var(--surface)'};color:${opcionSel === op ? '#fff' : 'var(--muted)'};cursor:pointer;text-transform:uppercase;letter-spacing:0.5px;font-weight:600;">${op === 'con' ? 'Con azúcar' : op === 'sin' ? 'Sin azúcar' : 'Endulzante'}</button>
+                `).join('')}
+            </div>` : '';
         return `
             <div class="jugo-item">
-                <div class="jugo-info">
-                    <span class="jugo-nombre">${nom}${!p.activo ? ' <span style="color:var(--fire);font-size:0.7rem;">(No disponible)</span>' : ''}</span>
-                    <span class="jugo-precio">$${p.precio.toLocaleString('es-CL')}</span>
+                <div style="flex:1;">
+                    <div class="jugo-info">
+                        <span class="jugo-nombre">${nom}${!p.activo ? ' <span style="color:var(--fire);font-size:0.7rem;">(No disponible)</span>' : ''}</span>
+                        <span class="jugo-precio">$${p.precio.toLocaleString('es-CL')}</span>
+                    </div>
+                    ${azucarHtml}
                 </div>
                 <div class="qty-control" style="${!p.activo ? 'opacity:0.4;pointer-events:none;' : ''}">
                     <button class="qty-btn" onclick="cambiar('${p.id}', -1)">−</button>
@@ -516,6 +629,13 @@
                     <button class="qty-btn plus" onclick="cambiar('${p.id}', 1)">+</button>
                 </div>
             </div>`;
+    }
+
+    function setAzucar(id, opcion) {
+        if (!window.jugoOpciones) window.jugoOpciones = {};
+        window.jugoOpciones[id] = opcion;
+        renderMenu();
+        if (typeof actualizarResumen === 'function') actualizarResumen();
     }
 
     // ── RENDER MENÚ ──
@@ -547,6 +667,7 @@
     }
 
     function renderCard(p) {
+        if (p.categoria === 'handroll') return renderCardHandroll(p);
         return `<div class="card ${p.activo ? '' : 'disabled'}" id="card-${p.id}">
             <div class="card-header">
                 <h3>${escHtml(p.nombre)}${!p.activo ? ' <span style="color:var(--fire);font-size:0.75rem;">(No disponible)</span>' : ''}</h3>
@@ -560,15 +681,105 @@
         </div>`;
     }
 
+    function renderCardHandroll(p) {
+        const salsa = salsaSel[p.id] || 'Soya';
+        const cant = _qtyHandroll(p.id);
+        const chips = SALSAS_HR.map(s => {
+            const activo = salsa === s.id;
+            const colorNota = s.precio > 0 ? 'var(--fire)' : 'var(--muted)';
+            return `<button type="button" onclick="setSalsaHandroll('${p.id}','${s.id}')" style="flex:1;padding:6px 8px;font-size:0.72rem;border:1px solid var(--border);border-radius:8px;background:${activo ? 'var(--fire)' : 'var(--surface)'};color:${activo ? '#fff' : 'var(--muted)'};cursor:pointer;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;display:flex;flex-direction:column;align-items:center;gap:2px;line-height:1.1;">
+                <span>${escHtml(s.label)}</span>
+                ${s.nota ? `<span style="font-size:0.6rem;color:${activo ? '#fff' : colorNota};font-weight:600;letter-spacing:0;text-transform:none;">${escHtml(s.nota)}</span>` : ''}
+            </button>`;
+        }).join('');
+        return `<div class="card ${p.activo ? '' : 'disabled'}" id="card-${p.id}">
+            <div class="card-header">
+                <h3>${escHtml(p.nombre)}${!p.activo ? ' <span style="color:var(--fire);font-size:0.75rem;">(No disponible)</span>' : ''}</h3>
+                <span class="price">$${p.precio.toLocaleString('es-CL')}</span>
+            </div>
+            <div style="margin-top:10px;">
+                <div style="font-size:0.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">Elige salsa</div>
+                <div style="display:flex;gap:6px;">${chips}</div>
+            </div>
+            <div class="qty-control" style="margin-top:12px;${!p.activo ? 'opacity:0.4;pointer-events:none;' : ''}">
+                <button class="qty-btn" onclick="quitarUltimoHandroll('${p.id}')" ${cant === 0 ? 'disabled' : ''}>−</button>
+                <span class="qty-num" id="qty-${p.id}">${cant}</span>
+                <button class="qty-btn plus" onclick="agregarHandroll('${p.id}')">+</button>
+            </div>
+        </div>`;
+    }
+
     function cambiar(id, delta) {
         const prod = productos.find(p => p.id === id);
         if (!prod || !prod.activo) return;
+        // Hand rolls usan agregarHandroll/quitarUltimoHandroll (necesitan salsa).
+        if (prod.categoria === 'handroll') {
+            if (delta > 0) agregarHandroll(id);
+            else quitarUltimoHandroll(id);
+            return;
+        }
         pedido[id] = Math.max(0, (pedido[id] || 0) + delta);
-        document.getElementById('qty-' + id).textContent = pedido[id];
+        const qtyEl = document.getElementById('qty-' + id);
+        if (qtyEl) qtyEl.textContent = pedido[id];
         actualizarResumen();
     }
 
-    let ubicacionCliente = null; // { lat, lng, url }
+    // ── BUSCADOR PÚBLICO ──
+    function buscarProductos(query) {
+        const results = document.getElementById('search-results');
+        const clear = document.getElementById('search-clear');
+        const q = (query || '').trim().toLowerCase();
+        if (!q) {
+            results.style.display = 'none';
+            clear.style.display = 'none';
+            return;
+        }
+        clear.style.display = 'block';
+        const found = productos.filter(p => p.activo && (
+            (p.nombre || '').toLowerCase().includes(q) ||
+            (p.categoria || '').toLowerCase().includes(q)
+        ));
+        if (found.length === 0) {
+            results.innerHTML = '<div class="search-no-results">No se encontraron productos</div>';
+        } else {
+            results.innerHTML = found.map(p => `
+                <div class="search-result-item" onclick="agregarDesdeBusqueda('${p.id}')">
+                    <div class="search-result-info">
+                        <div class="search-result-name">${escHtml(p.nombre)}</div>
+                    </div>
+                    <div class="search-result-price">$${(Number(p.precio)||0).toLocaleString('es-CL')}</div>
+                </div>
+            `).join('');
+        }
+        results.style.display = 'block';
+    }
+    function limpiarBusqueda() {
+        document.getElementById('search-input').value = '';
+        document.getElementById('search-results').style.display = 'none';
+        document.getElementById('search-clear').style.display = 'none';
+    }
+    function agregarDesdeBusqueda(id) {
+        const p = productos.find(x => x.id === id);
+        if (!p) return;
+        limpiarBusqueda();
+        // Buscar elemento destino: card directa o fila dentro de acordeón
+        let target = document.getElementById('card-' + id);
+        if (!target) {
+            const qty = document.getElementById('qty-' + id);
+            if (qty) target = qty.closest('.jugo-item') || qty.closest('.card') || qty.parentElement;
+        }
+        if (!target) return;
+        // Abrir acordeón si está cerrado
+        const acc = target.closest('.drinks-box');
+        if (acc && !acc.classList.contains('open')) acc.classList.add('open');
+        setTimeout(() => {
+            target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            target.classList.add('orbita-pulse');
+            setTimeout(() => target.classList.remove('orbita-pulse'), 1800);
+        }, 50);
+    }
+
+    var ubicacionCliente = null; // { lat, lng, url }
 
     function compartirUbicacion() {
         const btn    = document.getElementById('btn-compartir-ubi');
@@ -579,6 +790,15 @@
             pos => {
                 const lat = pos.coords.latitude;
                 const lng = pos.coords.longitude;
+                // Geofence: solo Frutillar alto/bajo
+                if (window.orbitaDelivery && !window.orbitaDelivery.dentroDeFrutillar(lat, lng)) {
+                    ubicacionCliente = null;
+                    btn.textContent = '📍 Ubicación fuera de zona';
+                    btn.disabled = false;
+                    estado.textContent = window.orbitaDelivery.mensajeFueraZona;
+                    estado.style.color = '#ff6b6b';
+                    return;
+                }
                 ubicacionCliente = { lat, lng, url: `https://maps.google.com/?q=${lat},${lng}` };
                 btn.textContent = '✅ Ubicación obtenida';
                 btn.classList.add('obtenida');
@@ -596,9 +816,19 @@
         );
     }
 
-    let tipoEntrega = null; // 'retiro' o 'delivery'
+    var tipoEntrega = null; // 'retiro' o 'delivery'
 
-    function seleccionarEntrega(tipo) {
+    async function seleccionarEntrega(tipo) {
+        if (tipo === 'delivery' && window.orbitaDelivery) {
+            const r = await window.orbitaDelivery.puedeHacerDeliveryAhora('handroll');
+            if (!r.ok) {
+                const btn = document.getElementById('btn-delivery');
+                if (window.orbitaPagoFlow && window.orbitaPagoFlow.flashError) {
+                    window.orbitaPagoFlow.flashError(btn, window.orbitaDelivery.mensajeFueraHorario(r.horario));
+                }
+                return;
+            }
+        }
         tipoEntrega = tipo;
         document.getElementById('btn-retiro').classList.toggle('active', tipo === 'retiro');
         document.getElementById('btn-delivery').classList.toggle('active', tipo === 'delivery');
@@ -609,22 +839,58 @@
 
     function actualizarResumen() {
         const res = document.getElementById('resumen');
-        const agridulce = document.getElementById('check-agridulce')?.checked ? 500 : 0;
-        const delivery  = tipoEntrega === 'delivery' ? 2000 : 0;
-        let items = [];
-        productos.forEach(p => { if (pedido[p.id] > 0) items.push(`${pedido[p.id]}x ${p.categoria === 'handroll' ? p.nombre.replace('Hand Roll ', '') : nombreEnPedido(p)}`); });
-        if (agridulce) items.push('Salsa Agridulce');
-        const total = productos.reduce((a, p) => a + (pedido[p.id] || 0) * p.precio, 0) + agridulce + delivery;
-        if (items.length > 0) {
-            res.innerHTML = `<span style="color:var(--green)">Llevas: ${items.join(' · ')}</span><br><span style="font-family:'Bebas Neue',sans-serif;font-size:1.3rem;color:var(--text);">Total: $${total.toLocaleString('es-CL')}</span>`;
+        const delivery  = tipoEntrega === 'delivery' ? (window.COSTO_DELIVERY || 2000) : 0;
+        // Total hand rolls: cada unidad con su precio + salsa
+        const totalHandrolls = handrollsEnPedido.reduce((a, h) => a + h.precio + _salsaPrecio(h.salsa), 0);
+        const totalResto = productos.reduce((a, p) => {
+            if (p.categoria === 'handroll') return a;
+            return a + (pedido[p.id] || 0) * p.precio;
+        }, 0);
+        const total = totalHandrolls + totalResto + delivery;
+        const row = (label, precio, onClickFn) => `
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;padding:7px 11px;background:rgba(255,77,0,0.08);border-radius:8px;margin-top:4px;font-size:0.85rem;text-align:left;">
+                <span>${escHtml(label)}${precio > 0 ? ` — $${Number(precio).toLocaleString('es-CL')}` : ''}</span>
+                ${onClickFn ? `<button type="button" onclick="${onClickFn}" style="background:transparent;border:none;color:#c1121f;font-size:1.1rem;cursor:pointer;padding:2px 6px;line-height:1;">×</button>` : ''}
+            </div>`;
+        // Hand rolls: una línea por unidad (con su salsa), agrupadas por (baseId+salsa).
+        const conteoHR = {};
+        handrollsEnPedido.forEach(h => {
+            const k = h.baseId + '||' + h.salsa;
+            if (!conteoHR[k]) conteoHR[k] = { nombre: h.nombre, baseId: h.baseId, salsa: h.salsa, precio: h.precio + _salsaPrecio(h.salsa), cantidad: 0 };
+            conteoHR[k].cantidad++;
+        });
+        const handrollsHtml = Object.values(conteoHR).map(g => {
+            const nom = g.nombre.replace('Hand Roll ', '');
+            const salsaTxt = g.salsa === 'Sin salsa' ? 'sin salsa' : (g.salsa.toLowerCase() + (_salsaPrecio(g.salsa) > 0 ? ' +$500' : ''));
+            const label = (g.cantidad > 1 ? g.cantidad + 'x ' : '1 ') + nom + ' (' + salsaTxt + ')';
+            return row(label, g.cantidad * g.precio, `quitarUltimoHandrollSalsa('${g.baseId}','${g.salsa}')`);
+        }).join('');
+        const restoHtml = productos.filter(p => p.categoria !== 'handroll' && (pedido[p.id]||0) > 0).map(p => {
+            const c = pedido[p.id];
+            const nom = nombreEnPedido(p);
+            const label = (c > 1 ? c + 'x ' : '1 ') + nom;
+            return row(label, c * p.precio, `cambiar('${p.id}', -${c})`);
+        }).join('');
+        if (handrollsHtml || restoHtml) {
+            res.innerHTML = handrollsHtml + restoHtml + `<div style="margin-top:10px;font-family:'Bebas Neue',sans-serif;font-size:1.3rem;color:var(--text);text-align:center;">Total: $${total.toLocaleString('es-CL')}</div>`;
         } else {
             res.innerHTML = `<span style="color:var(--muted)">Tu pedido está vacío</span>`;
         }
     }
+    function quitarUltimoHandrollSalsa(baseId, salsa) {
+        for (let i = handrollsEnPedido.length - 1; i >= 0; i--) {
+            if (handrollsEnPedido[i].baseId === baseId && handrollsEnPedido[i].salsa === salsa) {
+                handrollsEnPedido.splice(i, 1);
+                break;
+            }
+        }
+        renderMenu();
+        actualizarResumen();
+    }
 
     // ── ENVIAR PEDIDO ──
     async function enviarPedido() {
-        const totalUnidades = productos.reduce((a, p) => a + (pedido[p.id] || 0), 0);
+        const totalUnidades = handrollsEnPedido.length + productos.reduce((a, p) => a + (p.categoria === 'handroll' ? 0 : (pedido[p.id] || 0)), 0);
         if (totalUnidades === 0) { alert("Primero agrega algo al pedido 🍣"); return; }
         if (!tipoEntrega) { alert("Por favor elige Retiro en local o Delivery 👆"); return; }
 
@@ -641,49 +907,65 @@
         if (tipoEntrega === 'delivery' && !ubicacionCliente) { alert("Por favor comparte tu ubicación para el delivery 📍"); return; }
         if (error) { alert("Por favor completa todos los campos 👆"); return; }
 
-        let salsas = [];
-        document.querySelectorAll('.check-salsa:checked').forEach(s => salsas.push(s.value));
-        const agridulce = document.getElementById('check-agridulce')?.checked ? 500 : 0;
-        const delivery  = tipoEntrega === 'delivery' ? 2000 : 0;
-        const total = productos.reduce((a, p) => a + (pedido[p.id] || 0) * p.precio, 0) + agridulce + delivery;
+        const delivery  = tipoEntrega === 'delivery' ? (window.COSTO_DELIVERY || 2000) : 0;
+        const totalHR = handrollsEnPedido.reduce((a, h) => a + h.precio + _salsaPrecio(h.salsa), 0);
+        const totalResto = productos.reduce((a, p) => p.categoria === 'handroll' ? a : (a + (pedido[p.id] || 0) * p.precio), 0);
+        const total = totalHR + totalResto + delivery;
 
         let msg = `HAND ROLL EXPRESS\n--------------------\n`;
-        const handrollItems = productos.filter(p => p.categoria === 'handroll' && pedido[p.id] > 0);
-        const jugoItems     = productos.filter(p => p.categoria === 'jugo'     && pedido[p.id] > 0);
-        const bebidaItems   = productos.filter(p => p.categoria === 'bebida'   && pedido[p.id] > 0);
-        const aguaItems     = productos.filter(p => p.categoria === 'agua'     && pedido[p.id] > 0);
-        if (handrollItems.length) { msg += `🍣 Hand Rolls:\n`; handrollItems.forEach(p => { msg += `  • ${pedido[p.id]}x ${p.nombre.replace('Hand Roll ', '')}\n`; }); }
+        // Hand rolls agrupados por (baseId, salsa)
+        const conteoHR = {};
+        handrollsEnPedido.forEach(h => {
+            const k = h.baseId + '||' + h.salsa;
+            if (!conteoHR[k]) conteoHR[k] = { nombre: h.nombre, salsa: h.salsa, precio: h.precio + _salsaPrecio(h.salsa), cantidad: 0 };
+            conteoHR[k].cantidad++;
+        });
+        const conteoArr = Object.values(conteoHR);
+        if (conteoArr.length) {
+            msg += `🍣 Hand Rolls:\n`;
+            conteoArr.forEach(g => {
+                const salsaTxt = g.salsa === 'Sin salsa' ? 'sin salsa' : (g.salsa + (_salsaPrecio(g.salsa) > 0 ? ' +$500' : ''));
+                msg += `  • ${g.cantidad}x ${g.nombre.replace('Hand Roll ','')} (${salsaTxt})\n`;
+            });
+        }
+        const jugoItems     = productos.filter(p => p.categoria === 'jugo'   && pedido[p.id] > 0);
+        const bebidaItems   = productos.filter(p => p.categoria === 'bebida' && pedido[p.id] > 0);
+        const aguaItems     = productos.filter(p => p.categoria === 'agua'   && pedido[p.id] > 0);
         if (jugoItems.length)     { msg += `🥤 Jugos:\n`;      jugoItems.forEach(p => { msg += `  • ${pedido[p.id]}x ${nombreEnPedido(p)}\n`; }); }
         if (bebidaItems.length)   { msg += `${String.fromCodePoint(0x1F964)} Bebidas:\n`;    bebidaItems.forEach(p => { msg += `  • ${pedido[p.id]}x ${p.nombre}\n`; }); }
         if (aguaItems.length)     { msg += `${String.fromCodePoint(0x1F4A7)} Aguas:\n`;      aguaItems.forEach(p => { msg += `  • ${pedido[p.id]}x ${p.nombre}\n`; }); }
-        msg += `--------------------\n`;
-        const salsaTexto = salsas.length === 0 ? 'Sin salsa' : salsas.map(s => s === 'Agridulce' ? 'Agridulce (+$500)' : s).join(' + ');
-        msg += `Salsas: ${salsaTexto}\n`;
         msg += `--------------------\n`;
         if (tipoEntrega === 'retiro') {
             msg += `📦 Retiro en local\n`;
             msg += `Hora de retiro: ${hora}\n`;
         } else {
-            msg += `🛵 Delivery (+$2.000)\n`;
+            msg += `🛵 Delivery (+$${(window.COSTO_DELIVERY || 2000).toLocaleString('es-CL')})\n`;
             msg += `Ubicación: ${ubicacionCliente.url}\n`;
         }
         msg += `Nombre: ${nombre}\n`;
         msg += `Total: $${total.toLocaleString('es-CL')}\n`;
         msg += `--------------------`;
 
-        const items_json = productos.filter(p => pedido[p.id] > 0).map(p => ({
-            id: p.id, nombre: p.nombre, cantidad: pedido[p.id], precio: p.precio
-        }));
-        if (agridulce) items_json.push({ id: 'agridulce', nombre: 'Salsa Agridulce', cantidad: 1, precio: 500 });
-        if (tipoEntrega === 'delivery') items_json.push({ id: 'delivery', nombre: 'Delivery', cantidad: 1, precio: 2000 });
+        const items_json = [];
+        conteoArr.forEach(g => {
+            const salsaTxt = g.salsa === 'Sin salsa' ? 'sin salsa' : (g.salsa + (_salsaPrecio(g.salsa) > 0 ? ' +$500' : ''));
+            items_json.push({ id: g.nombre, nombre: g.nombre.replace('Hand Roll ','') + ' (' + salsaTxt + ')', cantidad: g.cantidad, precio: g.precio, salsa: g.salsa });
+        });
+        productos.filter(p => p.categoria !== 'handroll' && pedido[p.id] > 0).forEach(p => {
+            items_json.push({ id: p.id, nombre: p.nombre, cantidad: pedido[p.id], precio: p.precio });
+        });
+        if (tipoEntrega === 'delivery') items_json.push({ id: 'delivery', nombre: 'Delivery', cantidad: 1, precio: (window.COSTO_DELIVERY || 2000) });
+
+        const salsasResumen = conteoArr.map(g => `${g.cantidad}x ${g.salsa}`).join(', ') || 'Sin salsa';
 
         const pedidoBody = {
             nombre, total,
             hora_retiro: tipoEntrega === 'retiro' ? hora : null,
             tipo_entrega: tipoEntrega,
             items_json,
-            salsas_texto: salsas.join(', ') || 'Sin salsa',
+            salsas_texto: salsasResumen,
             direccion_entrega: tipoEntrega === 'delivery' ? (ubicacionCliente?.url || null) : null,
+            telefono: (window.OrbitaPagoRapido?.estado?.cliente?.telefono) || null,
         };
 
         if (window.orbitaPagoFlow) {
@@ -694,19 +976,21 @@
             window.open("https://wa.me/" + WSP_NUMBER + "?text=" + encodeURIComponent(msg), '_blank');
         }
 
+        handrollsEnPedido = [];
+        salsaSel = {};
         productos.forEach(p => { pedido[p.id] = 0; });
         document.querySelectorAll('.qty-num').forEach(el => el.textContent = '0');
-        document.querySelectorAll('.check-salsa').forEach(el => el.checked = false);
         document.getElementById('input-nombre').value = '';
         document.getElementById('input-hora').value = '';
+        renderMenu();
         actualizarResumen();
     }
 
     // ── MERCADO PAGO ──
-    const MP_EDGE_URL = "https://bhayzqgzxgzluafjhpdg.supabase.co/functions/v1/hyper-worker";
+    const MP_EDGE_URL = "https://uldqgxdmblhyqsnxenaz.supabase.co/functions/v1/hyper-worker";
 
     async function pagarConMP() {
-        const totalUnidades = productos.reduce((a, p) => a + (pedido[p.id] || 0), 0);
+        const totalUnidades = handrollsEnPedido.length + productos.reduce((a, p) => a + (p.categoria === 'handroll' ? 0 : (pedido[p.id] || 0)), 0);
         if (totalUnidades === 0) { alert("Primero agrega algo al pedido 🍣"); return; }
         if (!tipoEntrega) { alert("Por favor elige Retiro en local o Delivery 👆"); return; }
 
@@ -727,24 +1011,35 @@
         btn.disabled = true;
         btn.textContent = '⏳ Generando pago...';
 
-        const agridulce = document.getElementById('check-agridulce')?.checked ? 500 : 0;
-        const items = productos.filter(p => pedido[p.id] > 0)
-            .map(p => ({ title: p.nombre, quantity: pedido[p.id], unit_price: p.precio, currency_id: 'CLP' }));
-        if (agridulce) items.push({ title: 'Salsa Agridulce', quantity: 1, unit_price: 500, currency_id: 'CLP' });
-        if (tipoEntrega === 'delivery') items.push({ title: 'Delivery', quantity: 1, unit_price: 2000, currency_id: 'CLP' });
+        const items = [];
+        // Hand rolls agrupados por (baseId, salsa) — cada grupo es un line item con su precio (handroll + salsa).
+        const conteoHR = {};
+        handrollsEnPedido.forEach(h => {
+            const k = h.baseId + '||' + h.salsa;
+            if (!conteoHR[k]) conteoHR[k] = { nombre: h.nombre, salsa: h.salsa, precio: h.precio + _salsaPrecio(h.salsa), cantidad: 0 };
+            conteoHR[k].cantidad++;
+        });
+        Object.values(conteoHR).forEach(g => {
+            const salsaTxt = g.salsa === 'Sin salsa' ? 'sin salsa' : (g.salsa + (_salsaPrecio(g.salsa) > 0 ? ' +$500' : ''));
+            const title = (g.nombre.replace('Hand Roll ','') + ' (' + salsaTxt + ')').slice(0, 255);
+            items.push({ title, quantity: g.cantidad, unit_price: g.precio, currency_id: 'CLP' });
+        });
+        productos.filter(p => p.categoria !== 'handroll' && pedido[p.id] > 0)
+            .forEach(p => items.push({ title: p.nombre, quantity: pedido[p.id], unit_price: p.precio, currency_id: 'CLP' }));
+        if (tipoEntrega === 'delivery') items.push({ title: 'Delivery', quantity: 1, unit_price: (window.COSTO_DELIVERY || 2000), currency_id: 'CLP' });
 
         const items_json = items.map(i => ({ nombre: i.title, cantidad: i.quantity, precio: i.unit_price }));
         const total = items_json.reduce((a, i) => a + i.cantidad * i.precio, 0);
-        const salsas = [];
-        document.querySelectorAll('.check-salsa:checked').forEach(s => salsas.push(s.value));
+        const salsasResumen = Object.values(conteoHR).map(g => `${g.cantidad}x ${g.salsa}`).join(', ') || 'Sin salsa';
 
         const pedidoBody = {
             nombre, total,
             hora_retiro: tipoEntrega === 'retiro' ? hora : null,
             tipo_entrega: tipoEntrega,
             items_json,
-            salsas_texto: salsas.join(', ') || 'Sin salsa',
+            salsas_texto: salsasResumen,
             direccion_entrega: tipoEntrega === 'delivery' ? (ubicacionCliente?.url || null) : null,
+            telefono: (window.OrbitaPagoRapido?.estado?.cliente?.telefono) || null,
         };
 
         if (!window.orbitaPagoFlow) {
@@ -757,6 +1052,7 @@
             sitio: 'handroll',
             items,
             pedidoBody,
+            wspNumber: WSP_NUMBER,
             onError: () => {
                 alert('No se pudo generar el pago. Intenta pedir por WhatsApp o inténtalo nuevamente.');
                 btn.disabled = false;
@@ -775,10 +1071,10 @@
         const lista = document.getElementById('reviews-list');
         const avgEl = document.getElementById('avg-display');
         try {
-            const res = await fetch(`${SUPABASE_URL}/rest/v1/resenas?select=*&order=creado_at.desc`,
+            const res = await fetch(`${SUPABASE_URL}/rest/v1/resenas?sitio=eq.handroll&select=*&order=creado_at.desc`,
                 { headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` } });
             const data = await res.json();
-            if (!Array.isArray(data) || data.length === 0) { lista.innerHTML = '<p class="no-reviews">Aún no hay reseñas. ¡Sé el primero!</p>'; return; }
+            if (!Array.isArray(data) || data.length === 0) { lista.innerHTML = '<p class="no-reviews">Aún no hay reseñas. ¡Sé el primero!</p>'; if (avgEl) avgEl.textContent = ''; return; }
             const prom = (data.reduce((a,r) => a + r.estrellas, 0) / data.length).toFixed(1);
             avgEl.textContent = `${prom} ⭐ (${data.length})`;
             lista.innerHTML = data.map(r => `
@@ -814,22 +1110,23 @@
 
     function cerrarAdmin() {
         document.getElementById('modal-overlay').classList.remove('open');
-        actualizarBotonIngresoAdmin();
         document.getElementById('admin-email').value = '';
         document.getElementById('admin-pass').value = '';
         adminDesbloqueado = false;
+        // Garantizar que el banner muestre "Volver al panel admin" al cerrar.
+        cambiarBannerAdminAVolver();
     }
 
     function actualizarBotonIngresoAdmin() {
         const overlay = document.getElementById('modal-overlay');
-        const hidden = overlay && overlay.classList.contains('open');
-        const botones = [
-            document.getElementById('btn-admin-reopen'),
-            document.getElementById('btn-admin-banner')
-        ];
-        botones.forEach(btn => {
-            if (btn) btn.style.display = hidden ? 'none' : 'inline-block';
-        });
+        const panelOpen = overlay && overlay.classList.contains('open');
+        // Banner entero: ocultar cuando el panel admin está abierto, mostrar cuando está cerrado.
+        const banner = document.getElementById('admin-mode-banner');
+        if (banner) banner.style.display = panelOpen ? 'none' : 'block';
+        // Ajustar padding-top del body según visibilidad del banner
+        document.body.style.paddingTop = panelOpen ? '0' : '54px';
+        const btnReopen = document.getElementById('btn-admin-reopen');
+        if (btnReopen) btnReopen.style.display = panelOpen ? 'none' : 'inline-block';
     }
 
     async function verificarPass() {
@@ -876,15 +1173,28 @@
         }
     }
 
-    function mostrarPanelAdmin() {
+    async function mostrarPanelAdmin() {
         document.getElementById('login-section').style.display = 'none';
         document.getElementById('admin-panel').style.display = '';
         const lr = document.getElementById('link-admin-recarga');
         if (lr && tieneClavePrivada) lr.href = 'index.html?' + ADMIN_PRIVATE_KEY + '=' + encodeURIComponent(ADMIN_PRIVATE_SECRET) + '&' + ADMIN_URL_FLAG;
+        cambiarBannerAdminAVolver();
         cargarPedidosAdmin();
+        const lista = document.getElementById('admin-productos-list');
+        if (lista) lista.innerHTML = '<p style="color:var(--muted);font-size:0.9rem;">Cargando productos...</p>';
+        if (!productos || productos.length === 0) {
+            try { await cargarCatalogoHandroll(); } catch (e) {}
+        }
         renderProductosAdmin();
         cargarResenasAdmin();
         if (window.orbitaInventario) window.orbitaInventario.init('handroll', 'handroll');
+    }
+
+    function cambiarBannerAdminAVolver() {
+        const banner = document.getElementById('admin-mode-banner');
+        if (!banner) return;
+        banner.innerHTML = 'Modo admin activo. Si cerraste el panel, puedes volver a abrirlo aquí. <button id="btn-admin-banner" type="button" class="btn-modal btn-fire" style="margin-left:10px;font-size:0.85rem;padding:6px 10px;vertical-align:middle;" onclick="abrirAdmin()">Volver al panel admin</button>';
+        actualizarBotonIngresoAdmin();
     }
 
     function showTab(tabId, btn) {
@@ -892,8 +1202,8 @@
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         document.getElementById(tabId).classList.add('active');
         btn.classList.add('active');
-        if (tabId === 'tab-rendimiento') cargarRendimientoHandroll();
-        else if (tabId === 'tab-inventario' && window.orbitaInventario) window.orbitaInventario.render('handroll', 'handroll');
+        if (tabId === 'tab-inventario' && window.orbitaInventario) window.orbitaInventario.render('handroll', 'handroll');
+        else if (tabId === 'tab-resenas') cargarResenasAdmin();
     }
 
     async function guardarCostoFijoHandroll() {
@@ -903,8 +1213,20 @@
         else alert(r.error || 'No se pudo guardar.');
         cargarRendimientoHandroll();
     }
+    async function enviarResetPassAdmin() {
+        try {
+            const { data: { user } } = await window.orbitaAuth.getUser();
+            if (!user || !user.email) { alert('No se pudo obtener el correo. Inicia sesión nuevamente.'); return; }
+            if (!confirm('¿Enviar link de restablecimiento de contraseña a ' + user.email + '?')) return;
+            const r = await window.orbitaAuth.resetPassword(user.email);
+            if (r.error) alert('No se pudo enviar el correo: ' + r.error.message);
+            else alert('Listo, revisa tu bandeja de entrada (y carpeta de spam).');
+        } catch (e) { alert('Error: ' + e.message); }
+    }
+
     async function cambiarContrasena() {
-        const nuevaPass = document.getElementById('input-nueva-pass').value.trim();
+        // Flujo legacy: mantiene cambio directo si se llama desde código viejo.
+        const nuevaPass = document.getElementById('input-nueva-pass')?.value.trim() || '';
         if (!nuevaPass || nuevaPass.length < 6) {
             alert('La nueva contraseña debe tener al menos 6 caracteres.');
             return;
@@ -915,7 +1237,7 @@
                 alert('Error al cambiar contraseña: ' + result.error.message);
             } else {
                 alert('Contraseña cambiada exitosamente.');
-                document.getElementById('input-nueva-pass').value = '';
+                const i = document.getElementById('input-nueva-pass'); if (i) i.value = '';
             }
         } catch (e) {
             alert('Error: ' + e.message);
@@ -998,15 +1320,22 @@
         return `<span style="background:${m.bg};color:${m.color};padding:2px 8px;border-radius:10px;font-size:0.7rem;font-weight:700;">${m.txt}</span>`;
     }
 
+    // Devuelve HTML vertical (cada ítem en su línea). Items ya escapados.
     function _itemsResumen(p) {
+        const escItem = s => String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+        let labels = [];
         if (Array.isArray(p.items_json) && p.items_json.length) {
-            return p.items_json.map(i => `${i.cantidad || 1}x ${i.nombre}`).join(' · ');
+            labels = p.items_json.map(i => `${i.cantidad || 1}x ${escItem(i.nombre)}`);
+        } else {
+            (typeof productos !== 'undefined' ? productos : []).forEach(prod => {
+                if (p[prod.id] > 0) {
+                    const nom = prod.categoria === 'handroll' ? prod.nombre.replace('Hand Roll ','') : (typeof nombreEnPedido === 'function' ? nombreEnPedido(prod) : prod.nombre);
+                    labels.push(`${p[prod.id]}x ${escItem(nom)}`);
+                }
+            });
         }
-        let items = [];
-        (typeof productos !== 'undefined' ? productos : []).forEach(prod => {
-            if (p[prod.id] > 0) items.push(`${p[prod.id]}x ${prod.categoria === 'handroll' ? prod.nombre.replace('Hand Roll ','') : (typeof nombreEnPedido === 'function' ? nombreEnPedido(prod) : prod.nombre)}`);
-        });
-        return items.join(' · ') || '—';
+        if (!labels.length) return '—';
+        return labels.map(l => `<div style="line-height:1.4;">• ${l}</div>`).join('');
     }
 
     async function anularPedido(id) {
@@ -1044,10 +1373,12 @@
                     const salsas = p.salsas_texto || p.salsas;
                     return `<div class="pedido-item">
                         <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:4px;">
-                            <div style="font-weight:700;font-size:0.95rem;flex:1;">${escHtml(items)}</div>
+                            <div style="font-weight:700;font-size:0.92rem;flex:1;">${items}</div>
                             ${_badgeEstado(p.estado)}
                         </div>
                         ${p.nombre ? `<div style="font-size:0.8rem;color:#aaa;">👤 ${escHtml(p.nombre)}</div>` : ''}
+                        ${p.telefono ? `<div style="font-size:0.8rem;color:#aaa;margin-top:2px;">📞 <a href="tel:${escHtml(p.telefono)}" style="color:var(--fire);text-decoration:none;">${escHtml(p.telefono)}</a></div>` : ''}
+                        ${p.direccion_entrega ? `<div style="font-size:0.8rem;color:#aaa;margin-top:2px;">📍 <a href="${escHtml(p.direccion_entrega)}" target="_blank" style="color:var(--fire);text-decoration:none;">Ver ubicación</a></div>` : ''}
                         ${salsas ? `<div style="font-size:0.85rem;color:#aaa;margin-top:2px;">🫙 ${escHtml(salsas)}</div>` : ''}
                         <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;gap:8px;">
                             <span style="font-size:0.75rem;color:var(--muted);">⏰ ${hora}</span>
@@ -1096,6 +1427,7 @@
                                 <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;">
                                     <button class="btn-sm ${p.activo ? 'btn-toggle-on' : 'btn-toggle-off'}" onclick="toggleProducto(${idx})">${p.activo ? '✅ Activo' : '❌ Pausado'}</button>
                                     <button class="btn-sm btn-orange" onclick="abrirEditProducto('${p.id}')">✏️ Editar</button>
+                                    <button class="btn-sm" style="background:#c1121f;color:#fff;" onclick="eliminarProducto(${idx})">🗑️ Eliminar</button>
                                 </div>
                             </div>
                             <div class="edit-form" id="edit-${p.id}">
@@ -1104,8 +1436,12 @@
                                     <input type="text" id="edit-nombre-${p.id}" value="${escHtml(p.nombre)}">
                                 </div>
                                 <div class="edit-row">
-                                    <label>Precio</label>
+                                    <label>Precio venta</label>
                                     <input type="number" id="edit-precio-${p.id}" value="${p.precio}" step="100">
+                                </div>
+                                <div class="edit-row">
+                                    <label>Costo unitario</label>
+                                    <input type="number" id="edit-costo-${p.id}" value="${Number(p.costo)||0}" step="100" min="0">
                                 </div>
                                 <button class="btn-sm btn-fire" style="width:100%;padding:9px;margin-top:4px;" onclick="guardarProducto(${idx})">💾 GUARDAR</button>
                             </div>
@@ -1132,9 +1468,35 @@
         const p = productos[i];
         const nuevoNombre = document.getElementById('edit-nombre-' + p.id).value.trim();
         const nuevoPrecio = parseInt(document.getElementById('edit-precio-' + p.id).value);
-        if (!nuevoNombre || isNaN(nuevoPrecio) || nuevoPrecio < 0) { alert('Datos inválidos'); return; }
+        const nuevoCosto = parseInt(document.getElementById('edit-costo-' + p.id).value) || 0;
+        if (!nuevoNombre || isNaN(nuevoPrecio) || nuevoPrecio < 0 || nuevoCosto < 0) { alert('Datos inválidos'); return; }
         productos[i].nombre = nuevoNombre;
         productos[i].precio = nuevoPrecio;
+        productos[i].costo = nuevoCosto;
+        renderMenu();
+        renderProductosAdmin();
+        persistirCatalogoHandroll();
+    }
+
+    function eliminarProducto(i) {
+        const p = productos[i];
+        if (!p) return;
+        if (!confirm('¿Eliminar "' + p.nombre + '"? Esta acción no se puede deshacer.')) return;
+        productos.splice(i, 1);
+        renderMenu();
+        renderProductosAdmin();
+        persistirCatalogoHandroll();
+    }
+
+    function abrirAgregarProducto() {
+        const nombre = prompt('Nombre del producto:');
+        if (!nombre || !nombre.trim()) return;
+        const precioStr = prompt('Precio (CLP, sin puntos):', '0');
+        const precio = parseInt(precioStr, 10);
+        if (isNaN(precio) || precio < 0) { alert('Precio inválido.'); return; }
+        const categoria = prompt('Categoría (handroll, jugo, bebida, agua):', 'handroll') || 'handroll';
+        const id = 'p_' + Date.now();
+        productos.push({ id, nombre: nombre.trim(), precio, activo: true, categoria });
         renderMenu();
         renderProductosAdmin();
         persistirCatalogoHandroll();
@@ -1145,7 +1507,7 @@
         const lista = document.getElementById('admin-reviews-list');
         lista.innerHTML = '<p style="color:var(--muted);font-size:0.9rem;">Cargando...</p>';
         try {
-            const res = await window.orbitaAuth.adminFetch(`${SUPABASE_URL}/rest/v1/resenas?select=*&order=creado_at.desc`);
+            const res = await window.orbitaAuth.adminFetch(`${SUPABASE_URL}/rest/v1/resenas?sitio=eq.handroll&select=*&order=creado_at.desc`);
             const data = await res.json();
             if (!Array.isArray(data) || data.length === 0) { lista.innerHTML = '<p style="color:var(--muted);font-size:0.9rem;">No hay reseñas aún.</p>'; return; }
             lista.innerHTML = data.map(r => `
@@ -1167,13 +1529,67 @@
         } catch(e) { alert('Error al borrar.'); }
     }
 
-    document.getElementById('modal-overlay').addEventListener('click', function(e) {
-        if (e.target === this) cerrarAdmin();
-    });
+    // Click fuera del panel NO cierra el admin (se cierra solo con el botón CERRAR).
+
+    // ── COSTO DELIVERY ──
+    async function cargarCostoDeliveryHandroll() {
+        try {
+            if (window.orbitaCostosFijos && window.orbitaCostosFijos.leerCostoDelivery) {
+                window.COSTO_DELIVERY = await window.orbitaCostosFijos.leerCostoDelivery('handroll');
+            } else {
+                window.COSTO_DELIVERY = 2000;
+            }
+        } catch (e) { window.COSTO_DELIVERY = 2000; }
+        const lbl = document.getElementById('label-delivery-cost');
+        if (lbl) lbl.textContent = '+$' + (window.COSTO_DELIVERY || 2000).toLocaleString('es-CL');
+        const inp = document.getElementById('input-costo-delivery-handroll');
+        if (inp) inp.value = window.COSTO_DELIVERY || 2000;
+        if (typeof actualizarResumen === 'function') actualizarResumen();
+    }
+
+    async function guardarCostoDeliveryHandroll() {
+        const v = parseInt(document.getElementById('input-costo-delivery-handroll').value, 10);
+        if (isNaN(v) || v < 0) { alert('Ingresa un monto válido.'); return; }
+        const r = await window.orbitaCostosFijos.guardar('costo_delivery_handroll', v);
+        if (r.ok) {
+            window.COSTO_DELIVERY = v;
+            alert('Costo de delivery actualizado: $' + v.toLocaleString('es-CL'));
+            const lbl = document.getElementById('label-delivery-cost');
+            if (lbl) lbl.textContent = '+$' + v.toLocaleString('es-CL');
+            if (typeof actualizarResumen === 'function') actualizarResumen();
+        } else alert(r.error || 'No se pudo guardar.');
+    }
+
+    async function cargarHorarioDeliveryHandroll() {
+        try {
+            const h = await window.orbitaCostosFijos.leerHorarioDelivery('handroll');
+            window.DELIVERY_HORARIO = h;
+            const fmt = window.orbitaHorario.formatHHMM;
+            const iIni = document.getElementById('input-hora-ini-handroll');
+            const iFin = document.getElementById('input-hora-fin-handroll');
+            if (iIni) iIni.value = fmt(h.inicio);
+            if (iFin) iFin.value = fmt(h.fin);
+        } catch (e) {}
+    }
+
+    async function guardarHorarioDeliveryHandroll() {
+        const ini = window.orbitaHorario.parseHHMM(document.getElementById('input-hora-ini-handroll').value);
+        const fin = window.orbitaHorario.parseHHMM(document.getElementById('input-hora-fin-handroll').value);
+        if (ini == null || fin == null) { alert('Horarios inválidos.'); return; }
+        if (ini >= fin) { alert('La hora de inicio debe ser menor que la de fin.'); return; }
+        const r1 = await window.orbitaCostosFijos.guardar('delivery_hora_inicio_handroll', ini);
+        const r2 = await window.orbitaCostosFijos.guardar('delivery_hora_fin_handroll', fin);
+        if (r1.ok && r2.ok) {
+            window.DELIVERY_HORARIO = { inicio: ini, fin: fin };
+            alert('Horario actualizado: ' + window.orbitaHorario.formatHHMM(ini) + ' a ' + window.orbitaHorario.formatHHMM(fin));
+        } else alert((r1.error || r2.error) || 'No se pudo guardar.');
+    }
 
     // ── INIT ──
     (async function init() {
         await cargarCatalogoHandroll();
+        cargarCostoDeliveryHandroll();
+        cargarHorarioDeliveryHandroll();
         renderMenu();
         if (window.orbitaPagoFlow) window.orbitaPagoFlow.detectarRetorno();
     })();
@@ -1197,20 +1613,28 @@
             if (originalActualizarResumen) {
                 window.actualizarResumen = function() {
                     originalActualizarResumen();
-                    
-                    // Calcular total para pago rápido
-                    const total = productos.reduce((a, p) => a + (pedido[p.id] || 0) * p.precio, 0);
-                    const agridulce = document.getElementById('check-agridulce')?.checked ? 500 : 0;
-                    const delivery = tipoEntrega === 'delivery' ? 2000 : 0;
-                    const totalFinal = total + agridulce + delivery;
-                    
-                    // Obtener items para mostrar
+
+                    const totalHR = handrollsEnPedido.reduce((a, h) => a + h.precio + _salsaPrecio(h.salsa), 0);
+                    const totalResto = productos.reduce((a, p) => p.categoria === 'handroll' ? a : (a + (pedido[p.id] || 0) * p.precio), 0);
+                    const delivery = tipoEntrega === 'delivery' ? (window.COSTO_DELIVERY || 2000) : 0;
+                    const totalFinal = totalHR + totalResto + delivery;
+
                     const items = [];
-                    productos.forEach(p => { 
-                        if (pedido[p.id] > 0) items.push(`${pedido[p.id]}x ${p.nombre.replace('Hand Roll ', '')}`); 
+                    // Hand rolls agrupados por (baseId, salsa)
+                    const conteoHR = {};
+                    handrollsEnPedido.forEach(h => {
+                        const k = h.baseId + '||' + h.salsa;
+                        if (!conteoHR[k]) conteoHR[k] = { nombre: h.nombre, salsa: h.salsa, cantidad: 0 };
+                        conteoHR[k].cantidad++;
                     });
-                    if (agridulce) items.push('Salsa Agridulce');
-                    
+                    Object.values(conteoHR).forEach(g => {
+                        const salsaTxt = g.salsa === 'Sin salsa' ? 'sin salsa' : g.salsa.toLowerCase();
+                        items.push(`${g.cantidad}x ${g.nombre.replace('Hand Roll ','')} (${salsaTxt})`);
+                    });
+                    productos.forEach(p => {
+                        if (p.categoria !== 'handroll' && pedido[p.id] > 0) items.push(`${pedido[p.id]}x ${p.nombre}`);
+                    });
+
                     window.OrbitaPagoRapido.actualizarTotal(totalFinal, items);
                 };
             }

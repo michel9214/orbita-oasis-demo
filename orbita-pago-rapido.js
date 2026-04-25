@@ -52,15 +52,26 @@ window.OrbitaPagoRapido = {
         }).catch(() => {});
     },
 
-    _syncUpdateServer(email, pin_hash, updates) {
+    async _syncUpdateServer(email, pin_hash, updates) {
         const url = this._mpEdgeUrl();
         const headers = this._supabaseHeaders();
-        if (!url || !headers) return;
-        fetch(url, {
-            method: "POST",
-            headers,
-            body: JSON.stringify({ action: "update_customer", email, pin_hash, updates }),
-        }).catch(() => {});
+        if (!url || !headers) return { ok: false, reason: "no_config" };
+        try {
+            const res = await fetch(url, {
+                method: "POST",
+                headers,
+                body: JSON.stringify({ action: "update_customer", email, pin_hash, updates }),
+            });
+            const data = await res.json().catch(() => ({}));
+            if (!res.ok) {
+                console.warn("update_customer falló:", data);
+                return { ok: false, reason: data.reason || "http_" + res.status };
+            }
+            return { ok: true, cliente: data.cliente };
+        } catch (e) {
+            console.warn("update_customer error:", e);
+            return { ok: false, reason: "network" };
+        }
     },
 
     async _loginFromServer(email, pin_hash) {
@@ -149,6 +160,8 @@ window.OrbitaPagoRapido = {
             if (!c) { this._setSesionActiva(null); return; }
             this.estado.cliente = c;
             this.estado.modo = 'registrado';
+            // Refrescar en background por si hubo cambios en otro dispositivo
+            this.refreshClienteFromServer().catch(() => {});
         } catch (e) {}
     },
 
@@ -159,10 +172,10 @@ window.OrbitaPagoRapido = {
         return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
     },
 
-    guardarCliente(cliente, opts) {
+    async guardarCliente(cliente, opts) {
         try {
             const emailKey = (cliente.email || '').toLowerCase().trim();
-            if (!emailKey) return;
+            if (!emailKey) return { ok: false };
             cliente.email = emailKey;
             const map = this._getUsuarios();
             map[emailKey] = cliente;
@@ -170,17 +183,42 @@ window.OrbitaPagoRapido = {
             this._setSesionActiva(emailKey);
             this.estado.cliente = cliente;
             this.estado.modo = 'registrado';
-            // Sync con server (fire-and-forget)
             const mode = opts && opts.mode;
             if (mode === 'register') {
                 this._syncRegisterServer(cliente);
+                return { ok: true };
             } else if (mode === 'update') {
                 const { pin_hash, email, created_at, creado, id, ...updates } = cliente;
-                this._syncUpdateServer(email, pin_hash, updates);
+                const result = await this._syncUpdateServer(email, pin_hash, updates);
+                // Si el server devolvió el cliente actualizado, sobrescribir local
+                // con la versión canónica (por si el server normalizó algo)
+                if (result && result.ok && result.cliente) {
+                    const merged = { ...result.cliente, pin_hash: cliente.pin_hash };
+                    map[emailKey] = merged;
+                    this._saveUsuarios(map);
+                    this.estado.cliente = merged;
+                }
+                return result;
             }
+            return { ok: true };
         } catch (e) {
             console.error('Error guardando cliente:', e);
+            return { ok: false, reason: 'exception' };
         }
+    },
+
+    // Refresca el cliente desde el server (por si se registró/actualizó
+    // en otro dispositivo). No rompe si falla - mantiene el local.
+    async refreshClienteFromServer() {
+        const c = this.estado.cliente;
+        if (!c || !c.email || !c.pin_hash) return;
+        const remoto = await this._loginFromServer(c.email, c.pin_hash);
+        if (!remoto) return;
+        const merged = { ...remoto, pin_hash: c.pin_hash };
+        const map = this._getUsuarios();
+        map[c.email] = merged;
+        this._saveUsuarios(map);
+        this.estado.cliente = merged;
     },
 
     setupUI() {
@@ -222,7 +260,7 @@ window.OrbitaPagoRapido = {
                             </div>
                         </div>
                         <button class="btn-modal btn-fire" id="btn-crear-cuenta">CREAR CUENTA</button>
-                        <button class="btn-modal btn-gray" id="btn-iniciar-sesion" style="background:#1a1a1a;border:1px solid var(--fire);color:var(--fire);">INICIAR SESIÓN</button>
+                        <button class="btn-modal" id="btn-iniciar-sesion" style="background:transparent;border:2px solid var(--fire,var(--primary,#ff4d00));color:var(--fire,var(--primary,#ff4d00));font-weight:700;">INICIAR SESIÓN</button>
                         <button class="btn-modal btn-gray" onclick="OrbitaPagoRapido.cerrarModal()">Cancelar</button>
                     </div>
 
@@ -269,26 +307,13 @@ window.OrbitaPagoRapido = {
                             <input type="text" id="reg-direccion" placeholder="Calle 123, depto 4B" autocomplete="street-address">
                         </div>
                         <div class="form-group">
-                            <label>Método de pago preferido</label>
-                            <div class="metodo-grid">
-                                <label class="metodo-opt">
-                                    <input type="radio" name="reg-metodo" value="mercadopago" checked>
-                                    💳 MercadoPago
-                                </label>
-                                <label class="metodo-opt">
-                                    <input type="radio" name="reg-metodo" value="whatsapp">
-                                    💬 WhatsApp
-                                </label>
-                            </div>
-                        </div>
-                        <div class="form-group">
                             <label>PIN de 4 dígitos <span style="color:var(--muted);font-size:0.7em;">(para pago rápido)</span></label>
                             <input type="password" id="reg-pin" placeholder="****" maxlength="4" inputmode="numeric"
                                 style="letter-spacing:10px;font-size:1.8rem;text-align:center;">
                         </div>
 
                         <div class="form-group" id="reg-tarjeta-section" style="display:none;">
-                            <p style="font-size:0.8rem;color:var(--muted);margin:0;">La tarjeta se ingresa al pagar en MercadoPago. Por seguridad, no guardamos los datos en este dispositivo.</p>
+                            <p style="font-size:0.8rem;color:var(--muted);margin:0;">La tarjeta se ingresa al pagar en línea. Por seguridad, no guardamos los datos en este dispositivo.</p>
                         </div>
 
                         <div class="form-group">
@@ -309,12 +334,26 @@ window.OrbitaPagoRapido = {
                     <div id="vista-perfil" style="display:none;">
                         <div class="modal-title">MI PERFIL ÓRBITA</div>
 
-                        <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:12px;">
-                            <div id="perfil-nombre" style="font-weight:700;font-size:1.05rem;margin-bottom:2px;"></div>
-                            <div id="perfil-email" style="font-size:0.85rem;color:var(--muted);"></div>
-                            <div id="perfil-telefono" style="font-size:0.85rem;color:var(--muted);margin-top:2px;"></div>
-                            <div id="perfil-direccion" style="font-size:0.85rem;color:var(--muted);margin-top:2px;"></div>
-                            <div id="perfil-metodo" style="font-size:0.82rem;margin-top:6px;"></div>
+                        <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px 14px;margin-bottom:14px;">
+                            <div style="font-size:0.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:2px;">Email (no editable)</div>
+                            <div id="perfil-email" style="font-size:0.9rem;color:var(--text);"></div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Nombre completo</label>
+                            <input type="text" id="perfil-edit-nombre" placeholder="Tu nombre" autocomplete="name">
+                        </div>
+                        <div class="form-group">
+                            <label>Teléfono</label>
+                            <input type="tel" id="perfil-edit-telefono" placeholder="+56 9 1234 5678" autocomplete="tel">
+                        </div>
+                        <div class="form-group">
+                            <label>Mis direcciones de entrega</label>
+                            <div id="perfil-direcciones-list"></div>
+                            <div style="display:flex;gap:6px;margin-top:6px;">
+                                <input type="text" id="perfil-nueva-direccion" placeholder="Ej: Calle 123, depto 4B" autocomplete="street-address" style="margin-bottom:0;">
+                                <button type="button" class="btn-modal btn-gray" style="flex:0 0 auto;width:auto;padding:10px 14px;margin:0;font-size:0.78rem;white-space:nowrap;" onclick="OrbitaPagoRapido.agregarDireccion()">+ Agregar</button>
+                            </div>
                         </div>
 
                         <!-- Tarjeta visual -->
@@ -326,36 +365,23 @@ window.OrbitaPagoRapido = {
                             <div id="perfil-tarjeta-container"></div>
                         </div>
 
-                        <div class="form-group">
-                            <label>Método de pago preferido</label>
-                            <div class="metodo-grid">
-                                <label class="metodo-opt">
-                                    <input type="radio" name="perfil-metodo" value="mercadopago" id="rdo-perfil-mp">
-                                    💳 MercadoPago
-                                </label>
-                                <label class="metodo-opt">
-                                    <input type="radio" name="perfil-metodo" value="whatsapp" id="rdo-perfil-wsp">
-                                    💬 WhatsApp
-                                </label>
-                            </div>
+                        <div class="form-group" style="margin-top:22px;padding-top:16px;border-top:1px solid var(--border);">
+                            <label style="font-size:0.78rem;color:var(--muted);">Método de pago</label>
+                            <p style="font-size:0.85rem;color:var(--text);margin:6px 0 0;">💳 Pago en línea (MercadoPago, tarjetas Visa/Master sin cuenta MP)</p>
                         </div>
 
-                        <div class="form-group">
-                            <label style="font-size:0.85rem;color:var(--text);text-transform:none;letter-spacing:0;">Exportar mis datos (Ley 19.496)</label>
-                            <div style="display:flex;gap:8px;margin-top:6px;">
-                                <button class="btn-modal btn-gray" style="flex:1;font-size:0.8rem;" onclick="OrbitaPagoRapido.descargarDatosJSON()">Descargar JSON</button>
-                                <button class="btn-modal btn-gray" style="flex:1;font-size:0.8rem;" onclick="OrbitaPagoRapido.descargarDatosPDF()">Imprimir PDF</button>
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label style="font-size:0.85rem;color:#ff4444;text-transform:none;letter-spacing:0;">Eliminar cuenta</label>
-                            <button class="btn-modal" style="background:#1a0505;border:1px solid #3a0808;color:#ff4444;font-size:0.82rem;" onclick="OrbitaPagoRapido.eliminarCuentaCompleta()">ELIMINAR MI CUENTA</button>
-                        </div>
-
-                        <button class="btn-modal btn-fire" onclick="OrbitaPagoRapido.guardarPerfil()">GUARDAR</button>
-                        <button class="btn-modal" style="background:#1a0505;border:1px solid #3a0808;color:#ff4444;" onclick="OrbitaPagoRapido.cerrarSesion()">Cerrar sesión</button>
+                        <button class="btn-modal btn-fire" style="margin-top:14px;" onclick="OrbitaPagoRapido.guardarPerfil()">GUARDAR</button>
                         <button class="btn-modal btn-gray" onclick="OrbitaPagoRapido.cerrarModal()">Cerrar</button>
+                        <button class="btn-modal" style="background:#1a0505;border:1px solid #3a0808;color:#ff4444;" onclick="OrbitaPagoRapido.cerrarSesion()">Cerrar sesión</button>
+                        <button class="btn-modal" style="background:transparent;border:1px solid #3a0808;color:#ff4444;font-size:0.72rem;padding:8px;letter-spacing:0.5px;" onclick="OrbitaPagoRapido.eliminarCuentaCompleta()">Eliminar cuenta</button>
+
+                        <div style="margin-top:18px;padding-top:12px;border-top:1px solid var(--border);text-align:center;">
+                            <div style="font-size:0.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">Exportar mis datos (Ley 19.496)</div>
+                            <div style="display:flex;gap:6px;">
+                                <button class="btn-modal btn-gray" style="flex:1;font-size:0.72rem;padding:7px;margin:0;" onclick="OrbitaPagoRapido.descargarDatosJSON()">Descargar JSON</button>
+                                <button class="btn-modal btn-gray" style="flex:1;font-size:0.72rem;padding:7px;margin:0;" onclick="OrbitaPagoRapido.descargarDatosPDF()">Imprimir PDF</button>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Vista: Editar Tarjeta Virtual -->
@@ -506,13 +532,10 @@ window.OrbitaPagoRapido = {
         const pinInput = document.getElementById('pin-input-validacion');
         if (pinInput) pinInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') this.confirmarPagoConPin(); });
 
-        // Mostrar aviso "la tarjeta se ingresa al pagar" solo si eligió MercadoPago
-        document.querySelectorAll('input[name="reg-metodo"]').forEach(r => {
-            r.addEventListener('change', () => {
-                const sec = document.getElementById('reg-tarjeta-section');
-                if (sec) sec.style.display = r.value === 'mercadopago' && r.checked ? '' : 'none';
-            });
-        });
+        // Mostrar aviso "la tarjeta se ingresa al pagar" solo si eligió Pago en línea
+        // Mostrar aviso de tarjeta por default (todo es pago en línea ahora)
+        const sec = document.getElementById('reg-tarjeta-section');
+        if (sec) sec.style.display = '';
     },
 
     actualizarUI() {
@@ -555,7 +578,7 @@ window.OrbitaPagoRapido = {
             <div id="perfil-flotante-container" style="position:fixed;top:16px;right:16px;display:flex;align-items:center;gap:8px;z-index:1001;">
                 ${!estaRegistrado ? `<span id="perfil-login" style="${chipPrimary}">Iniciar sesión</span>` : ''}
                 ${!estaRegistrado ? `<span id="perfil-texto" style="${chipStyle}">Registrarme</span>` : ''}
-                <div id="perfil-flotante" style="background:${estaRegistrado ? 'linear-gradient(135deg,var(--fire),#e03a00)' : '#2a2a2a'};color:white;border-radius:50%;width:44px;height:44px;display:flex;align-items:center;justify-content:center;font-size:${estaRegistrado ? '1.3rem' : '1.1rem'};font-weight:bold;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,0.4);font-family:'Bebas Neue',sans-serif;">
+                <div id="perfil-flotante" style="background:${estaRegistrado ? 'var(--fire, var(--primary, #ff4d00))' : '#2a2a2a'};color:#fff;border-radius:50%;width:44px;height:44px;display:flex;align-items:center;justify-content:center;font-size:${estaRegistrado ? '1.3rem' : '1.1rem'};font-weight:bold;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,0.4);border:2px solid rgba(255,255,255,0.85);font-family:'Bebas Neue',sans-serif;">
                     ${estaRegistrado ? this.estado.cliente.nombre.charAt(0).toUpperCase() : '?'}
                 </div>
             </div>
@@ -625,22 +648,91 @@ window.OrbitaPagoRapido = {
 
     abrirPerfil() {
         if (!this.estado.cliente) { this.mostrarBeneficios(); return; }
-        const c = this.estado.cliente;
-        document.getElementById('perfil-nombre').textContent = c.nombre;
-        document.getElementById('perfil-email').textContent = c.email;
-        const elTel = document.getElementById('perfil-telefono');
-        if (elTel) elTel.textContent = c.telefono ? '📞 ' + c.telefono : '';
-        const elDir = document.getElementById('perfil-direccion');
-        if (elDir) elDir.textContent = c.direccion_entrega ? '📍 ' + c.direccion_entrega : '';
-        document.getElementById('perfil-metodo').textContent = c.metodo_pago === 'mercadopago' ? '💳 MercadoPago' : '💬 WhatsApp';
-        const mp = document.getElementById('rdo-perfil-mp');
-        const wsp = document.getElementById('rdo-perfil-wsp');
-        if (mp) mp.checked = c.metodo_pago !== 'whatsapp';
-        if (wsp) wsp.checked = c.metodo_pago === 'whatsapp';
-
-        this.renderTarjetaVisual();
+        this._pintarPerfil();
         this._mostrarVista('vista-perfil');
         document.getElementById('modal-pago-rapido').classList.add('open');
+        // Refrescar desde server para traer tarjeta/cambios hechos en otro
+        // dispositivo (crítico en mobile cuando te logueas por primera vez).
+        this.refreshClienteFromServer().then(() => this._pintarPerfil()).catch(() => {});
+    },
+
+    _pintarPerfil() {
+        const c = this.estado.cliente;
+        if (!c) return;
+        document.getElementById('perfil-email').textContent = c.email || '';
+        const elNombre = document.getElementById('perfil-edit-nombre');
+        if (elNombre) elNombre.value = c.nombre || '';
+        const elTel = document.getElementById('perfil-edit-telefono');
+        if (elTel) elTel.value = c.telefono || '';
+        this._renderDirecciones();
+        this.renderTarjetaVisual();
+    },
+
+    // Helper público para que los HTMLs lean las direcciones del cliente logueado.
+    getDireccionesCliente() {
+        if (!this.estado.cliente) return [];
+        return this._getDirecciones();
+    },
+
+    // Devuelve siempre un array de direcciones (backward-compat con direccion_entrega string).
+    _getDirecciones(cliente) {
+        const c = cliente || this.estado.cliente || {};
+        if (Array.isArray(c.direcciones)) return c.direcciones.filter(Boolean);
+        if (c.direccion_entrega) return [c.direccion_entrega];
+        return [];
+    },
+
+    _setDirecciones(arr) {
+        if (!this.estado.cliente) return;
+        const list = (arr || []).filter(Boolean);
+        this.estado.cliente.direcciones = list;
+        this.estado.cliente.direccion_entrega = list[0] || null; // primera = principal, back-compat
+    },
+
+    _renderDirecciones() {
+        const cont = document.getElementById('perfil-direcciones-list');
+        if (!cont) return;
+        const list = this._getDirecciones();
+        if (!list.length) {
+            cont.innerHTML = '<p style="font-size:0.78rem;color:var(--muted);margin:4px 0;">Sin direcciones guardadas. Agrega una abajo.</p>';
+            return;
+        }
+        cont.innerHTML = list.map((d, i) => `
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 10px;background:var(--surface);border:1px solid var(--border);border-radius:10px;margin-bottom:6px;font-size:0.86rem;">
+                <span>📍 ${this._esc(d)}${i === 0 ? ' <span style="font-size:0.68rem;color:var(--fire,var(--primary));font-weight:700;">· principal</span>' : ''}</span>
+                <button type="button" onclick="OrbitaPagoRapido.eliminarDireccionIndex(${i})" style="background:transparent;border:none;color:#c1121f;font-size:1.1rem;cursor:pointer;padding:2px 6px;line-height:1;" title="Eliminar">×</button>
+            </div>
+        `).join('');
+    },
+
+    agregarDireccion() {
+        if (!this.estado.cliente) return;
+        const input = document.getElementById('perfil-nueva-direccion');
+        const valor = (input && input.value || '').trim();
+        if (!valor) { this.mostrarToast('Ingresa una dirección primero', 'error'); return; }
+        const actual = this._getDirecciones();
+        if (actual.some(d => d.toLowerCase() === valor.toLowerCase())) {
+            this.mostrarToast('Esa dirección ya está guardada', 'error');
+            return;
+        }
+        actual.push(valor);
+        this._setDirecciones(actual);
+        this.guardarCliente(this.estado.cliente, { mode: 'update' });
+        if (input) input.value = '';
+        this._renderDirecciones();
+        this.mostrarToast('Dirección agregada ✓', 'success');
+    },
+
+    eliminarDireccionIndex(i) {
+        if (!this.estado.cliente) return;
+        const actual = this._getDirecciones();
+        if (i < 0 || i >= actual.length) return;
+        if (!confirm('¿Eliminar "' + actual[i] + '" de tus direcciones?')) return;
+        actual.splice(i, 1);
+        this._setDirecciones(actual);
+        this.guardarCliente(this.estado.cliente, { mode: 'update' });
+        this._renderDirecciones();
+        this.mostrarToast('Dirección eliminada ✓');
     },
 
     renderTarjetaVisual() {
@@ -778,7 +870,7 @@ window.OrbitaPagoRapido = {
         document.getElementById('modal-pago-rapido').classList.add('open');
     },
 
-    guardarTarjeta() {
+    async guardarTarjeta() {
         const c = this.estado.cliente;
         if (!c) { this.mostrarBeneficios(); return; }
         const titular = document.getElementById('tarjeta-titular').value.trim().toUpperCase();
@@ -800,8 +892,13 @@ window.OrbitaPagoRapido = {
         c.ultimos4 = ultimos4;
         c.emisor_tarjeta = emisor || null;
 
-        this.guardarCliente(c, { mode: 'update' });
-        this.mostrarToast('Tarjeta guardada ✓');
+        this.mostrarToast('Guardando...');
+        const result = await this.guardarCliente(c, { mode: 'update' });
+        if (result && result.ok) {
+            this.mostrarToast('Tarjeta guardada y sincronizada ✓', 'success');
+        } else {
+            this.mostrarToast('Tarjeta guardada local. Sin conexión con el servidor.', 'error');
+        }
         this.abrirPerfil();
     },
 
@@ -898,7 +995,7 @@ window.OrbitaPagoRapido = {
         const telefono = document.getElementById('reg-telefono')?.value.trim() || '';
         const direccion = document.getElementById('reg-direccion')?.value.trim() || '';
         const pin = document.getElementById('reg-pin').value.trim();
-        const metodo = document.querySelector('input[name="reg-metodo"]:checked')?.value || 'mercadopago';
+        const metodo = 'mercadopago';
         const errEl = document.getElementById('reg-error');
         errEl.style.display = 'none';
 
@@ -934,15 +1031,22 @@ window.OrbitaPagoRapido = {
         })();
     },
 
-    guardarPerfil() {
-        const metodo = document.querySelector('input[name="perfil-metodo"]:checked')?.value;
-        if (this.estado.cliente && metodo) {
-            this.estado.cliente.metodo_pago = metodo;
-            this.guardarCliente(this.estado.cliente, { mode: 'update' });
-        }
+    async guardarPerfil() {
+        if (!this.estado.cliente) return;
+        const c = this.estado.cliente;
+        const nombre = (document.getElementById('perfil-edit-nombre')?.value || '').trim();
+        const telefono = (document.getElementById('perfil-edit-telefono')?.value || '').trim();
+        if (!nombre) { this.mostrarToast('El nombre no puede estar vacío', 'error'); return; }
+        c.nombre = nombre;
+        c.telefono = telefono || null;
+        c.metodo_pago = 'mercadopago'; // WhatsApp ya no es método de pago
+        // Direcciones: las edita el usuario con agregarDireccion() / eliminarDireccionIndex()
+        // aquí solo persistimos el estado actual
+        const result = await this.guardarCliente(c, { mode: 'update' });
         this.cerrarModal();
         this.actualizarUI();
-        this.mostrarToast('Perfil actualizado ✓');
+        if (result && result.ok) this.mostrarToast('Perfil actualizado ✓', 'success');
+        else this.mostrarToast('Guardado local. Sin conexión con el servidor.', 'error');
     },
 
     cerrarSesion() {
@@ -967,14 +1071,48 @@ window.OrbitaPagoRapido = {
             return;
         }
 
-        const horaInput = document.getElementById('input-hora');
-        if (horaInput && horaInput.style.display !== 'none' && !horaInput.value) {
-            this.mostrarToast('Elige hora de retiro');
-            horaInput.focus();
-            return;
+        // Detectar tipo de entrega por estado de los botones (DOM = verdad).
+        // Si es retiro → pedir hora. Si es delivery → pedir ubicación.
+        const tipo = this._detectarTipoEntrega();
+        if (tipo === 'retiro') {
+            const horaInput = document.getElementById('input-hora');
+            if (horaInput && !horaInput.value) {
+                this.mostrarToast('Elige hora de retiro');
+                horaInput.focus();
+                return;
+            }
+        } else if (tipo === 'delivery') {
+            if (!window.ubicacionCliente) {
+                this.mostrarToast('Comparte tu ubicación para el delivery');
+                return;
+            }
+        } else if (tipo === null) {
+            // Botones existen pero ninguno activo → exigir selección
+            if (document.getElementById('btn-retiro') || document.getElementById('btn-delivery')) {
+                this.mostrarToast('Elige Retiro en local o Delivery');
+                return;
+            }
+            // Sin selector → validar hora si está visible (flujo legacy)
+            const horaInput = document.getElementById('input-hora');
+            const campoHora = document.getElementById('campo-hora');
+            const horaVisible = horaInput && (!campoHora || campoHora.style.display !== 'none');
+            if (horaVisible && !horaInput.value) {
+                this.mostrarToast('Elige hora de retiro');
+                horaInput.focus();
+                return;
+            }
         }
 
         this.abrirModalPin();
+    },
+
+    _detectarTipoEntrega() {
+        const btnR = document.getElementById('btn-retiro');
+        const btnD = document.getElementById('btn-delivery');
+        if (btnR && btnR.classList.contains('active')) return 'retiro';
+        if (btnD && btnD.classList.contains('active')) return 'delivery';
+        if (btnR || btnD) return null; // existen pero ninguno activo
+        return undefined; // no hay selector
     },
 
     abrirModalPin() {
@@ -1010,13 +1148,9 @@ window.OrbitaPagoRapido = {
         this.mostrarToast('PIN correcto ✓ Procesando pago...');
 
         setTimeout(() => {
-            if (this.estado.cliente.metodo_pago === 'mercadopago') {
-                if (window.pagarConMP) window.pagarConMP();
-                else this.mostrarToast('Redirigiendo a MercadoPago...');
-            } else {
-                if (window.enviarPedido) window.enviarPedido();
-                else this.mostrarToast('Enviando pedido por WhatsApp...');
-            }
+            // Pago rápido siempre va por pago en línea (WhatsApp es canal, no método)
+            if (window.pagarConMP) window.pagarConMP();
+            else this.mostrarToast('Redirigiendo al pago en línea...');
         }, 500);
     },
 
@@ -1074,8 +1208,7 @@ window.OrbitaPagoRapido = {
     },
 
     eliminarCuentaCompleta() {
-        if (!confirm('¿Seguro quieres eliminar tu cuenta? Esta acción NO se puede deshacer.')) return;
-        if (!confirm('Se eliminarán todos tus datos en este dispositivo y en el servidor. ¿Confirmar?')) return;
+        if (!confirm('¿Estás seguro? Se borrarán tus medios de pago, tarjeta guardada, dirección, teléfono y todo tu historial en este dispositivo y en el servidor. Esta acción NO se puede deshacer.')) return;
         const email = (this.estado.cliente && this.estado.cliente.email || '').toLowerCase().trim();
         const pinHash = this.estado.cliente && this.estado.cliente.pin_hash;
         if (email) {

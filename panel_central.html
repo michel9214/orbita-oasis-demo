@@ -41,14 +41,9 @@
         .btn-primary:hover { opacity: 0.92; }
         .err { color: #ff6b6b; font-size: 0.85rem; margin-bottom: 10px; display: none; }
         #dashboard { display: none; }
-        .chart-toggle {
-            display: flex; gap: 8px; justify-content: center; margin-bottom: 16px; flex-wrap: wrap;
-        }
-        .chart-toggle button {
-            padding: 10px 18px; border-radius: 10px; border: 1px solid var(--border); background: var(--card);
-            color: var(--muted); font-weight: 600; font-size: 0.85rem; cursor: pointer;
-        }
-        .chart-toggle button.active { border-color: var(--hand); color: var(--text); background: #221108; }
+        .toggle-row { display: flex; gap: 8px; justify-content: center; margin-bottom: 16px; flex-wrap: wrap; }
+        .toggle-row button { padding: 8px 14px; border-radius: 10px; border: 1px solid var(--border); background: var(--card); color: var(--muted); font-weight: 600; font-size: 0.82rem; cursor: pointer; }
+        .toggle-row button.active { border-color: var(--hand); color: var(--text); background: #221108; }
         .chart-box {
             background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 18px 14px 8px;
             margin-bottom: 22px; min-height: 280px;
@@ -59,16 +54,6 @@
         .tab-nav button.active { border-color: var(--hand); color: var(--text); background: #221108; }
         .tab-panel { display: none; }
         .tab-panel.active { display: block; }
-        .perf-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; margin-top: 18px; }
-        .perf-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 16px; }
-        .perf-card h4 { margin: 0 0 10px; font-family: 'Bebas Neue', sans-serif; font-size: 1rem; color: var(--text); }
-        .perf-row { display: flex; justify-content: space-between; gap: 10px; font-size: 0.88rem; color: var(--muted); margin-bottom: 10px; }
-        .perf-row strong { color: var(--text); }
-        .history-list { display: grid; gap: 12px; margin-top: 14px; }
-        .history-item { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 14px; }
-        .history-item strong { color: var(--text); }
-        .history-item p { margin: 4px 0; font-size: 0.88rem; color: var(--muted); }
-        .inventory-note { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; padding: 16px; margin-bottom: 18px; }
         .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin-bottom: 20px; }
         .loc-card {
             border-radius: 14px; padding: 16px; text-align: left; border: 1px solid var(--border);
@@ -87,6 +72,22 @@
             border-radius: 16px; padding: 20px; margin-top: 8px;
         }
         .consolidado h3 { font-family: 'Bebas Neue', sans-serif; font-size: 1.3rem; letter-spacing: 2px; margin-bottom: 14px; text-align: center; }
+        .inventory-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 16px; margin-bottom: 12px; }
+        .inventory-card h4 { font-family: 'Bebas Neue', sans-serif; font-size: 1rem; letter-spacing: 2px; margin-bottom: 10px; }
+        .inv-row { display: flex; gap: 8px; align-items: center; margin-bottom: 8px; }
+        .inv-row label { flex: 0 0 110px; font-size: 0.85rem; color: var(--muted); }
+        .inv-row input { flex: 1; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--border); background: #0a0a0c; color: var(--text); font-size: 0.95rem; }
+        .inv-row button { padding: 10px 14px; border-radius: 10px; border: none; background: var(--hand); color: #fff; font-weight: 700; font-size: 0.85rem; cursor: pointer; }
+        .product-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.04); font-size: 0.88rem; gap: 10px; }
+        .product-row:last-child { border-bottom: none; }
+        .product-row .p-name { color: var(--text); font-weight: 500; flex: 1; }
+        .product-row .p-value { color: var(--text); font-weight: 700; text-align: right; min-width: 90px; }
+        .product-row .p-rank { display: inline-block; width: 22px; height: 22px; border-radius: 50%; background: rgba(255,77,0,0.15); color: var(--hand); text-align: center; font-size: 0.75rem; font-weight: 700; line-height: 22px; margin-right: 8px; }
+        .margin-section { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 16px; margin-bottom: 14px; }
+        .margin-section h4 { font-family: 'Bebas Neue', sans-serif; font-size: 1.1rem; letter-spacing: 2px; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+        .margin-section.hand h4 { color: var(--hand); }
+        .margin-section.cafe h4 { color: #e8b4b4; }
+        .margin-section.fuente h4 { color: var(--fuente); }
         .nav-foot { text-align: center; margin-top: 28px; font-size: 0.8rem; color: var(--muted); }
         .nav-foot a { color: var(--fuente); margin: 0 8px; text-decoration: none; }
         .nav-foot a:hover { text-decoration: underline; }
@@ -97,19 +98,19 @@
 <body>
     <div class="wrap">
         <h1>ÓRBITA · PANEL CENTRAL</h1>
-        <p class="sub">Ventas de Hand Roll, Café y Fuente de soda · mismos datos que en cada local</p>
+        <p class="sub">Ventas consolidadas y rendimiento de los 3 locales</p>
 
         <div id="login-section" class="login-card">
             <h2>Acceso staff</h2>
             <p class="err" id="login-err">Credenciales incorrectas</p>
-            <input type="email" id="admin-email" placeholder="Email (usuario Supabase)" autocomplete="username">
+            <input type="email" id="admin-email" placeholder="Email" autocomplete="username">
             <input type="password" id="admin-pass" placeholder="Contraseña" autocomplete="current-password" onkeydown="if(event.key==='Enter') entrar()">
             <button type="button" class="btn btn-primary" onclick="entrar()">INGRESAR</button>
-            <p class="sub" style="margin-top:14px;font-size:0.78rem;">Cuenta creada en Supabase → Authentication → Users (no hay clave en el código).</p>
         </div>
 
         <div id="dashboard">
             <p id="sync-warning" style="color:#ff9b6b;font-size:0.82rem;text-align:center;margin-bottom:14px;display:none;line-height:1.4;"></p>
+
             <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px 16px;margin-bottom:18px;text-align:center;">
                 <p style="font-size:0.75rem;text-transform:uppercase;letter-spacing:2px;color:var(--muted);margin-bottom:10px;">Cartas y precios (admin en cada local)</p>
                 <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;">
@@ -117,65 +118,86 @@
                     <a href="cafe.html?k=orbita_8h3k2p_2026&orbita_back" style="padding:8px 12px;border-radius:10px;background:#221018;border:1px solid var(--cafe);color:#e8b4b4;font-size:0.82rem;font-weight:600;text-decoration:none;">Café · Productos</a>
                     <a href="fuente.html?k=orbita_8h3k2p_2026&orbita_back" style="padding:8px 12px;border-radius:10px;background:#1a1408;border:1px solid var(--fuente);color:var(--fuente);font-size:0.82rem;font-weight:600;text-decoration:none;">Fuente · Productos</a>
                 </div>
-                <p style="font-size:0.72rem;color:var(--muted);margin-top:10px;line-height:1.4;">Se guardan en <code style="font-size:0.68rem;">orbita_productos</code> (ejecuta <code style="font-size:0.68rem;">orbita-productos.sql</code> una vez en Supabase).</p>
             </div>
+
             <div class="tab-nav">
                 <button type="button" class="active" onclick="showCentralTab('ventas', this)">Ventas</button>
-                <button type="button" onclick="showCentralTab('pedidos', this)">Pedidos</button>
+                <button type="button" onclick="showCentralTab('rendimiento', this)">Rendimiento</button>
                 <button type="button" onclick="showCentralTab('inventario', this)">Inventario</button>
-                <button type="button" onclick="showCentralTab('historial', this)">Historial</button>
                 <button type="button" onclick="showCentralTab('margenes', this)">Márgenes</button>
             </div>
 
+            <!-- TAB VENTAS -->
             <div class="tab-panel active" id="tab-ventas">
+                <div class="toggle-row">
+                    <button type="button" id="btn-vista-mes" class="active" onclick="setVista('mes')">Mensual</button>
+                    <button type="button" id="btn-vista-anio" onclick="setVista('anio')">Anual</button>
+                </div>
                 <div class="chart-box">
-                    <h3 id="chart-title">Comparativa mes actual</h3>
+                    <h3 id="chart-title">Comparativa ventas — mes actual (CLP)</h3>
                     <canvas id="chart-main" height="220"></canvas>
                 </div>
-                <h3 style="font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:2px;color:var(--muted);margin-bottom:12px;text-align:center;">Rendimiento por local</h3>
-                <div class="grid-3" id="cards-locales"></div>
                 <div class="consolidado">
                     <h3>Negocio consolidado (3 locales)</h3>
                     <div id="consolidado-body"></div>
                 </div>
             </div>
 
-            <div class="tab-panel" id="tab-pedidos">
-                <h3 style="font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:2px;color:var(--muted);margin-bottom:12px;text-align:center;">Pedidos recientes</h3>
-                <div id="pedidos-central-list" class="history-list"><p style="color:var(--muted);font-size:0.9rem;">Selecciona esta pestaña para cargar pedidos de los tres locales.</p></div>
+            <!-- TAB RENDIMIENTO -->
+            <div class="tab-panel" id="tab-rendimiento">
+                <h3 style="font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:2px;color:var(--muted);margin-bottom:12px;text-align:center;">Rendimiento por local</h3>
+                <div class="grid-3" id="cards-rendimiento"></div>
             </div>
 
+            <!-- TAB INVENTARIO -->
             <div class="tab-panel" id="tab-inventario">
-                <h3 style="font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:2px;color:var(--muted);margin-bottom:12px;text-align:center;">Inventario central</h3>
-                <div class="inventory-note">
-                    <p style="margin:0 0 8px;">El inventario de insumos y movimiento de stock se administra desde cada local con su propio panel.</p>
-                    <p style="margin:0;">Aquí puedes ver el estado de costos fijos y una visión consolidada de inventario por local en cuanto a recursos compartidos.</p>
-                </div>
-                <div class="perf-grid">
-                    <div class="perf-card">
-                        <h4>Costos fijos</h4>
-                        <div class="perf-row"><span>Hand Roll</span><strong id="costos-handroll">—</strong></div>
-                        <div class="perf-row"><span>Café Órbita</span><strong id="costos-cafe">—</strong></div>
-                        <div class="perf-row"><span>Fuente de soda</span><strong id="costos-fuente">—</strong></div>
-                        <div class="perf-row" style="border-top:1px solid rgba(255,255,255,0.08);padding-top:10px;"><span>Total mensual</span><strong id="costos-total">—</strong></div>
-                    </div>
-                    <div class="perf-card">
-                        <h4>Nota</h4>
-                        <p style="margin:0;color:var(--muted);font-size:0.92rem;line-height:1.5;">Para ver el historial de entradas y salidas de insumos, usa el panel admin interno de Hand Roll, Café y Fuente.</p>
+                <h3 style="font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:2px;color:var(--muted);margin-bottom:12px;text-align:center;">Costos fijos e inventario central</h3>
+                <p style="font-size:0.82rem;color:var(--muted);margin-bottom:14px;line-height:1.5;text-align:center;">Ingresa los costos fijos mensuales de cada local (arriendo, luz, sueldos). Se restan a las ventas líquidas para el neto.</p>
+
+                <div class="inventory-card">
+                    <h4 style="color:var(--hand);">Hand Roll</h4>
+                    <div class="inv-row">
+                        <label>Costo fijo/mes</label>
+                        <input type="number" id="cf-handroll" min="0" step="1000" placeholder="Ej: 500000">
+                        <button type="button" onclick="guardarCostoFijo('handroll')">Guardar</button>
                     </div>
                 </div>
+
+                <div class="inventory-card">
+                    <h4 style="color:#e8b4b4;">Café Órbita</h4>
+                    <div class="inv-row">
+                        <label>Costo fijo/mes</label>
+                        <input type="number" id="cf-cafe" min="0" step="1000" placeholder="Ej: 400000">
+                        <button type="button" onclick="guardarCostoFijo('cafe')">Guardar</button>
+                    </div>
+                </div>
+
+                <div class="inventory-card">
+                    <h4 style="color:var(--fuente);">Fuente de soda</h4>
+                    <div class="inv-row">
+                        <label>Costo fijo/mes</label>
+                        <input type="number" id="cf-fuente" min="0" step="1000" placeholder="Ej: 450000">
+                        <button type="button" onclick="guardarCostoFijo('fuente')">Guardar</button>
+                    </div>
+                </div>
+
+                <div class="inventory-card" style="background:linear-gradient(135deg,#12121a,var(--card));">
+                    <h4>Total mensual (3 locales)</h4>
+                    <div class="stat-row" style="font-size:1.1rem;"><span>Suma de costos fijos</span><strong id="total-costos-fijos">—</strong></div>
+                </div>
+
+                <p style="font-size:0.75rem;color:var(--muted);margin-top:14px;line-height:1.4;text-align:center;">El inventario de insumos se administra desde el panel interno de cada local.</p>
             </div>
 
-            <div class="tab-panel" id="tab-historial">
-                <h3 style="font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:2px;color:var(--muted);margin-bottom:12px;text-align:center;">Historial de ventas</h3>
-                <div id="historial-central-list" class="history-list"><p style="color:var(--muted);font-size:0.9rem;">Selecciona esta pestaña para cargar el historial de ventas recientes.</p></div>
-            </div>
-
+            <!-- TAB MÁRGENES -->
             <div class="tab-panel" id="tab-margenes">
-                <h3 style="font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:2px;color:var(--muted);margin-bottom:12px;text-align:center;">Productos por margen y ventas</h3>
-                <div id="margenes-central-list" class="perf-grid">
-                    <div class="perf-card"><p style="color:var(--muted);font-size:0.9rem;">Selecciona esta pestaña para cargar la clasificación de productos por ingreso y ventas.</p></div>
+                <h3 style="font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:2px;color:var(--muted);margin-bottom:12px;text-align:center;">Rendimiento de productos por local</h3>
+                <div class="toggle-row">
+                    <button type="button" id="btn-orden-margen" class="active" onclick="setOrdenMargen('margenPct')">% margen</button>
+                    <button type="button" id="btn-orden-unidades" onclick="setOrdenMargen('unidades')">Unidades vendidas</button>
+                    <button type="button" id="btn-orden-neto" onclick="setOrdenMargen('margenNeto')">Margen neto $</button>
                 </div>
+                <div id="margenes-por-local"></div>
             </div>
 
             <button type="button" class="logout" onclick="salir()">Cerrar sesión</button>
@@ -186,7 +208,6 @@
                 <a href="cafe.html?k=orbita_8h3k2p_2026&orbita_back">Café Órbita</a>
                 <a href="fuente.html?k=orbita_8h3k2p_2026&orbita_back">Fuente de soda</a>
             </div>
-            <p class="sub" style="margin-top:16px;">Costos en <code style="font-size:0.75rem;">orbita_config</code> (solo usuarios autenticados si aplicaste <code style="font-size:0.75rem;">supabase-security-rls.sql</code>).</p>
         </div>
     </div>
 
@@ -194,40 +215,39 @@
 <script src="orbita-auth.js"></script>
 <script src="orbita-supabase-sync.js"></script>
 <script>
-    const TABLAS = { handroll: "pedidos", cafe: "pedidos_cafe", fuente: "pedidos_fuente" };
     const MESES = ["Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sep","Oct","Nov","Dic"];
     const SITES = [
-        { key: 'handroll', label: 'Hand Roll', tabla: TABLAS.handroll, color: 'var(--hand)' },
-        { key: 'cafe', label: 'Café Órbita', tabla: TABLAS.cafe, color: '#c45c5c' },
-        { key: 'fuente', label: 'Fuente de soda', tabla: TABLAS.fuente, color: '#D4872A' }
+        { key: 'handroll', label: 'Hand Roll', color: '#ff4d00', cssClass: 'hand' },
+        { key: 'cafe',     label: 'Café Órbita', color: '#c45c5c', cssClass: 'cafe' },
+        { key: 'fuente',   label: 'Fuente de soda', color: '#D4872A', cssClass: 'fuente' }
     ];
 
     let chartInst = null;
-    let datosCache = null;
-    let vistaActual = "mes";
+    let datosCache = null;       // { rH, rC, rF } - pedidos por local del año
+    let costosCache = null;       // { costo_fijo_handroll, costo_fijo_cafe, costo_fijo_fuente }
+    let vistaActual = "mes";     // 'mes' | 'anio'
+    let ordenMargen = "margenPct"; // 'margenPct' | 'unidades' | 'margenNeto'
     let catalogCache = {};
-    let orderCache = {};
+    let margenesCache = null;    // Calculado 1 vez
 
     function formatClp(value) {
-        return '$' + Math.round(value || 0).toLocaleString('es-CL');
+        return '$' + Math.round(Number(value) || 0).toLocaleString('es-CL');
+    }
+
+    function formatPct(value) {
+        if (!isFinite(value)) return '—';
+        return (value >= 0 ? '+' : '') + Math.round(value) + '%';
     }
 
     async function fetchCatalogo(sitio) {
         if (catalogCache[sitio]) return catalogCache[sitio];
-        const catalog = await window.orbitaProductos.fetchJson(sitio);
-        catalogCache[sitio] = Array.isArray(catalog) ? catalog : [];
+        try {
+            const catalog = await window.orbitaProductos.fetchJson(sitio);
+            catalogCache[sitio] = Array.isArray(catalog) ? catalog : [];
+        } catch (e) {
+            catalogCache[sitio] = [];
+        }
         return catalogCache[sitio];
-    }
-
-    async function fetchOrderRows(tabla, limit = 200) {
-        if (orderCache[tabla]) return orderCache[tabla];
-        const res = await window.orbitaAuth.adminFetch(
-            `${window.orbitaAuth.url}/rest/v1/${tabla}?select=*&order=creado_at.desc&limit=${limit}`
-        );
-        if (!res.ok) return [];
-        const data = await res.json();
-        orderCache[tabla] = Array.isArray(data) ? data : [];
-        return orderCache[tabla];
     }
 
     function showCentralTab(tab, btn) {
@@ -235,162 +255,20 @@
         document.querySelectorAll('.tab-panel').forEach(panel => panel.classList.remove('active'));
         if (btn) btn.classList.add('active');
         document.getElementById('tab-' + tab).classList.add('active');
-
-        if (tab === 'pedidos') cargarCentralPedidos();
-        else if (tab === 'historial') renderCentralHistorial();
-        else if (tab === 'margenes') renderCentralMargenes();
+        if (tab === 'margenes') renderMargenes();
     }
 
-    function describeOrderItems(order, products) {
-        const parts = [];
-        (products || []).forEach(prod => {
-            const qty = Number(order[prod.id]) || 0;
-            if (qty > 0) parts.push(`${qty}x ${prod.nombre}`);
-        });
-        return parts.join(' · ') || '—';
-    }
-
-    async function cargarCentralPedidos() {
-        const lista = document.getElementById('pedidos-central-list');
-        lista.innerHTML = '<p style="color:var(--muted);font-size:0.9rem;">Cargando pedidos...</p>';
-        try {
-            const pedidosPorLocal = await Promise.all(SITES.map(site => fetchOrderRows(site.tabla, 40)));
-            const rows = [];
-            for (let i = 0; i < SITES.length; i++) {
-                const site = SITES[i];
-                const catalogo = await fetchCatalogo(site.key);
-                (pedidosPorLocal[i] || []).forEach(order => rows.push({ site, order, catalogo }));
-            }
-            rows.sort((a, b) => new Date(b.order.creado_at) - new Date(a.order.creado_at));
-            if (!rows.length) {
-                lista.innerHTML = '<p style="color:var(--muted);font-size:0.9rem;">Sin pedidos recientes.</p>';
-                return;
-            }
-            lista.innerHTML = rows.slice(0, 25).map(item => {
-                const hora = new Date(item.order.creado_at).toLocaleTimeString('es-CL', { hour:'2-digit', minute:'2-digit' });
-                const products = describeOrderItems(item.order, item.catalogo);
-                return `<div class="history-item"><strong>${item.site.label}</strong><p>${products}</p><p>⏰ ${hora} · Total: <strong>${formatClp(item.order.total)}</strong></p></div>`;
-            }).join('');
-        } catch (e) {
-            lista.innerHTML = '<p style="color:var(--fire);font-size:0.9rem;">No se pudieron cargar los pedidos.</p>';
-        }
-    }
-
-    async function renderCentralHistorial() {
-        const lista = document.getElementById('historial-central-list');
-        lista.innerHTML = '<p style="color:var(--muted);font-size:0.9rem;">Cargando historial...</p>';
-        try {
-            const pedidosPorLocal = await Promise.all(SITES.map(site => fetchOrderRows(site.tabla, 40)));
-            const rows = [];
-            for (let i = 0; i < SITES.length; i++) {
-                const site = SITES[i];
-                const catalogo = await fetchCatalogo(site.key);
-                (pedidosPorLocal[i] || []).forEach(order => rows.push({ site, order, catalogo }));
-            }
-            rows.sort((a, b) => new Date(b.order.creado_at) - new Date(a.order.creado_at));
-            if (!rows.length) {
-                lista.innerHTML = '<p style="color:var(--muted);font-size:0.9rem;">No hay historial de ventas.</p>';
-                return;
-            }
-            lista.innerHTML = rows.slice(0, 30).map(item => {
-                const fecha = new Date(item.order.creado_at).toLocaleDateString('es-CL', { day:'numeric', month:'short' });
-                const products = describeOrderItems(item.order, item.catalogo);
-                return `<div class="history-item"><strong>${item.site.label}</strong><p>${products}</p><p>${fecha} · Total: <strong>${formatClp(item.order.total)}</strong></p></div>`;
-            }).join('');
-        } catch (e) {
-            lista.innerHTML = '<p style="color:var(--fire);font-size:0.9rem;">No se pudo cargar el historial.</p>';
-        }
-    }
-
-    async function renderCentralMargenes() {
-        const cont = document.getElementById('margenes-central-list');
-        cont.innerHTML = '<div class="perf-card"><p style="color:var(--muted);font-size:0.9rem;">Cargando clasificación de productos...</p></div>';
-        try {
-            const datosPorLocal = await Promise.all(SITES.map(async site => {
-                const [catalogo, orders] = await Promise.all([fetchCatalogo(site.key), fetchOrderRows(site.tabla, 200)]);
-                return { site, catalogo, orders };
-            }));
-
-            const productosMap = {};
-            datosPorLocal.forEach(({ site, catalogo, orders }) => {
-                orders.forEach(order => {
-                    catalogo.forEach(prod => {
-                        const qty = Number(order[prod.id]) || 0;
-                        if (!qty) return;
-                        const revenue = qty * (Number(prod.precio) || 0);
-                        const costUnit = Number(prod.costo || prod.cost) || 0;
-                        const key = `${site.key}:${prod.id}`;
-                        if (!productosMap[key]) {
-                            productosMap[key] = {
-                                label: prod.nombre,
-                                site: site.label,
-                                units: 0,
-                                revenue: 0,
-                                cost: 0,
-                                price: Number(prod.precio) || 0
-                            };
-                        }
-                        productosMap[key].units += qty;
-                        productosMap[key].revenue += revenue;
-                        productosMap[key].cost += qty * costUnit;
-                    });
-                });
-            });
-
-            const productos = Object.values(productosMap);
-            if (!productos.length) {
-                cont.innerHTML = '<div class="perf-card"><p style="color:var(--muted);font-size:0.9rem;">No hay ventas registradas para calcular rentabilidad.</p></div>';
-                return;
-            }
-
-            const sortRevenue = productos.slice().sort((a,b) => b.revenue - a.revenue).slice(0,6);
-            const sortUnits = productos.slice().sort((a,b) => b.units - a.units).slice(0,6);
-            const sortLow = productos.slice().filter(p=>p.units>0).sort((a,b)=>a.units-b.units).slice(0,6);
-
-            cont.innerHTML = `
-                <div class="perf-card">
-                    <h4>Top por ingresos</h4>
-                    ${sortRevenue.map(p => `<div class="perf-row"><span>${p.label} <small style="color:var(--muted);">(${p.site})</small></span><strong>${formatClp(p.revenue)}</strong></div>`).join('')}
-                </div>
-                <div class="perf-card">
-                    <h4>Más vendidos</h4>
-                    ${sortUnits.map(p => `<div class="perf-row"><span>${p.label} <small style="color:var(--muted);">(${p.site})</small></span><strong>${p.units} uds</strong></div>`).join('')}
-                </div>
-                <div class="perf-card">
-                    <h4>Menos vendidos</h4>
-                    ${sortLow.map(p => `<div class="perf-row"><span>${p.label} <small style="color:var(--muted);">(${p.site})</small></span><strong>${p.units} uds</strong></div>`).join('')}
-                </div>
-            `;
-            if (productos.some(p => p.cost > 0)) {
-                const margenHtml = productos.slice().sort((a,b)=>((b.revenue-b.cost)-(a.revenue-a.cost))).slice(0,6).map(p => {
-                    const margin = p.revenue - p.cost;
-                    return `<div class="perf-row"><span>${p.label} <small style="color:var(--muted);">(${p.site})</small></span><strong>${formatClp(margin)}</strong></div>`;
-                }).join('');
-                cont.innerHTML += `<div class="perf-card"><h4>Mayor margen bruto</h4>${margenHtml}</div>`;
-            }
-        } catch (e) {
-            cont.innerHTML = '<div class="perf-card"><p style="color:var(--fire);font-size:0.9rem;">No se pudo cargar la clasificación de productos.</p></div>';
-        }
-    }
-
-    function renderCentralInventario(costos) {
-        document.getElementById('costos-handroll').textContent = formatClp(Number(costos.costo_fijo_handroll) || 0);
-        document.getElementById('costos-cafe').textContent = formatClp(Number(costos.costo_fijo_cafe) || 0);
-        document.getElementById('costos-fuente').textContent = formatClp(Number(costos.costo_fijo_fuente) || 0);
-        document.getElementById('costos-total').textContent = formatClp(
-            (Number(costos.costo_fijo_handroll) || 0) + (Number(costos.costo_fijo_cafe) || 0) + (Number(costos.costo_fijo_fuente) || 0)
-        );
-    }
-
-    async function fetchYear(tabla) {
+    async function fetchPedidosAnio(sitio) {
         const y = new Date().getFullYear();
         const desde = `${y}-01-01T00:00:00`;
         const res = await window.orbitaAuth.adminFetch(
-            `${window.orbitaAuth.url}/rest/v1/${tabla}?select=total,creado_at&creado_at=gte.${desde}&order=creado_at.asc`
+            `${window.orbitaAuth.url}/rest/v1/pedidos?sitio=eq.${sitio}&select=total,creado_at,estado,items_json&creado_at=gte.${desde}&order=creado_at.asc`
         );
         if (!res.ok) return [];
         const data = await res.json();
-        return Array.isArray(data) ? data : [];
+        if (!Array.isArray(data)) return [];
+        // Filtrar cancelados/rechazados para el cálculo de ventas reales
+        return data.filter(r => r.estado !== 'anulado' && r.estado !== 'rechazado');
     }
 
     function sumMes(rows, y, m0) {
@@ -440,7 +318,7 @@
             document.getElementById("dashboard").style.display = "block";
             cargarTodo();
         } catch (e) {
-            errEl.textContent = e.message || "Error al iniciar sesión. Revisa la consola.";
+            errEl.textContent = e.message || "Error al iniciar sesión.";
             errEl.style.display = "block";
             document.getElementById("admin-pass").value = "";
         }
@@ -454,77 +332,113 @@
         document.getElementById("login-section").style.display = "block";
         if (chartInst) { chartInst.destroy(); chartInst = null; }
         datosCache = null;
+        costosCache = null;
+        margenesCache = null;
     }
 
     async function cargarTodo() {
         const [rH, rC, rF, costos] = await Promise.all([
-            fetchYear(TABLAS.handroll),
-            fetchYear(TABLAS.cafe),
-            fetchYear(TABLAS.fuente),
+            fetchPedidosAnio('handroll'),
+            fetchPedidosAnio('cafe'),
+            fetchPedidosAnio('fuente'),
             window.orbitaCostosFijos.leer()
         ]);
         datosCache = { rH, rC, rF };
+        costosCache = costos;
+        margenesCache = null; // invalidar
+
         const w = document.getElementById("sync-warning");
-        if (costos._necesitaLogin) {
+        if (costos && costos._necesitaLogin) {
             w.style.display = "block";
-            w.textContent = "Inicia sesión arriba o aplicá supabase-security-rls.sql y usa un usuario de Authentication.";
-        } else if (costos._sinTabla) {
-            w.style.display = "block";
-            w.textContent = "No se pudo leer orbita_config (¿tabla o permisos?). Revisa orbita-config.sql y RLS.";
+            w.textContent = "Inicia sesión con un usuario de Supabase Auth para ver/editar costos.";
         } else {
             w.style.display = "none";
-            w.textContent = "";
         }
+
+        renderRendimiento();
+        renderConsolidado();
+        renderInventario();
+        pintarChart();
+    }
+
+    function renderRendimiento() {
+        if (!datosCache || !costosCache) return;
+        const { rH, rC, rF } = datosCache;
         const now = new Date();
         const y = now.getFullYear();
         const m = now.getMonth();
-        const cfH = Number(costos.costo_fijo_handroll) || 0;
-        const cfC = Number(costos.costo_fijo_cafe) || 0;
-        const cfF = Number(costos.costo_fijo_fuente) || 0;
+        const cfH = Number(costosCache.costo_fijo_handroll) || 0;
+        const cfC = Number(costosCache.costo_fijo_cafe) || 0;
+        const cfF = Number(costosCache.costo_fijo_fuente) || 0;
         const vH_m = sumMes(rH, y, m), vC_m = sumMes(rC, y, m), vF_m = sumMes(rF, y, m);
         const vH_a = sumAnio(rH, y), vC_a = sumAnio(rC, y), vF_a = sumAnio(rF, y);
-        const totalM = vH_m + vC_m + vF_m;
-        const totalA = vH_a + vC_a + vF_a;
+
+        const card = (cls, label, v_m, v_a, cf) => {
+            const netM = v_m - cf;
+            const netA = v_a - cf * 12;
+            return `
+            <div class="loc-card ${cls}">
+                <h4>${label}</h4>
+                <div class="stat-row">Ventas mes <strong>${formatClp(v_m)}</strong></div>
+                <div class="stat-row">Ventas año <strong>${formatClp(v_a)}</strong></div>
+                <div class="stat-row">Costo fijo / mes <strong>${formatClp(cf)}</strong></div>
+                <div class="stat-row">Aprox. neto mes <strong style="color:${netM >= 0 ? 'var(--green)' : '#ff6b6b'}">${formatClp(netM)}</strong></div>
+                <div class="stat-row">Aprox. neto año <strong style="color:${netA >= 0 ? 'var(--green)' : '#ff6b6b'}">${formatClp(netA)}</strong></div>
+            </div>`;
+        };
+
+        document.getElementById("cards-rendimiento").innerHTML =
+            card('hand', 'Hand Roll', vH_m, vH_a, cfH) +
+            card('cafe', 'Café Órbita', vC_m, vC_a, cfC) +
+            card('fuente', 'Fuente de soda', vF_m, vF_a, cfF);
+    }
+
+    function renderConsolidado() {
+        if (!datosCache || !costosCache) return;
+        const { rH, rC, rF } = datosCache;
+        const now = new Date();
+        const y = now.getFullYear();
+        const m = now.getMonth();
+        const cfH = Number(costosCache.costo_fijo_handroll) || 0;
+        const cfC = Number(costosCache.costo_fijo_cafe) || 0;
+        const cfF = Number(costosCache.costo_fijo_fuente) || 0;
+        const totalM = sumMes(rH, y, m) + sumMes(rC, y, m) + sumMes(rF, y, m);
+        const totalA = sumAnio(rH, y) + sumAnio(rC, y) + sumAnio(rF, y);
         const cfTotalM = cfH + cfC + cfF;
         const netM = totalM - cfTotalM;
-        const netA = totalA - (cfH + cfC + cfF) * 12;
-
-        document.getElementById("cards-locales").innerHTML = `
-            <div class="loc-card hand">
-                <h4>Hand Roll</h4>
-                <div class="stat-row">Ventas mes <strong>$${vH_m.toLocaleString("es-CL")}</strong></div>
-                <div class="stat-row">Ventas año <strong>$${vH_a.toLocaleString("es-CL")}</strong></div>
-                <div class="stat-row">Costo fijo / mes <strong>$${cfH.toLocaleString("es-CL")}</strong></div>
-                <div class="stat-row">Aprox. neto mes <strong style="color:${vH_m - cfH >= 0 ? "var(--green)" : "#ff6b6b"}">$${(vH_m - cfH).toLocaleString("es-CL")}</strong></div>
-                <div class="stat-row">Aprox. neto año <strong style="color:${vH_a - cfH * 12 >= 0 ? "var(--green)" : "#ff6b6b"}">$${(vH_a - cfH * 12).toLocaleString("es-CL")}</strong></div>
-            </div>
-            <div class="loc-card cafe">
-                <h4>Café Órbita</h4>
-                <div class="stat-row">Ventas mes <strong>$${vC_m.toLocaleString("es-CL")}</strong></div>
-                <div class="stat-row">Ventas año <strong>$${vC_a.toLocaleString("es-CL")}</strong></div>
-                <div class="stat-row">Costo fijo / mes <strong>$${cfC.toLocaleString("es-CL")}</strong></div>
-                <div class="stat-row">Aprox. neto mes <strong style="color:${vC_m - cfC >= 0 ? "var(--green)" : "#ff6b6b"}">$${(vC_m - cfC).toLocaleString("es-CL")}</strong></div>
-                <div class="stat-row">Aprox. neto año <strong style="color:${vC_a - cfC * 12 >= 0 ? "var(--green)" : "#ff6b6b"}">$${(vC_a - cfC * 12).toLocaleString("es-CL")}</strong></div>
-            </div>
-            <div class="loc-card fuente">
-                <h4>Fuente de soda</h4>
-                <div class="stat-row">Ventas mes <strong>$${vF_m.toLocaleString("es-CL")}</strong></div>
-                <div class="stat-row">Ventas año <strong>$${vF_a.toLocaleString("es-CL")}</strong></div>
-                <div class="stat-row">Costo fijo / mes <strong>$${cfF.toLocaleString("es-CL")}</strong></div>
-                <div class="stat-row">Aprox. neto mes <strong style="color:${vF_m - cfF >= 0 ? "var(--green)" : "#ff6b6b"}">$${(vF_m - cfF).toLocaleString("es-CL")}</strong></div>
-                <div class="stat-row">Aprox. neto año <strong style="color:${vF_a - cfF * 12 >= 0 ? "var(--green)" : "#ff6b6b"}">$${(vF_a - cfF * 12).toLocaleString("es-CL")}</strong></div>
-            </div>`;
+        const netA = totalA - cfTotalM * 12;
 
         document.getElementById("consolidado-body").innerHTML = `
-            <div class="stat-row" style="font-size:1rem;margin-bottom:8px;">Suma ventas mes (3 locales) <strong>$${totalM.toLocaleString("es-CL")}</strong></div>
-            <div class="stat-row" style="font-size:0.9rem;">Menos costos fijos mensuales sumados <strong>− $${cfTotalM.toLocaleString("es-CL")}</strong></div>
-            <div class="stat-row" style="font-size:1.05rem;margin-top:12px;padding-top:12px;border-top:1px solid var(--border);">Resultado aprox. mes <strong style="color:${netM >= 0 ? "var(--green)" : "#ff6b6b"}">$${netM.toLocaleString("es-CL")}</strong></div>
-            <div class="stat-row" style="margin-top:16px;font-size:0.95rem;">Suma ventas año <strong>$${totalA.toLocaleString("es-CL")}</strong></div>
-            <div class="stat-row" style="font-size:0.9rem;">Menos 12× costo fijo c/u (estimación) <strong>− $${((cfH + cfC + cfF) * 12).toLocaleString("es-CL")}</strong></div>
-            <div class="stat-row" style="font-size:1.05rem;margin-top:10px;">Resultado aprox. año <strong style="color:${netA >= 0 ? "var(--green)" : "#ff6b6b"}">$${netA.toLocaleString("es-CL")}</strong></div>`;
+            <div class="stat-row" style="font-size:1rem;margin-bottom:8px;">Ventas mes (3 locales) <strong>${formatClp(totalM)}</strong></div>
+            <div class="stat-row" style="font-size:0.9rem;">Costos fijos mensuales <strong>− ${formatClp(cfTotalM)}</strong></div>
+            <div class="stat-row" style="font-size:1.05rem;margin-top:12px;padding-top:12px;border-top:1px solid var(--border);">Neto aprox. mes <strong style="color:${netM >= 0 ? 'var(--green)' : '#ff6b6b'}">${formatClp(netM)}</strong></div>
+            <div class="stat-row" style="margin-top:16px;font-size:0.95rem;">Ventas año <strong>${formatClp(totalA)}</strong></div>
+            <div class="stat-row" style="font-size:0.9rem;">Costos fijos 12 meses <strong>− ${formatClp(cfTotalM * 12)}</strong></div>
+            <div class="stat-row" style="font-size:1.05rem;margin-top:10px;">Neto aprox. año <strong style="color:${netA >= 0 ? 'var(--green)' : '#ff6b6b'}">${formatClp(netA)}</strong></div>`;
+    }
 
-        renderCentralInventario(costos);
-        pintarChart();
+    function renderInventario() {
+        if (!costosCache) return;
+        const cfH = Number(costosCache.costo_fijo_handroll) || 0;
+        const cfC = Number(costosCache.costo_fijo_cafe) || 0;
+        const cfF = Number(costosCache.costo_fijo_fuente) || 0;
+        document.getElementById('cf-handroll').value = cfH || '';
+        document.getElementById('cf-cafe').value = cfC || '';
+        document.getElementById('cf-fuente').value = cfF || '';
+        document.getElementById('total-costos-fijos').textContent = formatClp(cfH + cfC + cfF);
+    }
+
+    async function guardarCostoFijo(sitio) {
+        const input = document.getElementById('cf-' + sitio);
+        const v = parseInt(input.value, 10);
+        if (isNaN(v) || v < 0) { alert('Ingresa un monto válido.'); return; }
+        const clave = 'costo_fijo_' + sitio;
+        const r = await window.orbitaCostosFijos.guardar(clave, v);
+        if (!r.ok) { alert(r.error || 'No se pudo guardar.'); return; }
+        costosCache[clave] = v;
+        renderRendimiento();
+        renderConsolidado();
+        renderInventario();
     }
 
     function setVista(v) {
@@ -535,6 +449,7 @@
             ? "Comparativa ventas — mes actual (CLP)"
             : "Evolución ventas — año en curso por mes (CLP)";
         pintarChart();
+        renderConsolidado();
     }
 
     function pintarChart() {
@@ -592,6 +507,96 @@
             });
         }
     }
+
+    async function computeMargenes() {
+        if (margenesCache) return margenesCache;
+        const out = { handroll: [], cafe: [], fuente: [] };
+        const sitioKeys = ['handroll', 'cafe', 'fuente'];
+        const catalogos = {};
+        for (const k of sitioKeys) catalogos[k] = await fetchCatalogo(k);
+
+        sitioKeys.forEach(sitioKey => {
+            const rows = sitioKey === 'handroll' ? datosCache.rH : sitioKey === 'cafe' ? datosCache.rC : datosCache.rF;
+            const catalog = catalogos[sitioKey] || [];
+            const byNombre = {}; // nombre → {units, revenue, cost, precio}
+
+            rows.forEach(order => {
+                const items = Array.isArray(order.items_json) ? order.items_json : [];
+                items.forEach(item => {
+                    const nombre = String(item.nombre || '').trim();
+                    if (!nombre || nombre.toLowerCase() === 'delivery') return;
+                    const qty = Number(item.cantidad) || 0;
+                    const precio = Number(item.precio) || 0;
+                    if (!byNombre[nombre]) {
+                        // Buscar costo en catálogo (por nombre aproximado)
+                        const cat = catalog.find(c => String(c.nombre || '').trim() === nombre);
+                        const costoUnit = Number(cat && (cat.costo || cat.cost)) || 0;
+                        byNombre[nombre] = { nombre, units: 0, revenue: 0, cost: 0, costoUnit, precio };
+                    }
+                    byNombre[nombre].units += qty;
+                    byNombre[nombre].revenue += qty * precio;
+                    byNombre[nombre].cost += qty * byNombre[nombre].costoUnit;
+                });
+            });
+
+            const arr = Object.values(byNombre).map(p => {
+                const margenNeto = p.revenue - p.cost;
+                const margenPct = p.revenue > 0 ? ((p.revenue - p.cost) / p.revenue) * 100 : 0;
+                return { ...p, margenNeto, margenPct };
+            });
+            out[sitioKey] = arr;
+        });
+
+        margenesCache = out;
+        return out;
+    }
+
+    function setOrdenMargen(orden) {
+        ordenMargen = orden;
+        document.getElementById('btn-orden-margen').classList.toggle('active', orden === 'margenPct');
+        document.getElementById('btn-orden-unidades').classList.toggle('active', orden === 'unidades');
+        document.getElementById('btn-orden-neto').classList.toggle('active', orden === 'margenNeto');
+        renderMargenes();
+    }
+
+    async function renderMargenes() {
+        const cont = document.getElementById('margenes-por-local');
+        cont.innerHTML = '<p style="color:var(--muted);font-size:0.9rem;text-align:center;">Calculando márgenes...</p>';
+        try {
+            const data = await computeMargenes();
+            const valorFn = {
+                margenPct: p => formatPct(p.margenPct),
+                unidades: p => p.units + ' uds',
+                margenNeto: p => formatClp(p.margenNeto)
+            }[ordenMargen];
+            const cmpFn = {
+                margenPct: (a, b) => b.margenPct - a.margenPct,
+                unidades: (a, b) => b.units - a.units,
+                margenNeto: (a, b) => b.margenNeto - a.margenNeto
+            }[ordenMargen];
+
+            const html = SITES.map(site => {
+                const items = (data[site.key] || []).slice().sort(cmpFn);
+                const rows = items.length
+                    ? items.map((p, i) => `
+                        <div class="product-row">
+                            <span class="p-name"><span class="p-rank">${i+1}</span>${escHtml(p.nombre)}</span>
+                            <span class="p-value">${valorFn(p)}</span>
+                        </div>`).join('')
+                    : `<p style="color:var(--muted);font-size:0.85rem;padding:8px 0;">Sin ventas registradas en ${site.label} este año.</p>`;
+                return `
+                    <div class="margin-section ${site.cssClass}">
+                        <h4>${site.label}</h4>
+                        ${rows}
+                    </div>`;
+            }).join('');
+            cont.innerHTML = html;
+        } catch (e) {
+            cont.innerHTML = '<p style="color:#ff6b6b;font-size:0.9rem;text-align:center;">No se pudo calcular márgenes.</p>';
+        }
+    }
+
+    function escHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
     document.addEventListener("DOMContentLoaded", async function () {
         const { data: { session } } = await window.orbitaAuth.getSession();

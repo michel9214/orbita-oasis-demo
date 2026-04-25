@@ -3,8 +3,8 @@
  * Requiere: supabase-js → orbita-auth.js → este archivo.
  */
 (function () {
-    var U = (window.orbitaAuth && window.orbitaAuth.url) || "https://bhayzqgzxgzluafjhpdg.supabase.co";
-    var K_FALLBACK = (window.orbitaAuth && window.orbitaAuth.anonKey) || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVsZHFneGRtYmxoeXFzbnhlbmF6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4MjY2NjUsImV4cCI6MjA5MDQwMjY2NX0.9o0GseD_yxV-tf98w_1H2q_aJLSvyX3gh1KxIYLbMg";
+    var U = (window.orbitaAuth && window.orbitaAuth.url) || "https://uldqgxdmblhyqsnxenaz.supabase.co";
+    var K_FALLBACK = (window.orbitaAuth && window.orbitaAuth.anonKey) || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVsZHFneGRtYmxoeXFzbnhlbmF6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4MjY2NjUsImV4cCI6MjA5MDQwMjY2NX0.9o0GseD_yxXv-tf98w_1H2q_aJLSvyX3gh1KxIYLbMg";
 
     async function hdr() {
         if (window.orbitaAuth && typeof window.orbitaAuth.restHeaders === "function") {
@@ -37,14 +37,19 @@
             var o = map[d.id];
             if (!o) return Object.assign({}, d);
             var out = Object.assign({}, d);
+            // Campos editables desde admin: nombre/precio/activo/desc/grano/bebida/costo.
+            // El `cat` y `categoria` NO se sobrescriben: son identidad del producto y un
+            // valor incorrecto guardado antes (ej. salchipapa con cat distinto de 'extra')
+            // dejaría el producto fuera de su columna y sin posibilidad de agregarlo.
             if (o.nombre !== undefined) out.nombre = o.nombre;
             if (typeof o.precio === "number") out.precio = o.precio;
             if (o.activo !== undefined) out.activo = !!o.activo;
             if (o.desc !== undefined) out.desc = o.desc;
-            if (o.cat !== undefined) out.cat = o.cat;
-            if (o.categoria !== undefined) out.categoria = o.categoria;
             if (o.grano !== undefined) out.grano = o.grano;
             if (o.bebida !== undefined) out.bebida = o.bebida;
+            if (typeof o.costo === "number") out.costo = o.costo;
+            if (typeof o.cost === "number") out.costo = o.cost;
+            if (typeof o.stock === "number") out.stock = o.stock;
             return out;
         });
     }
